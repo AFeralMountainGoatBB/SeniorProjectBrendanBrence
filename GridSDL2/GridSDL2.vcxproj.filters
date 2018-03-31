@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Kiss_SDL stuff">
+      <UniqueIdentifier>{b7328859-b363-437d-8f26-e20274dad2eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\EntityTypesHFiles">
+      <UniqueIdentifier>{cf3d0f03-7720-4ddf-8ad1-7db5667a6d39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DataHeaders">
+      <UniqueIdentifier>{a2aa096d-6437-415f-8fec-6b71e3763814}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Data cpp">
+      <UniqueIdentifier>{3e804670-d4e9-47b9-861a-337b1e4270b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Menu Headers">
+      <UniqueIdentifier>{55f47067-2432-4d72-8054-53f0f62b0c14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Menu cpps">
+      <UniqueIdentifier>{93d69476-dea3-48a1-a372-c842d2bb33e1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="39_tiling.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameInstance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="kiss_general.c">
+      <Filter>Source Files\Kiss_SDL stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="kiss_widgets.c">
+      <Filter>Source Files\Kiss_SDL stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="kiss_draw.c">
+      <Filter>Source Files\Kiss_SDL stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="EncounterInstance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerCharacter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Feats.cpp">
+      <Filter>Source Files\Data cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects.cpp">
+      <Filter>Source Files\Data cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="EncounterMenuItems.cpp">
+      <Filter>Source Files\Menu cpps</Filter>
+    </ClCompile>
+    <ClCompile Include="MainMenu.cpp">
+      <Filter>Source Files\Menu cpps</Filter>
+    </ClCompile>
+    <ClCompile Include="ScenarioMenu.cpp">
+      <Filter>Source Files\Menu cpps</Filter>
+    </ClCompile>
+    <ClCompile Include="PickupItemsMenu.cpp">
+      <Filter>Source Files\Menu cpps</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemContainer.cpp">
+      <Filter>Source Files\Data cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="InventoryMenu.cpp">
+      <Filter>Source Files\Menu cpps</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="dot.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="button.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="tiles.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="kiss_combo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="kiss_down.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="kiss_hslider.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="kiss_left.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="kiss_normal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="kiss_prelight.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="kiss_right.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="kiss_selected.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="kiss_ss1.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="kiss_ss2.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="kiss_unselected.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="kiss_up.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="kiss_vslider.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="kiss_wood.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="kiss_active.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="kiss_bar.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Dot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Grid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameInstance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneralHeaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="kiss_sdl.h">
+      <Filter>Source Files\Kiss_SDL stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="EncounterInstance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedEnums.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityClass.h">
+      <Filter>Header Files\EntityTypesHFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCharacter.h">
+      <Filter>Header Files\EntityTypesHFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Races.h">
+      <Filter>Header Files\DataHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects.h">
+      <Filter>Header Files\DataHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassesAndLevels.h">
+      <Filter>Header Files\DataHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Feats.h">
+      <Filter>Header Files\DataHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="EncounterMenuItems.h">
+      <Filter>Header Files\Menu Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="MainMenu.h">
+      <Filter>Header Files\Menu Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="ScenarioMenu.h">
+      <Filter>Header Files\Menu Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="PickupItemsMenu.h">
+      <Filter>Header Files\Menu Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemContainer.h">
+      <Filter>Header Files\DataHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="InventoryMenu.h">
+      <Filter>Header Files\Menu Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lazy.map">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="kiss_font.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,15 @@
+CHARACTER
+NAME:TestyMctest
+CLASSES:Fighter 3
+TYPE: Humanoid
+Race: Human
+
+Abilities:
+Strength: 10
+Agility: 10
+Constitution: 11
+Intelligence: 16
+Wisdom: 14
+Charisma:10 
+
+FeatList:

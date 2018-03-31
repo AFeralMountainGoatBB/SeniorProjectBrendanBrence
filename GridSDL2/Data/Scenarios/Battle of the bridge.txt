@@ -1,0 +1,6 @@
+MAP: Battle of the bridge
+Characters:
+PlayerCharacter: KnifeMan, (0,0), 1
+ComputerCharacter: SwordMan, (3,0), 2
+ComputerCharacter: SpearMan, (0,3), 2
+
