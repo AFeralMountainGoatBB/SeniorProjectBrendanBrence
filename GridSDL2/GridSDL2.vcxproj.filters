@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Menu cpps">
       <UniqueIdentifier>{93d69476-dea3-48a1-a372-c842d2bb33e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\InterfaceHeaders">
+      <UniqueIdentifier>{dfd216d0-2cf3-473c-a99c-58a5d93f0eb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\InterfaceCPP">
+      <UniqueIdentifier>{b4e0b283-37bc-46df-bf38-87459db7914e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="39_tiling.cpp">
@@ -92,6 +98,15 @@
     </ClCompile>
     <ClCompile Include="InventoryMenu.cpp">
       <Filter>Source Files\Menu cpps</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Source Files\InterfaceCPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Armor.cpp">
+      <Filter>Source Files\Data cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Log.cpp">
+      <Filter>Source Files\InterfaceCPP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -219,6 +234,15 @@
     </ClInclude>
     <ClInclude Include="InventoryMenu.h">
       <Filter>Header Files\Menu Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Header Files\InterfaceHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Armor.h">
+      <Filter>Header Files\DataHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>Header Files\InterfaceHeaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

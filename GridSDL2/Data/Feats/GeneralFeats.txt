@@ -1,0 +1,42 @@
+//general feats
+<Feat>
+FeatName: WeaponFocus WEAPONTYPE EACH
+FeatDescription: "Choose one type of weapon. You can also choose unarmed strike or grapple as your weapon for purposes of this feat. You gain +1 to attack rolls with this weapon type."
+
+Prerequisites: Proficient (WEAPONTYPE), BaseAttackBonus +1.
+
+Benefit: +1 AttackRoll (WEAPONTYPE).
+
+Special: WEAPONTYPE EACH 
+</Feat>
+
+<Feat>
+FeatName: WeaponSpecialization WEAPONTYPE EACH
+FeatDescription: "Choose one type of weapon for which you have already selected the Weapon Focus feat. You can also choose unarmed strike or grapple as your weapon for purposes of this feat. You deal extra +2 damage when using this weapon."
+
+Prerequisites:Proficient (WEAPONTYPE), WeaponFocus (WEAPONTYPE), BaseAttackBonus +4.
+
+Benefit: +2 DamageRoll (WEAPONTYPE).
+
+Special: WEAPONTYPE EACH.
+</Feat>
+
+<Feat>
+FeatName:PowerAttack
+FeatDescription: "On your action, before making attack rolls for a round, you may choose to subtract a number from all melee attack rolls and add the same number to all melee damage rolls. The penalty on attacks and bonus on damage apply until your next turn."
+
+Prerequisites: Strength 13.
+
+Benefit:RANGE(0x5), -RANGE AttackRoll ALLWEAPONS, +RANGE DamageRoll ALLWEAPONS-Light, +RANGE DamageRoll TwoHanding.
+
+Special:Activated, Melee.
+
+</Feat>
+
+<Feat>
+FeatName:CombatExpertise
+FeatDescription: "On your action, before making attack rolls for a round, you may choose to subtract a number from all melee attack rolls and add the same number to your AC. The penalty on attacks and bonus on damage apply until your next turn."
+
+Prerequisites: Int 13.
+Benefit:RANGE(0x5), -RANGE AttackRoll ALL, +RANGE Dodge ALL.
+</Feat>

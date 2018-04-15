@@ -20,7 +20,7 @@ public:
 
 #ifdef _SDL_TTF_H
 	//Creates image from font string
-	bool loadFromRenderedText(std::string textureText, SDL_Color textColor);
+	bool loadFromRenderedText(std::string textureText, SDL_Color textColor, SDL_Renderer *& Renderer, TTF_Font *gFont);
 #endif
 
 	//Deallocates texture

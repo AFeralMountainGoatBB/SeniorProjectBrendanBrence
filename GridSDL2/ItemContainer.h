@@ -18,4 +18,9 @@ public:
 private:
 	std::vector<ObjectClass *> ItemsPresent;
 	int TotalWeight = 0;
+
+//loading objects
+public:
+	//loads all items present in this object
+	bool LoadAll();
 };

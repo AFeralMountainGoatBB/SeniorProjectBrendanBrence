@@ -4,6 +4,9 @@
 #include "Texture.h"
 #include "Tile.h"
 #include "PickupItemsMenu.h"
+#include "EncounterInstance.h"
+#include "Armor.h"
+
 
 EntityClass::EntityClass(int xInitial, int yInitial, int HPMax=0, int HPCurrent=0, EntitySize ThisSize=MEDIUM)
 {	
@@ -376,6 +379,10 @@ void EntityClass::handleEvent(SDL_Event& e)
 		//change the location
 		switch (e.key.keysym.sym)
 		{
+			//move to encounter handle
+		case SDLK_i: DisplayEntireInventory(); break;
+
+			//end move to encounter handle
 		case SDLK_s:MoveDirection = STATIONARY; break;
 		case SDLK_w:MoveDirection = NORTH; break;
 		case SDLK_a:MoveDirection = WEST; break;
@@ -604,6 +611,7 @@ void EntityClass::SetLocation(int x, int y, std::vector < std::vector < Tile> > 
 	mLocation.first = x;
 	mLocation.second = y;
 	TileMap[x][y].SetOccupant(*this);
+	this->SetRendLocation(TileMap);
 }
 
 std::pair<int, int> EntityClass::GetLocation()
@@ -787,10 +795,367 @@ void EntityClass::DisplayEntireInventory()
 	{
 		if ((*iter).second != NULL)
 		{
-		
 		std::cout << BodyLocationTextMap[iter->first] << "  " << (*iter).second->GetName() << std::endl;
-	}
+		}
 	}
 	std::cout << "Backpack items: " << std::endl;
 	BackPack.DisplayItems();
+}
+
+void EntityClass::SetAbilityScore(AbilityType type, int amount)
+{
+	AbilityScore[type] = amount;
+}
+
+void EntityClass::DisplayAbilityScores()
+{
+	for (auto i = AbilityScore.begin(); i != AbilityScore.end(); i++)
+	{
+		std::cout << AbilityScoreTextMap[(*i).first] << "  " << (*i).second << std::endl;
+	}
+}
+
+//loading functions
+bool EntityClass::LoadEntity(std::string name, std::pair<int, int> Location, bool PlayerControlled, int side, EncounterInstance &Instance)
+{
+	name = Instance.GetCharacterFolderPath() +"\\"+ name;
+	std::ifstream reader;
+	std::cout << "Reader path: " << name << std::endl;
+	reader.open(name);
+	LoadNameDescriptionAndTexture(reader);
+	LoadAbilityScores(reader);
+	LoadEquipment(reader, Instance.GetObjectList());
+	LoadFeats(reader);
+	//LoadProperties(reader);
+	this->SetLocation(Location.first, Location.second, Instance.GetTileMap());
+
+	std::cout << "Loaded entity: " << this->EntityName << std::endl;
+	return true;
+}
+
+bool EntityClass::LoadNameDescriptionAndTexture(std::ifstream &reader)
+{
+	reader.clear();
+	reader.seekg(0, std::ios::beg);
+	std::string line = "";
+	bool GotName = false;
+	bool GotTexture = false;
+	bool GotDescription = false;
+	while (getline(reader, line))
+	{
+		if (GotName &&GotTexture && GotDescription)
+		{
+			//std::cout<<"Loaded all of Name, Description, texture" << std::endl;
+			break;
+		}
+		//remove comments
+		if (line.find("//") != std::string::npos)
+		{
+			int endchar = line.find("//");
+			line = line.substr(0, endchar);
+			//	std::cout << "ResultAfterComment " << line << std::endl;
+		}//end remove comments block
+
+		if (line.find("Name:") != std::string::npos)
+		{
+			line = line.substr(line.find(":") + 1);
+			this->SetName(line);
+			GotName = true;
+		}
+
+		if (line.find("Texture:") != std::string::npos)
+		{
+			line = line.substr(line.find(":") + 1);
+			this->mPathTexture = line;
+			GotTexture = true;
+		}
+		
+	}
+	return false;
+}
+
+bool EntityClass::LoadAbilityScores(std::ifstream &reader)
+{
+	reader.clear();
+	reader.seekg(0, std::ios::beg);
+	if (reader.is_open())
+	{
+		std::cout << "reader is open to path" << std::endl;
+	}
+	std::string line;
+	while (getline(reader, line))
+	{
+	//	std::cout << line << std::endl;
+		//remove comments
+		if (line.find("//") != std::string::npos)
+		{
+			int endchar = line.find("//");
+			line = line.substr(0, endchar);
+			//	std::cout << "ResultAfterComment " << line << std::endl;
+		}//end remove comments block
+
+		//lowercase the string
+		for (std::string::size_type i = 0; i < line.length(); ++i) {
+			line[i] = tolower(line[i]);
+		}
+
+		int temp = 0;
+		if (line.find("strength:") != std::string::npos)
+		{
+			line = line.substr(line.find(":") + 1);
+			try
+			{
+				temp = stoi(line);
+				SetAbilityScore(STR, temp);
+				//std::cout << "Line: " << line << std::endl;
+			}
+			catch(std::exception const & error)
+			{
+				std::cout << "Error in abilityscoreload" << error.what() << std::endl;
+			}
+
+		}
+		if (line.find("dexterity:") != std::string::npos)
+		{
+			line = line.substr(line.find(":") + 1);
+			try
+			{
+				temp = stoi(line);
+				SetAbilityScore(DEX, temp);
+				//std::cout << "Line: " << line << std::endl;
+			}
+			catch (std::exception const & error)
+			{
+				std::cout << "Error in abilityscoreload" << error.what() << std::endl;
+			}
+		}
+
+		if (line.find("constitution:") != std::string::npos)
+		{
+			line = line.substr(line.find(":") + 1);
+			try
+			{
+				temp = stoi(line);
+				SetAbilityScore(CON, temp);
+				//std::cout << "Line: " << line << std::endl;
+			}
+			catch (std::exception const & error)
+			{
+				std::cout << "Error in abilityscoreload" << error.what() << std::endl;
+			}
+		}
+
+		if (line.find("intelligence:") != std::string::npos)
+		{
+			line = line.substr(line.find(":") + 1);
+			try
+			{
+				temp = stoi(line);
+				SetAbilityScore(INT, temp);
+				//std::cout << "Line: " << line << std::endl;
+			}
+			catch (std::exception const & error)
+			{
+				std::cout << "Error in abilityscoreload" << error.what() << std::endl;
+			}
+		}
+
+		if (line.find("wisdom:") != std::string::npos)
+		{
+			line = line.substr(line.find(":") + 1);
+			try
+			{
+				temp = stoi(line);
+				SetAbilityScore(WIS, temp);
+			//	std::cout << "Line: " << line << std::endl;
+			}
+			catch (std::exception const & error)
+			{
+				std::cout << "Error in abilityscoreload" << error.what() << std::endl;
+			}
+		}
+
+		if (line.find("charisma:") != std::string::npos)
+		{
+			line = line.substr(line.find(":") + 1);
+			try
+			{
+				temp = stoi(line);
+				SetAbilityScore(CHA, temp);
+			//	std::cout <<"Line: "<< line << std::endl;
+			}
+			catch (std::exception const & error)
+			{
+				std::cout << "Error in abilityscoreload" << error.what() << std::endl;
+			}
+		}
+	
+	}
+//	DisplayAbilityScores();
+	return true;
+}
+
+bool EntityClass::LoadEquipment(std::ifstream & reader, std::map<std::string, ObjectClass*>& MasterObjectList)
+{
+	bool success = true;
+	reader.clear();
+	reader.seekg(0, std::ios::beg);
+	if (!reader.is_open())
+	{
+		std::cout << "reader is not open to path" << std::endl;
+		success = false;
+		return success;
+	}
+	bool BackPackLoading = false;
+	bool EquipmentLoading = false;
+	std::string line;
+	while (getline(reader, line))
+	{
+		BodyLocation TempLocation = UNKNOWNBODYSLOTTYPE;
+		//	std::cout << line << std::endl;
+		//remove comments
+		if (line.find("//") != std::string::npos)
+		{
+			int endchar = line.find("//");
+			line = line.substr(0, endchar);
+			//	std::cout << "ResultAfterComment " << line << std::endl;
+		}//end remove comments block
+
+		if (line.find("End Backpack:")!=std::string::npos)
+		{
+			BackPackLoading = false;
+			std::cout << "End loading backpack" << std::endl;
+		}
+		else if (line.find("Backpack:") != std::string::npos)
+		{
+			BackPackLoading = true;
+			std::cout << "LoadingBackPack" << std::endl;
+		}
+
+		if (line.find("End Equipped:") != std::string::npos)
+		{
+			EquipmentLoading = false;
+			std::cout << "End loading equipment" << std::endl;
+		}
+		else if (line.find("Equipped:") != std::string::npos)
+		{
+			EquipmentLoading = true;
+			std::cout << "Loading Equipment" << std::endl;
+		}
+
+		TempLocation = GetBodyLocation(line);
+		//equipment load functions
+		if (EquipmentLoading && TempLocation != UNKNOWNBODYSLOTTYPE)
+		{
+			//std::cout << line << std::endl;
+			line = line.substr(line.find(BodyLocationTextMap[TempLocation] + ":")+BodyLocationTextMap[TempLocation].length()+1);
+			//std::cout << "Line without location: " << line << std::endl;
+			//this line should contain the name of the object now, we search for it in our item functions
+			if (this->DoesSlotExist(TempLocation))
+			{
+				if (line.find("Armor") != std::string::npos)
+				{
+					Equipment[TempLocation] = new ArmorObject(*MasterObjectList[line]);
+				}
+				else
+				{
+					Equipment[TempLocation] = new ObjectClass(*MasterObjectList[line]);
+					Equipment[TempLocation]->DisplayObjectWeaponFacts();
+				}
+				
+				if (Equipment[TempLocation]->GetName()!=line)
+				{
+					std::cout << "Error loading object equipped in " << BodyLocationTextMap[TempLocation]<< std::endl;
+					Equipment[TempLocation] = NULL;
+				}
+
+			}
+		}
+		if (BackPackLoading)
+		{
+			if (line.find_first_not_of(' ')!=std::string::npos)
+			{
+				if (line.find("Backpack:")!=std::string::npos)
+				{
+					continue;
+				}
+				std::cout << line << std::endl;
+				//this should be a name then, make a new object and add it to backpack
+				if (MasterObjectList.count(line))
+				{
+					auto tempPtr = new ObjectClass(*MasterObjectList[line]);
+					tempPtr->SetName(line);
+					BackPack.AddItem(tempPtr);
+				}
+			
+			}
+		}	
+
+	}
+	std::cout << "Trying to load equipment" << std::endl;
+	for (auto i = Equipment.begin(); i != Equipment.end(); i++)
+	{
+		if ((*i).second != NULL)
+		{
+		//	success = (*i).second->LoadObject();
+		}
+
+	}
+	success = BackPack.LoadAll();
+	return success;
+}
+
+bool EntityClass::LoadFeats(std::ifstream & reader)
+{
+	bool success = true;
+	reader.clear();
+	reader.seekg(0, std::ios::beg);
+	bool LoadingFeats;
+
+	std::string line;
+	while (getline(reader, line))
+	{
+		//	std::cout << line << std::endl;
+		//remove comments
+		if (line.find("//") != std::string::npos)
+		{
+			int endchar = line.find("//");
+			line = line.substr(0, endchar);
+			//	std::cout << "ResultAfterComment " << line << std::endl;
+		}//end remove comments block
+
+
+		if (line.find("End Feats:") != std::string::npos)
+		{
+			LoadingFeats= false;
+		}
+		else if (line.find("Feats:") != std::string::npos)
+		{
+			LoadingFeats = true;
+		}
+		auto TempFeatPtr = new FeatClass;
+		TempFeatPtr->SetName(line);
+		Feats.push_back(TempFeatPtr);
+	}
+
+	for (auto i = Feats.begin(); i != Feats.end(); i++)
+	{
+		(*i)->LoadFeat();
+	}
+
+
+	return success;
+}
+
+BodyLocation EntityClass::GetBodyLocation(std::string line)
+{
+	for (auto i = BodyLocationTextMap.begin(); i != BodyLocationTextMap.end(); i++)
+	{
+		if (line.find((*i).second) != std::string::npos)
+		{
+			//std::cout << "Here" << std::endl;
+			return (*i).first;
+		}
+	}
+	return UNKNOWNBODYSLOTTYPE;
 }

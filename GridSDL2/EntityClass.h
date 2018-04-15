@@ -3,9 +3,11 @@
 #include "GeneralHeaders.h"
 #include "Objects.h"
 #include "ItemContainer.h"
+#include "Feats.h"
 
 class Tile;
 class LTexture;
+class EncounterInstance;
 
 /*
 There are inherent statistics and derived statistics
@@ -134,6 +136,8 @@ public:
 	ObjectClass* PickupTile(std::vector<std::vector<Tile>> &TileVector);
 	//end equipment functions
 
+	void SetAbilityScore(AbilityType type, int amount);
+	void DisplayAbilityScores();
 protected:
 
 private:
@@ -150,6 +154,9 @@ private:
 
 	ControlMode ControlSetting = MOVEMODE;
 	std::string mPathTexture = "clericMace.png";
+
+	//for keeping track of who is on what side, used in AI and rendering
+	int TeamSide = 0;
 
 	/*Inherent statistics start*/
 	//the string rep of the name of the entity, mostly for flavor and for user interaction
@@ -191,7 +198,7 @@ private:
 	};
 
 	ItemContainer BackPack;
-	
+	std::vector<FeatClass*> Feats;
 	
 	int HitPoints=HitPointMaximum;
 	EntitySize ThisSize;
@@ -207,22 +214,24 @@ private:
 
 	LTexture* mTexture;
 
+
 	public:
 		//mastercalls the other load functions
-		bool LoadEntity(std::string name, int Location, bool PlayerControlled);
+		bool LoadEntity(std::string name, std::pair<int, int> Location, bool PlayerControlled, int side, EncounterInstance &Instance);
 
 		//loads the name of the character and its description if it has one
-		bool LoadNameAndDescription(std::ifstream reader);
+		bool LoadNameDescriptionAndTexture(std::ifstream &reader);
 		
 		//loads the ability scores
-		bool LoadAbilityScores(std::ifstream reader);
+		bool LoadAbilityScores(std::ifstream &reader);
 
 		//loads equipment of character including their backpack inventory
-		bool LoadEquipment(std::ifstream reader);
+		bool LoadEquipment(std::ifstream &reader, std::map<std::string, ObjectClass*> &MasterObjectList);
+		BodyLocation GetBodyLocation(std::string line);
 
 		//loads feats of character 
-		bool LoadFeats(std::ifstream reader);
+		bool LoadFeats(std::ifstream &reader);
 		
 		//loads properties of character not covered by ability scores, equipments and feats
-		bool LoadProperties(std::ifstream reader);
+		bool LoadProperties(std::ifstream &reader);
 	};

@@ -18,7 +18,7 @@ class ScenarioMenu
 {
 public:
 	ScenarioMenu();
-	std::string DirectoryPath = "Scenarios";
+	std::string DirectoryPath = "Data\\Scenarios";
 	std::string ScenarioPath = "";
 
 	SDL_Renderer* renderer;

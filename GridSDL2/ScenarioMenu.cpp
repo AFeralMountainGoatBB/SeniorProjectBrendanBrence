@@ -130,8 +130,8 @@ void ScenarioMenu::button_ok1_event(kiss_button *button, SDL_Event *e,	kiss_wind
 	if (kiss_button_event(button, e, draw)) {
 		kiss_string_copy(buf, kiss_maxlength(kiss_textfont,	window2->rect.w - 2 * kiss_vslider.w, label_sel->text, entry->text), label_sel->text, entry->text);
 		kiss_string_copy(label_res->text, KISS_MAX_LABEL, "The following path was selected:\n", buf);
-		GInst.ScenarioPath = entry->text;
-		PrintFile(GInst.ScenarioPath);
+		GInst.SetScenarioPath(entry->text);
+		PrintFile(GInst.GetScenarioPath());
 		window2->visible = 1;
 		window2->focus = 1;
 		window1->focus = 0;
@@ -175,8 +175,7 @@ int ScenarioMenu::ScenarioMenuRun(GameInstance &GInst)
 
 			kiss_window_event(&SecondaryWindow, &e, &draw);
 			kiss_window_event(&MainWindow, &e, &draw);
-		//	textbox1_event(&textbox1, &e, &vscrollbar1, &textbox2, &vscrollbar2, &label_sel, &draw);
-			//vscrollbar1_event(&vscrollbar1, &e, &textbox1, &draw);
+		
 			textbox2_event(&textbox2, &e, &vscrollbar1, &entry, &draw);
 			vscrollbar1_event(&vscrollbar1, &e, &textbox2, &draw);
 			button_ok1_event(&Main_ok_button, &e, &MainWindow, &SecondaryWindow, &label_sel, &entry, &label_res, &progressbar, &draw, GInst);

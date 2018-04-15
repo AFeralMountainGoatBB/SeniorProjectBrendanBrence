@@ -47,7 +47,6 @@ public:
 		PosX = other->PosX;
 		PosY = other->PosY;
 
-
 	}
 	
 private:

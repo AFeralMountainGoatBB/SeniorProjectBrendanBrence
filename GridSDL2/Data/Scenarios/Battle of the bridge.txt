@@ -1,6 +1,8 @@
-MAP: Battle of the bridge
+Map: Battle of the bridge
 Characters:
-PlayerCharacter: KnifeMan, (0,0), 1
-ComputerCharacter: SwordMan, (3,0), 2
+PlayerCharacter: KnifeMan, (0,0), 1 //test comment two
+ComputerCharacter:Dummy, (5,1), 2
+ComputerCharacter: SwordMan, (1,0), 2
 ComputerCharacter: SpearMan, (0,3), 2
-
+//testcomment
+Item: Dagger, (1,1)

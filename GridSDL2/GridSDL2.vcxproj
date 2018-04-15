@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="39_tiling.cpp" />
+    <ClCompile Include="Armor.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="InventoryMenu.cpp" />
     <ClCompile Include="ItemContainer.cpp" />
     <ClCompile Include="Dot.cpp" />
@@ -30,6 +32,7 @@
     <ClCompile Include="kiss_draw.c" />
     <ClCompile Include="kiss_general.c" />
     <ClCompile Include="kiss_widgets.c" />
+    <ClCompile Include="Log.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Objects.cpp" />
     <ClCompile Include="PickupItemsMenu.cpp" />
@@ -65,6 +68,8 @@
     <None Include="lazy.map" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Armor.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="ClassesAndLevels.h" />
     <ClInclude Include="InventoryMenu.h" />
     <ClInclude Include="ItemContainer.h" />
@@ -76,6 +81,7 @@
     <ClInclude Include="Grid.h" />
     <ClInclude Include="GeneralHeaders.h" />
     <ClInclude Include="kiss_sdl.h" />
+    <ClInclude Include="Log.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Objects.h" />
     <ClInclude Include="PickupItemsMenu.h" />

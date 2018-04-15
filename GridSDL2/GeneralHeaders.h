@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <map>
 #include <utility>
+#include <deque>
 
 extern "C" {
 #include "kiss_sdl.h"

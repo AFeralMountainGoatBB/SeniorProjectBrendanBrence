@@ -106,6 +106,7 @@ EntityClass* Tile::GetOccupant()
 void Tile:: AddItem(ObjectClass* Item)
 {
 	ItemsPresent.push_back(Item);
+	//ItemsPresent.back()->DisplayObjectWeaponFacts();
 }
 
 Tile Tile::RemoveObject(ObjectClass* item)

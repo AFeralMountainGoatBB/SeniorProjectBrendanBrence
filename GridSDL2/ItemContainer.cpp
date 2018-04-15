@@ -13,3 +13,10 @@ void ItemContainer::DisplayItems()
 		std::cout << (*iter)->GetName() << std::endl;
 	}
 }
+
+bool ItemContainer::LoadAll()
+{
+	bool success= true;
+
+	return success;
+}

@@ -1,0 +1,80 @@
+//base proficiencies for Armor, Weapons, Circumstance attacks
+<FeatStart>
+FeatName: ArmorProficiency Light Armor
+FeatDescription: "You are proficient with this kind of armor, if you are not already proficient."
+
+Prerequisites:N/A
+
+Benefit:ArmorProficiency(Light Armor)
+
+Special: N/A
+</FeatEnd>
+
+<FeatStart>
+FeatName: ArmorProficiency Medium Armor
+FeatDescription: "You are proficient with this kind of armor, if you are not already proficient."
+
+Prerequisites:ArmorProficiency(Light Armor)
+
+Benefit:ArmorProficiency(Medium Armor)
+
+Special: N/A
+</FeatEnd>
+
+<FeatStart>
+FeatName: ArmorProficiency Heavy Armor
+FeatDescription: "You are proficient with this kind of armor, if you are not already proficient."
+
+Prerequisites:ArmorProficiency(Medium Armor)
+
+Benefit:ArmorProficiency(Heavy Armor)
+
+Special: N/A
+</FeatEnd>
+
+<FeatStart>
+FeatName: ArmorProficiency Normal Shield
+FeatDescription: "You are proficient with normal types of shields, if you are not already proficient."
+
+Prerequisites:N/A
+
+Benefit:ArmorProficiency(Shield)
+
+Special: N/A
+</FeatEnd>
+
+<FeatStart>
+FeatName: ArmorProficiency Tower Shield
+FeatDescription: "You are proficient with TowerShields, if you are not already proficient."
+
+Prerequisites:Proficiency(Shield)
+
+Benefit:ArmorProficiency(TowerShield)
+
+Special: N/A
+</FeatEnd>
+
+//end armor proficiencies
+//start weapon proficiencies
+<FeatStart>
+FeatName: Simple Weapon Proficiency
+FeatDescription: "You are proficient with simple types of weapons, if you are not already proficient."
+
+Prerequisites:N/A
+
+Benefit:WeaponProficiency(Simple)
+
+Special: N/A
+</FeatEnd>
+
+<FeatStart>
+FeatName: Martial Weapon Proficiency
+FeatDescription: "You are proficient with Martial types of weapons, if you are not already proficient."
+
+Prerequisites:N/A
+
+Benefit:WeaponProficiency(Martial)
+
+Special: N/A
+</FeatEnd>
+

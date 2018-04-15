@@ -1,0 +1,24 @@
+//Armor or Shield Bonus, Damage Reduction, Max Dex Bonus, ACP, Speed, Weight
+Padded,				+1, 0/-,	8,	-0,	30 ft,	10 lb, Light
+Leather, 			+1, 1/-,	6,	-0,	30 ft,	15 lb, Light
+Studded leather, 	+2,	1/-, 	5,	-1,	30 ft,	20 lb, Light
+Chain shirt,		+2,	2/-,	4, 	-2,	30 ft,	25 lb, Light
+
+//Medium armor
+Hide, 				+2, 1/-,	4,	-3,	20 ft,	25 lb, Medium
+Scale mail,			+2, 2/-,	3,  -4,	20 ft,	30 lb, Medium
+Chainmail,			+3,	2/-,	2,  -5,	20 ft,	40 lb, Medium
+Breastplate,		+3, 2/-,	3,	-4,	20 ft,	30 lb, Medium
+
+//Heavy armor
+Splint mail,		+3,	3/-,	0,	-7,	20 ft, 	45 lb, Heavy
+Banded mail,		+3,	3/-,	1,	-6,	20 ft,	35 lb, Heavy
+Half-plate,			+4,	3/-,	0,	-7,	20 ft, 	50 lb, Heavy
+Full-plate,			+4, 4/-,	1,	-6,	20 ft, 	50 lb, Heavy
+//Shields
+Buckler,			    +1,	0/-,	-,	-1,		-,	5 lb, Shield
+Light Wood Shield,  	+1,	0/-,	-,	-1,		-,	5 lb, Shield
+Light Steel Shield, 	+1,	0/-,	-,	-1,		-,	6 lb, Shield
+Heavy Wood Shield,  	+2,	0/-,	-,	-2,		-,	10 lb, Shield
+Heavy Steel Shield,     +2,	0/-,	-,	-2,		-,	15 lb, Shield
+Tower Shield, 		    +4,	0/-,	2,	-10,	-,	45 lb, TowerShield

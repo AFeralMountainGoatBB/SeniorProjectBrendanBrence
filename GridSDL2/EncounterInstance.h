@@ -6,20 +6,17 @@
 #include <map>
 #include "EntityClass.h"
 #include "PickupItemsMenu.h"
+#include "Log.h"
 
 class EncounterInstance
 {
 	public:
 	LTexture gDotTexture;
 	LTexture gTileTexture;
-	LTexture mEntityTexture;
-	LTexture ObjectTexture;
-	LTexture KnifeTexture;
-
-	//std::map<std::string, LTexture> Textures;
-
+	
 	SDL_Texture * MenuPort;
 	SDL_Texture * BottomPort;
+	TTF_Font *gFont = NULL;
 	SDL_Rect gTileClips[TOTAL_TILE_SPRITES];
 	//Event handler
 	SDL_Event e;
@@ -27,17 +24,16 @@ class EncounterInstance
 	//tileset map
 	std::map<std::string, std::string> SpriteSet;
 
-	//The dot that will be moving around on the screen
-	Dot dot;
-	EntityClass man;
-	EntityClass Dummy;
+	//pointer to the activeUnit whose turn it is
+	EntityClass* ActiveUnit;
+
 	std::unique_ptr<ObjectClass> Dagger= std::make_unique<ObjectClass>();
 	//todo
 	//vector<creatures>
 
 	//The window we'll be rendering to
 	SDL_Window* gWindow = NULL;
-
+	
 	//The window renderer
 	SDL_Renderer* gRenderer = NULL;
 	SDL_Rect camera = { 0, 0, (SCREEN_WIDTH/4)*3, (SCREEN_HEIGHT / 4) * 3 };
@@ -52,6 +48,8 @@ class EncounterInstance
 	bool setTiles(SDL_Rect gTileClips[]);
 	bool LoadSpriteSet();
 	void ClipTileSheet(SDL_Rect gTileClips[]);
+	void AllEntitySetTexture();
+	void RenderAllEntities(SDL_Rect& camera, SDL_Renderer *& Renderer);
 
 	//In encounter functions
 	bool touchesWall(SDL_Rect box);
@@ -74,10 +72,18 @@ class EncounterInstance
 	void RenderTiles(SDL_Rect camera, LTexture &gTileTexture, SDL_Rect gTileClips[], SDL_Renderer*& gRenderer);
 
 	std::map<std::string, LTexture*>& GetTextures();
-	std::string GetTextureFolderPath();
-	void SetTextureFolderPath(std::string NewPath);
-
 	
+	void DisplayMasterObjectListNames();
+	void DisplayMasterFeatListNames();
+
+	//log functions
+	void AddLog(std::string LogEntry);
+	void AddStringLog(std::string LogEntry);
+	void AddTextureLog(std::string LogEntry);
+	void DeleteFromLog();
+	void UpIndex();
+	void DownIndex();
+	void RenderLog(SDL_Rect Viewport);
 
 private: 
 	static const int TileMapWidth = LEVEL_WIDTH / TILE_WIDTH;
@@ -85,29 +91,61 @@ private:
 	std::vector < std::vector < Tile> > TileMap;
 	std::vector<EntityClass*> EntityList;
 	std::vector<EntityClass*> InitiativeList;
+	std::vector<ObjectClass*> ObjectList;
 	
+	std::map<std::string, ObjectClass*> MasterObjectList;
+	std::map<std::string, FeatClass*> MasterFeatList;
+	
+	Log ActionLog;
 
-	//texture stuff
+	SDL_Color LogTextColor = { 0, 0, 0 };
+	std::deque<std::string>StringLog;
+	std::deque<LTexture*> TextureLog;
+	int LogMaximumSize = 100;
+	int LocationLogIndex = 0;
+
+	//resources stuff
+	std::string FontPath = "Data\\Fonts";
 	std::string TextureFolderPath = "Data\\Textures"; //parent directory for textures
+	std::string CharacterFolderPath = "Data\\Characters";
+	std::string ItemFolderPath = "Data\\Items";
+	std::string MapFolderPath = "Data\\Maps";
+	std::string FeatFolderPath = "Data\\Feats";
+	std::vector<std::string> WeaponLists = { "SimpleWeapons.txt", "MartialWeapons.txt", "ExoticWeapons.txt"};
+	std::vector<std::string> ArmorLists = { "BaseArmorList.txt" };
+	std::vector<std::string> FeatLists = { "BaseProficiencies.txt", "GeneralFeats.txt" };
+	std::string CurrentMapPath = "";
 	std::map<std::string, LTexture*> Textures;
-
+	std::string TilePath = "";
 	
-
 
 	//loading functions 
 public:
+	std::string GetTextureFolderPath();
+	void SetTextureFolderPath(std::string NewPath);
+
+	std::string GetCharacterFolderPath();
+	void SetCharacterFolderPath();
+
+	std::string GetItemFolderPath();
+	void SetItemFolderPath();
+
+	std::map<std::string, ObjectClass*> & GetObjectList();
+
 	//mastercalls all other load functions
 	//passes map name to loadmap, gets location of objects and entities and constructs vectors of strings
 	bool ScenarioLoad(std::string path); 
 
-	//loads the map and tiles into memory (SetTiles)
-	bool LoadMap(std::string path);
-
-	//loads all entities passed by ScenarioLoad
-	bool LoadEntities(std::vector<std::pair<std::string, int>> );
-
 	//loads all loose objects on the tiles, passed by ScenarioLoad
-	bool LoadObjects(std::vector<std::pair<std::string, int>> ObjectsAndLocation);
+	bool LoadObjectIntoTile(int x, int y, std::string name);
 
+	bool LoadWeaponList(std::string path);
+	bool LoadArmorList(std::string path);
+	bool LoadFeatList(std::string line);
+	bool AddEachWeaponFeat(std::ifstream& reader, int StartPos, WeaponType type);
+	bool LoadFeat(std::ifstream &reader, int place);
+
+	std::string RemoveComments(std::string line);
 	//loads all 
+
 };

@@ -77,7 +77,7 @@ int GameInstance::MenuOperation()
 {
 	enum MenuOptions {MAINMENU=0, SCENARIOMENU=1, QUIT=-1, ENCOUNTER= 2};
 	MenuOptions Selected = MAINMENU;
-
+	
 	while (Selected != QUIT)
 	{
 		switch (Selected) {
@@ -95,7 +95,7 @@ int GameInstance::MenuOperation()
 		}
 		case ENCOUNTER:
 		{
-			EncounterRun();//loads and runs encounter selected by ScenarioMenuRun
+			EncounterRun("PlaceHolder");//loads and runs encounter selected by ScenarioMenuRun
 			break;
 		}
 		case QUIT:
@@ -115,20 +115,14 @@ int GameInstance::MenuOperation()
 	return 0;
 }
 
-int GameInstance::EncounterRun()
+int GameInstance::EncounterRun(std::string path)
 {
 	//create space for entities in memory
 	EncounterInstance Instance;
-	//Instance.ScenarioLoad(ScenarioPath);
+	Instance.ScenarioLoad(path);
 	Instance.RunEncounter();
 
-	//two pass load scenario first?
-	//analyzing what characters exist in this scenario and what needs to be loaded, then setting aside space for them and
-	//passing entites by reference to the load functions 
-
-	//OR, use vector to store characters and object as they arrive
-
-	//returning from scenario, render map and then start encounter
+	//one pass loading implementation started to be written
 
 	return 0;
 }
@@ -136,4 +130,14 @@ int GameInstance::EncounterRun()
 void GameInstance::Quit()
 {
 
+}
+
+std::string GameInstance::GetScenarioPath()
+{
+	return ScenarioPaths;
+}
+
+void GameInstance::SetScenarioPath(std::string path)
+{
+	ScenarioPaths = path;
 }

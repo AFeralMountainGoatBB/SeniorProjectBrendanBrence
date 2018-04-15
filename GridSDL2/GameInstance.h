@@ -10,8 +10,6 @@
 class GameInstance
 {
 public:
-
-	std::string ScenarioPath = "";
 	GameInstance();
 	
 	~GameInstance();
@@ -27,9 +25,9 @@ public:
 	//Handles the main menu and calls ScenarioMenu
 	int MenuOperation();
 
-	bool ScenarioLoad();
+	bool ScenarioLoad(std::string path);
 
-	int EncounterRun();
+	int EncounterRun(std::string path);
 
 	void Quit();
 
@@ -40,7 +38,9 @@ public:
 	-> EncounterRun, runs encounterclass functions and returns to MenuOperation
 	*/
 
+	std::string GetScenarioPath();
+	void SetScenarioPath(std::string path);
 private:
-
+	std::string ScenarioPaths="Data\\Scenarios";
 
 };

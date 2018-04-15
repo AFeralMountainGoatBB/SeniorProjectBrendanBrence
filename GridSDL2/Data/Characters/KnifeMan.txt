@@ -1,0 +1,28 @@
+Name: Bob the knife guy
+
+Ability Scores:
+
+Strength: 10
+Dexterity: 15
+Constitution: 13
+Intelligence: 12
+Wisdom: 14
+Charisma:5
+
+End Ability Scores:
+
+Equipped:
+MainHand:Dagger
+
+End Equipped:
+
+Backpack:
+Dagger
+
+End Backpack:
+
+Feats:
+
+End Feats:
+
+Texture:Maceman1.png

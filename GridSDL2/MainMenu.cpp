@@ -8,7 +8,7 @@ MainMenu::MainMenu()
 		return;
 
 	kiss_window_new(&window, NULL, 0, 0, 0, kiss_screen_width, kiss_screen_height);
-	strcpy(message, "Obscurum Main Menu");
+	strcpy(message, "WotC Lawsuit bait Main Menu");
 	kiss_label_new(&label, &window, message, (window.rect.w / 2 - strlen(message) * kiss_textfont.advance / 2), (window.rect.h / 2 - (kiss_textfont.fontheight + 2 * kiss_normal.h) / 2));
 	label.textcolor.r = 255;
 	

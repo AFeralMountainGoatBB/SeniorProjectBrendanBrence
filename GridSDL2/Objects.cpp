@@ -12,6 +12,85 @@ ObjectClass::ObjectClass()
 	//std::cout << "Entity size, H, w : " << mBox.w << " " << mBox.h << std::endl;
 }
 
+ObjectClass::ObjectClass( ObjectClass const &other)
+{
+	if (other.mBox.x == NULL)
+	{
+		mBox.x = 0;
+	}
+	else
+	{
+		mBox.x = other.mBox.x;
+	}
+	
+	if (other.mBox.y==NULL)
+	{
+		mBox.y = 0;
+	}
+	else
+	{
+		mBox.y = other.mBox.y;
+	}
+
+	if (other.mBox.w == NULL)
+	{
+		mBox.w = OBJECT_WIDTH;
+	}
+	else
+	{
+		mBox.w = other.mBox.w;
+	}
+
+	if (other.mBox.h == NULL)
+	{
+		mBox.h = OBJECT_HEIGHT;
+	}
+	else
+	{
+		mBox.h = other.mBox.h;
+	}
+	
+	mPathTexture = other.mPathTexture;
+	ObjectName = other.ObjectName;
+	ObjectDescription = other.ObjectDescription;
+
+	TwoHanded = other.TwoHanded;
+	Versatile = other.Versatile;
+	for (auto i = other.WeaponTypes.begin(); i != other.WeaponTypes.end(); i++)
+	{
+		this->WeaponTypes.push_back(*i);
+	}
+	for (auto i = other.DamageTypes.begin(); i != other.DamageTypes.end(); i++)
+	{
+		this->DamageTypes.push_back(*i);
+	}
+	DamageDice.first = other.DamageDice.first;
+	DamageDice.second = other.DamageDice.second;
+
+	Weight = other.Weight;
+	BodySlot = other.BodySlot;
+	CritMultiplier = other.CritMultiplier;
+	CritThreat = other.CritThreat;
+
+	int ArmorBonus = other.ArmorBonus;
+	int DamageReduction = other.DamageReduction;
+	int MaxDexBonus = other.MaxDexBonus;
+	int ArmorCheckPenalty = other.ArmorCheckPenalty;
+	int SpeedReduction = other.SpeedReduction;
+	int EquipActions = other.EquipActions;
+	bool IsShield = other.IsShield;
+	
+	mTexture = other.mTexture;
+}
+
+void ObjectClass::SetmBox(int x, int y, int w, int h)
+{
+	mBox.x = x;
+	mBox.y = y;
+	mBox.w = w;
+	mBox.h = h;
+}
+
 void ObjectClass::setCamera(SDL_Rect& camera)
 {
 	//Center the camera over the entity
@@ -106,12 +185,13 @@ void ObjectClass::SetTexture(std::map<std::string, LTexture*> TextureMap, std::s
 	{
 		mTexture = TextureMap[Path +"\\"+ mPathTexture];
 		//std::cout << mPathTexture << " Loaded into " << ObjectName << std::endl;
-		mTexture->setWidth(OBJECT_WIDTH);
+		//mTexture->setWidth(OBJECT_WIDTH);
 		//mTexture->setHeight(OBJECT_HEIGHT);
 	}
 	else
 	{
 		std::cout << "No matching texture found " << mPathTexture << std::endl;
+		mTexture = TextureMap[Path + "\\" + "QuestionMark.png"];
 	}
 }
 
@@ -120,6 +200,11 @@ void ObjectClass::SetTexture(std::map<std::string, LTexture*> TextureMap, std::s
 bool ObjectClass::GetTwoHanded()
 {
 	return TwoHanded;
+}
+
+void ObjectClass::SetTwoHanded(bool passed)
+{
+	TwoHanded = passed;
 }
 
 void ObjectClass::SetName(std::string PassedName)
@@ -137,18 +222,56 @@ BodyLocation ObjectClass::GetBodySlot()
 	return this->BodySlot;
 }
 
-float ObjectClass::GetBaseWeight()
+const float ObjectClass::GetBaseWeight()
 {
 	return Weight;
 }
 
 void ObjectClass::SetBaseWeight(float Weight)
 {
-	Weight = Weight;
+	this->Weight = Weight;
 }
 
+void ObjectClass::SetDamageDice(std::pair<int, DiceType> DamageDicePassed)
+{
+	DamageDice = DamageDicePassed;
+}
 
+std::pair<int, DiceType> ObjectClass::GetDamageDice()
+{
+	return DamageDice;
+}
 
+std::vector<DamageType>& ObjectClass::GetDamageTypes()
+{
+	return this->DamageTypes;
+}
+
+void ObjectClass::AddDamageType(DamageType AddDamage)
+{
+	this->DamageTypes.push_back(AddDamage);
+}
+
+void ObjectClass::SetCritInformation(int range, int multiplier)
+{
+	CritThreat = range;
+	CritMultiplier = multiplier;
+}
+
+std::pair<int, int> ObjectClass::GetCritInformation()
+{
+	return std::pair<int, int>(CritThreat, CritMultiplier);
+}
+
+void ObjectClass::AddWeaponType(WeaponType AddType)
+{
+	this->WeaponTypes.push_back(AddType);
+}
+
+std::vector<WeaponType>& ObjectClass:: GetWeaponType()
+{
+	return WeaponTypes;
+}
 
 
 //loading functions start reader is passed from function to function
@@ -157,6 +280,12 @@ bool ObjectClass::LoadObject()
 
 
 	return false;
+}
+
+bool ObjectClass::LoadObjectByName(std::string line)
+{
+
+	return true;
 }
 
 bool ObjectClass::LoadNameAndDescription()
@@ -171,4 +300,172 @@ bool ObjectClass::LoadProperties()
 	return false;
 }
 
+bool ObjectClass:: GetVersatile()
+{
+	return Versatile;
+}
+
+void ObjectClass::SetVersatile(bool passed)
+{
+	Versatile = passed;
+}
+
 //loading functions end
+
+void ObjectClass::DisplayObjectWeaponFacts()
+{
+
+	//start weapon facts
+	std::cout << "Object Name: " << ObjectName << std::endl;
+	//std::string ObjectDescription = "";
+
+	std::cout << "Damage dice: " << DamageDice.first << "d" << DamageDice.second << std::endl;
+	
+	//display weapon types
+	std::cout << "Weapon Types: "<<std::endl<< "\t";
+	for (auto i = WeaponTypes.begin(); i != WeaponTypes.end(); i++)
+	{
+		std::cout << WeaponTypeTextMap[(*i)] << ", ";
+	}
+	if (Versatile)
+	{
+		std::cout << "Versatile, " << std::endl;
+	}
+
+	if (TwoHanded)
+	{
+		std::cout << "Two Handed, " << std::endl;
+	}
+	std::cout << std::endl;
+
+
+	//display damage types
+	std::cout << "Damage Types: " << std::endl << "\t";
+	for (auto i = DamageTypes.begin(); i != DamageTypes.end(); i++)
+	{
+		if (i != DamageTypes.begin())
+		{
+			std::cout << ", " << std::endl;
+		}
+		std::cout << DamageTypeTextMap[(*i)];
+	}
+	std::cout << std::endl;
+
+	std::cout << "Weight: " << Weight << "lb." << std::endl;
+	std::cout << "Range increment: " << RangeIncrement << std::endl;
+
+	std::cout << "Criticals: " << GetCritInformation().first << "/x" << GetCritInformation().second << std::endl;
+	
+	std::cout << "End " << ObjectName << std::endl << std::endl;
+	//end weaponfacts
+}
+
+const int ObjectClass::GetRangeIncrement()
+{
+	return RangeIncrement;
+}
+void ObjectClass::SetRangeIncrement(int RIncrem)
+{
+	RangeIncrement = RIncrem;
+}
+
+
+const int ObjectClass::GetArmorBonus()
+{
+	return ArmorBonus;
+}
+void ObjectClass::SetArmorBonus(int bonus)
+{
+	ArmorBonus = bonus;
+}
+
+int ObjectClass::GetDamageReduction()
+{
+	return DamageReduction;
+}
+void ObjectClass::SetDamageReduction(int reduction)
+{
+	DamageReduction = reduction;
+}
+
+int ObjectClass::GetMaxDexBonus()
+{
+	return MaxDexBonus;
+}
+void ObjectClass::SetMaxDex(int max)
+{
+	MaxDexBonus = max;
+}
+
+int ObjectClass::GetArmorCheckPenalty()
+{
+	return ArmorCheckPenalty;
+}
+void ObjectClass::SetArmorCheckPen(int penalty)
+{
+	ArmorCheckPenalty = penalty;
+}
+
+int ObjectClass::GetSpeedReduction()
+{
+	return SpeedReduction;
+}
+void ObjectClass::SetSpeedReduction(int SpeedReduction)
+{
+	this->SpeedReduction = SpeedReduction;
+}
+
+int ObjectClass::GetEquipActions()
+{
+	return EquipActions;
+}
+void ObjectClass::SetEquipActions(int actions)
+{
+	EquipActions = actions;
+}
+
+bool ObjectClass::GetIsShield()
+{
+	return IsShield;
+}
+
+void ObjectClass::SetIsShield(bool isShield)
+{
+	IsShield = isShield;
+}
+
+std::vector<ArmorType>& ObjectClass::GetArmorTypes()
+{
+	return this->ArmorTypes;
+}
+
+void ObjectClass::AddArmorType(ArmorType addType)
+{
+	ArmorTypes.push_back(addType);
+}
+
+void ObjectClass::DisplayArmorInfo()
+{
+		//start weapon facts
+
+		std::cout << "Object Name: " << GetName() << std::endl;
+
+		std::cout << "Armor bonus " << GetArmorBonus() << std::endl;
+		std::cout << "DamageReduction " << GetDamageReduction() << std::endl;
+		std::cout << "Max Dex " << GetMaxDexBonus() << std::endl;
+		std::cout << "ACP " << GetArmorCheckPenalty() << std::endl;
+
+		for (auto i = GetArmorTypes().begin(); i != GetArmorTypes().end(); i++)
+		{
+			std::cout << ArmorTypeTextMap[(*i)] << std::endl;
+		}
+
+		std::cout << "Weight: " << GetBaseWeight() << "lb." << std::endl;
+		if (GetIsShield())
+		{
+			std::cout << "This is a shield" << std::endl;
+		}
+		std::cout << "Max speed " << GetSpeedReduction() << std::endl << std::endl;
+
+		//end Armor info
+}
