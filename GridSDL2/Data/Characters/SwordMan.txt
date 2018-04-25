@@ -1,5 +1,4 @@
-Name: Bob the knife guy
-
+Name:SwordMan
 Ability Scores:
 
 Strength: 10

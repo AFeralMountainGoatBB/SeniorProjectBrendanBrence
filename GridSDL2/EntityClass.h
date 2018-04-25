@@ -4,10 +4,12 @@
 #include "Objects.h"
 #include "ItemContainer.h"
 #include "Feats.h"
+#include "AttackClass.h"
 
 class Tile;
 class LTexture;
 class EncounterInstance;
+class InventoryMenu;
 
 /*
 There are inherent statistics and derived statistics
@@ -53,18 +55,21 @@ public:
 	void move(std::vector<std::vector<Tile>> &TileVector);
 
 	//combat functions
-	bool EntityAttack(std::vector<std::vector<Tile>> &TileVector);
+	bool EntityAttack(std::vector<std::vector<Tile>> &TileVector, EncounterInstance & Instance);
 	EntityClass* EntityAttackTile(std::vector<std::vector<Tile>> &TileVector);
+	int GetBaseAttackBonus() { return BaseAttackBonus; }
+	ObjectClass GetUnarmedStrike();
 	bool MeleeAttackRoll(EntityClass &Target);
 	int MeleeAttackDamage(EntityClass &Target);
 	bool RangedAttackRoll(EntityClass &Target);
 	int RangedAttackDamage(EntityClass &Target);
 	void TakeDamage(int DamageRecived, DamageType DamageType);
+	int GetTotalDamageReduction();
 	//end combat functions
 
 	//combat Armor class functions
 	const int GetArmorClass();
-	const int GetTouchArmorClass();
+	//const int GetTouchArmorClass();
 
 	//end combat armor class functions
 
@@ -90,7 +95,6 @@ public:
 	const int GetHitPoints();
 	const bool IsBroke();
 
-
 	//Setters
 	void UpdateArmorClass();
 	void AddHitPoints(int addition);
@@ -102,6 +106,7 @@ public:
 
 	/*Calculating derived values*/
 	int TotalAttackBonus();
+	int MaxHitPoints();
 	void SetName(std::string name);
 	std::string GetName();
 
@@ -110,44 +115,61 @@ public:
 	LTexture* GetTexture();
 
 	void DisplayEntireInventory();
+	void DisplayFeats();
 
 	//equipment functions
 	//getters
 	ObjectClass* GetEquipmentInSlot(BodyLocation location); //returns whatever is equipped in location, null if nothing
 	bool DoesSlotExist(BodyLocation location);
-	ObjectClass* GetMainHandWeapon();
-	ObjectClass* GetOffHandWeapon();
-	ObjectClass* GetBodyEquip(); //body slot holds armor
-
-	ObjectClass GetHeadEquip(); //helmets
-	ObjectClass GetFaceEquip(); //masks and stuff
-	ObjectClass GetArmsEquip(); // arms for bracers
-	ObjectClass GetHandsEquip(); //gloves
-	ObjectClass GetLegsEquip(); //magic boots
+	
 	//setters
 	bool EquipAsWeapon(ObjectClass*);
 	bool EquipMainHandWeapon(ObjectClass*);
 	bool EquipOffHandWeapon(ObjectClass*);
+	void SwapWeaponHands();
+	void TwoHandWeapon();
 
-	void EquipArmor(ObjectClass*);
+	void AddToBackPack(ObjectClass *);
+	void UnEquip(BodyLocation location);
+	bool EquipArmor(ObjectClass*);
+	void DropFromEquipment(BodyLocation location, std::vector<std::vector<Tile>>& TileMap);
+	void DropFromBackPack(int index, std::vector<std::vector<Tile>>& TileMap);
 
 	bool EquipObject(ObjectClass*);
 	void EntityPickup(std::vector<std::vector<Tile>> &TileVector);
+	ObjectClass* EntityInventory(std::vector<std::vector<Tile>>&TileVector);
+	void EntityFeatMenu();
 	ObjectClass* PickupTile(std::vector<std::vector<Tile>> &TileVector);
+
 	//end equipment functions
 
-	void SetAbilityScore(AbilityType type, int amount);
+	void SetAbilityScore(AbilityScoreType type, int amount);
 	void DisplayAbilityScores();
+
+	std::vector<FeatClass>& GetFeats() { return Feats; }
+	std::vector<FeatClass> GetActiveFeats();
+	std::vector<FeatClass*> GetToggleableFeats();
+
+	bool IsProne() { return isProne; }
+	void SwitchProne() { isProne = !isProne; }
+
+	int GetAbilityModifier(AbilityScoreType ability) { return (int)(floor((AbilityScore[ability] - 10) / 2)); }
+	int GetAbilityScore(AbilityScoreType ability) { return AbilityScore[ability]; }
+
+	bool IsTwoHanding();
+	bool IsDualWielding();
+
+	ItemContainer& GetBackPack();
 protected:
 
 private:
 
 	//Collision box of the entity
 	SDL_Rect mBox;
-	//
 
-	//The location on the map the object is in
-	std::pair<int, int> mLocation = { 0,0 }; //first is x value, second is y value
+	bool AttackBothHands = false;
+	//The location on the map the object is in (what tile)
+	std::pair<unsigned, unsigned> mLocation = { 0,0 }; //first is x value, second is y value
 	bool attemptMove;
 	Direction MoveDirection = STATIONARY;
 	Direction FaceDirection = SOUTH;
@@ -157,13 +179,15 @@ private:
 
 	//for keeping track of who is on what side, used in AI and rendering
 	int TeamSide = 0;
+	ObjectClass UnarmedStrike;
 
+	bool isProne = false;
 	/*Inherent statistics start*/
 	//the string rep of the name of the entity, mostly for flavor and for user interaction
 	std::string EntityName = "Anonymous";
 
 	//map of ability scores
-	std::map<AbilityType, int> AbilityScore =
+	std::map<AbilityScoreType, int> AbilityScore =
 	{
 	{STR, NULL},
 	{DEX, NULL},
@@ -198,7 +222,7 @@ private:
 	};
 
 	ItemContainer BackPack;
-	std::vector<FeatClass*> Feats;
+	std::vector <FeatClass> Feats;
 	
 	int HitPoints=HitPointMaximum;
 	EntitySize ThisSize;
@@ -230,7 +254,9 @@ private:
 		BodyLocation GetBodyLocation(std::string line);
 
 		//loads feats of character 
-		bool LoadFeats(std::ifstream &reader);
+		bool LoadFeats(std::ifstream &reader, EncounterInstance& Encounter);
+
+		bool LoadLevels(std::ifstream &reader, EncounterInstance& Encounter);
 		
 		//loads properties of character not covered by ability scores, equipments and feats
 		bool LoadProperties(std::ifstream &reader);

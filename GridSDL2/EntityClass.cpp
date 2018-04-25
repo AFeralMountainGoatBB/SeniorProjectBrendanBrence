@@ -6,7 +6,8 @@
 #include "PickupItemsMenu.h"
 #include "EncounterInstance.h"
 #include "Armor.h"
-
+#include "InventoryMenu.h"
+#include "FeatMenu.h"
 
 EntityClass::EntityClass(int xInitial, int yInitial, int HPMax=0, int HPCurrent=0, EntitySize ThisSize=MEDIUM)
 {	
@@ -39,6 +40,7 @@ void EntityClass::SetTexture(std::map<std::string, LTexture*> &TextureMap, std::
 	else
 	{
 		std::cout << "No matching texture found " << Path << "\\" << mPathTexture << std::endl;
+		mTexture = TextureMap[Path + "\\" + "QuestionMark.png"];
 	}
 	
 }
@@ -96,20 +98,20 @@ std::string EntityClass:: GetName()
 
 /*----------------END MUTATORS-----------------*/
 
-bool EntityClass::EntityAttack(std::vector<std::vector<Tile>> &TileVector)
+bool EntityClass::EntityAttack(std::vector<std::vector<Tile>> &TileVector, EncounterInstance& Instance)
 {
 	//call EntityAttackTile, if not null call selected attack roll
 	EntityClass* Target = EntityAttackTile(TileVector);
 	if (Target != NULL)
 	{
-		//do the roll and see if it hits
-		if (MeleeAttackRoll(*Target))
+		MeleeAttack Attack;
+		if (!AttackBothHands)
 		{
-			int Damage = MeleeAttackDamage(*Target); //calculate damage
-			//deal damage
-			Target->TakeDamage(Damage, PIERCE);
-			//if target is dead/unconscious, 
-			//and this entity has cleave or GreaterCleave, then activate cleave todo
+			Attack.AttackNormal(*this, *Target, Instance);
+		}
+		else if(AttackBothHands)
+		{
+			Attack.AttackDualWield(*this, *Target, Instance);
 		}
 	}
 
@@ -157,6 +159,15 @@ void EntityClass::TakeDamage(int Damage, DamageType DamageType)
 	//subtract Damage reduction from total damage
 	//finally subtract from health pool
 	HitPoints -= Damage;
+}
+
+int EntityClass::GetTotalDamageReduction()
+{
+	//go through equipment and add up damage reduction.
+	//go through feats and add up damage reduction + resistances
+	//add together, return total
+
+	return 1;
 }
 
 EntityClass* EntityClass::EntityAttackTile(std::vector<std::vector<Tile>> &TileVector)
@@ -283,13 +294,99 @@ EntityClass* EntityClass::EntityAttackTile(std::vector<std::vector<Tile>> &TileV
 
 const int EntityClass::GetArmorClass()
 {
-	std::cout << EntityName << " has armor class of " << ArmorClass << std::endl;
+//	std::cout << EntityName << " has armor class of " << ArmorClass << std::endl;
 	return ArmorClass;
 }
 
 ObjectClass* EntityClass::GetEquipmentInSlot(BodyLocation Location)
 {
-	return Equipment.find(Location)->second;
+	if (Equipment.find(Location) != Equipment.end())
+	{
+		return Equipment[Location];
+	}
+	return nullptr;
+}
+ObjectClass EntityClass::GetUnarmedStrike()
+{
+	ObjectClass UnarmedStrike;
+	UnarmedStrike.AddWeaponType(UNARMED);
+	UnarmedStrike.AddWeaponType(LIGHT);
+	UnarmedStrike.AddDamageType(BLUNT);
+	UnarmedStrike.SetBaseWeight(0.0);
+	UnarmedStrike.SetCritInformation(20, 2);
+	UnarmedStrike.SetDamageDice(std::pair<int, DiceType>(1, D3));
+	return UnarmedStrike;
+
+}
+void EntityClass::TwoHandWeapon()
+{
+	if (Equipment[MAINHAND] != NULL)
+	{
+		if (Equipment[OFFHAND] != NULL)
+		{
+			//this means that we are already grasping the wep in two hands we will stop
+			if (Equipment[OFFHAND]==Equipment[MAINHAND])
+			{
+				std::cout << "Offhand Let go" << std::endl;
+				Equipment[OFFHAND] = NULL;
+			}
+			else
+			{
+				std::cout << "Both Hands Occupied" << std::endl;
+				return;
+			}	
+		}
+		else
+		{
+			Equipment[OFFHAND] = Equipment[MAINHAND];
+			std::cout << "Weapon Grasped in both hands" << std::endl;
+		}
+	} // end mainhand !=null
+	else
+	{
+		if (Equipment[OFFHAND] != NULL)
+		{
+			std::cout << "Weapon Grasped in both hands" << std::endl;
+			Equipment[MAINHAND] = Equipment[OFFHAND];
+		}
+	}
+}
+
+std::vector<FeatClass> EntityClass::GetActiveFeats()
+{
+	std::vector<FeatClass>ActiveFeats;
+	for (auto it = Feats.begin(); it != Feats.end(); it++)
+	{
+		if ((*it).IsActive())
+		{
+			ActiveFeats.push_back(*it);
+		}
+	}
+	return ActiveFeats;
+}
+
+std::vector<FeatClass*> EntityClass::GetToggleableFeats()
+{
+	std::vector<FeatClass*> ToggleableFeats;
+	for (auto it = Feats.begin(); it != Feats.end(); it++)
+	{
+	//	std::cout << "Feat" << (*it).GetName();
+		if ((*it).IsToggleAbility())
+		{
+			FeatClass* TempPtr = &(*it);
+			//std::cout << "is toggle" << std::endl;
+			ToggleableFeats.push_back(TempPtr);
+			continue;
+		}
+		//std::cout << " not toggle" << std::endl;
+	}
+/*
+	for (auto it = ToggleableFeats.begin(); it != ToggleableFeats.end(); it++)
+	{
+		std::cout << (*it)->GetName() << std::endl;
+	}
+	*/
+	return ToggleableFeats;
 }
 
 bool EntityClass::DoesSlotExist(BodyLocation Location)
@@ -415,6 +512,25 @@ void EntityClass::handleEvent(SDL_Event& e)
 				SetControlMode(PICKUPMODE);
 			}
 			else if(GetControlMode()!=NOCONTROLMODE)
+			{
+				SetControlMode(MOVEMODE);
+			}
+			break;
+		case SDLK_3:
+			if (GetControlMode() != INVENTORYMODE && GetControlMode() != NOCONTROLMODE)
+			{
+				SetControlMode(INVENTORYMODE);
+			}
+			else if (GetControlMode() != NOCONTROLMODE)
+			{
+				SetControlMode(MOVEMODE);
+			}
+		case SDLK_4:
+			if (GetControlMode() != FEATOPTIONMODE && GetControlMode() != NOCONTROLMODE)
+			{
+				SetControlMode(FEATOPTIONMODE);
+			}
+			else
 			{
 				SetControlMode(MOVEMODE);
 			}
@@ -580,7 +696,6 @@ void EntityClass::move(std::vector<std::vector<Tile>> &TileVector)
 	MoveDirection = STATIONARY;
 	}
 
-
 void EntityClass::setCamera(SDL_Rect& camera)
 {
 	//Center the camera over the entity
@@ -717,12 +832,54 @@ void EntityClass::SetControlMode(ControlMode NewControl)
 	this->ControlSetting = NewControl;
 }
 
-ObjectClass* EntityClass:: PickupTile(std::vector<std::vector<Tile>> &TileVector)
+
+bool EntityClass::IsTwoHanding()
+{
+	if (Equipment[MAINHAND] == Equipment[OFFHAND])
+	{
+		//entity is holding the same weapon in both hands, definition of two handing
+		return true;
+	}
+	else
+	{
+		//entity is not holding the same weapon in both hands, not two handing
+		return false;
+	}
+}
+
+void EntityClass::SwapWeaponHands()
+{
+	ObjectClass* TempStore;
+	if (!this->IsTwoHanding()) //you cant swap two handed weapons to mainhand/offhand
+	{
+		if (GetEquipmentInSlot(MAINHAND) != NULL)
+		{
+			TempStore = GetEquipmentInSlot(MAINHAND);
+			if (GetEquipmentInSlot(OFFHAND) != NULL)
+			{
+				Equipment[MAINHAND] = Equipment[OFFHAND];	
+				Equipment[OFFHAND] = TempStore;
+			}
+			else
+			{
+				Equipment[OFFHAND] = TempStore;
+				Equipment[MAINHAND] = NULL;
+			}
+		
+		}
+		else if (GetEquipmentInSlot(OFFHAND) != NULL)
+		{
+			Equipment[MAINHAND] = Equipment[OFFHAND];
+			Equipment[OFFHAND] = NULL;
+		}
+	}
+}
+
+ObjectClass* EntityClass::PickupTile(std::vector<std::vector<Tile>> &TileVector)
 {
 	PickupItemsMenu PMenu;
-	
+
 	return PMenu.PickupItemsRun(TileVector[mLocation.first][mLocation.second]);
-	
 }
 
 void EntityClass::EntityPickup(std::vector<std::vector<Tile>> &TileVector)
@@ -738,8 +895,75 @@ void EntityClass::EntityPickup(std::vector<std::vector<Tile>> &TileVector)
 			TileVector[Target->GetLocation().first][Target->GetLocation().second].RemoveObject(Target);
 		}
 	}
-	DisplayEntireInventory();
+	//DisplayEntireInventory();
 	return;
+}
+
+ObjectClass* EntityClass::EntityInventory(std::vector<std::vector<Tile>> &TileVector)
+{
+	InventoryMenu IMenu;
+	return IMenu.InventoryMenuRun(*this, TileVector);
+
+}
+void EntityClass::EntityFeatMenu()
+{
+	FeatMenu FMenu;
+	FMenu.FeatMenuRun(*this);
+}
+ItemContainer& EntityClass::GetBackPack()
+{
+	return BackPack;
+}
+
+void EntityClass::AddToBackPack(ObjectClass * object)
+{
+	BackPack.AddItem(object);
+}
+
+void EntityClass::UnEquip(BodyLocation location)
+{
+	if (Equipment[location]!=NULL)
+	{
+		AddToBackPack(Equipment[location]);
+		Equipment[location] = NULL;
+	}
+}
+bool EntityClass::EquipArmor(ObjectClass* item)
+{
+	if (Equipment[BODY] == NULL)
+	{
+		Equipment[BODY] = item;
+		return true;
+	}
+	else 
+	{
+		return false;
+	}
+}
+
+void EntityClass::DropFromEquipment(BodyLocation location, std::vector<std::vector<Tile>>&TileMap)
+{
+	if (Equipment[location] != NULL)
+	{
+		Equipment[location]->SetLocation(mLocation.first, mLocation.second, TileMap);
+		Equipment[location] = NULL;
+	}
+}
+
+void EntityClass::DropFromBackPack(int index, std::vector<std::vector<Tile>>& TileMap)
+{
+	if (index < 0)
+	{
+		return;
+	}
+	//get item at index
+	if (BackPack.GetItemAtIndex(index)) //will not go if NULL
+	{
+		BackPack.GetItemAtIndex(index)->SetLocation(mLocation.first, mLocation.second, TileMap);
+		BackPack.RemoveItemAtIndex(index);
+	}
+	//BackPack.DropItemAtIndex(int index);
+
 }
 
 bool EntityClass::EquipObject(ObjectClass* item)
@@ -802,7 +1026,7 @@ void EntityClass::DisplayEntireInventory()
 	BackPack.DisplayItems();
 }
 
-void EntityClass::SetAbilityScore(AbilityType type, int amount)
+void EntityClass::SetAbilityScore(AbilityScoreType type, int amount)
 {
 	AbilityScore[type] = amount;
 }
@@ -825,7 +1049,7 @@ bool EntityClass::LoadEntity(std::string name, std::pair<int, int> Location, boo
 	LoadNameDescriptionAndTexture(reader);
 	LoadAbilityScores(reader);
 	LoadEquipment(reader, Instance.GetObjectList());
-	LoadFeats(reader);
+	LoadFeats(reader, Instance);
 	//LoadProperties(reader);
 	this->SetLocation(Location.first, Location.second, Instance.GetTileMap());
 
@@ -1055,12 +1279,31 @@ bool EntityClass::LoadEquipment(std::ifstream & reader, std::map<std::string, Ob
 			{
 				if (line.find("Armor") != std::string::npos)
 				{
-					Equipment[TempLocation] = new ArmorObject(*MasterObjectList[line]);
+					//std::cout << "Found armor, adding it to character " << line << std::endl;
+					if (MasterObjectList.count(line) == 0)
+					{
+						std::cout << line << " not found in MasterObjectList, not adding it in" << std::endl;
+					}
+					else
+					{
+					//	MasterObjectList[line]->DisplayArmorInfo();
+						Equipment[TempLocation] = new ArmorObject(*MasterObjectList[line]);
+						//std::cout << "New armor made" << line << std::endl;
+						//Equipment[TempLocation]->DisplayArmorInfo();
+					}
 				}
 				else
 				{
-					Equipment[TempLocation] = new ObjectClass(*MasterObjectList[line]);
-					Equipment[TempLocation]->DisplayObjectWeaponFacts();
+					if (MasterObjectList.count(line) == 0)
+					{
+						std::cout << line << " not found in MasterObjectList, not adding it in" << std::endl;
+					}
+					else
+					{
+						Equipment[TempLocation] = new ObjectClass(*MasterObjectList[line]);
+						Equipment[TempLocation]->DisplayObjectWeaponFacts();
+					}
+					
 				}
 				
 				if (Equipment[TempLocation]->GetName()!=line)
@@ -1105,12 +1348,12 @@ bool EntityClass::LoadEquipment(std::ifstream & reader, std::map<std::string, Ob
 	return success;
 }
 
-bool EntityClass::LoadFeats(std::ifstream & reader)
+bool EntityClass::LoadFeats(std::ifstream & reader, EncounterInstance& Encounter)
 {
 	bool success = true;
 	reader.clear();
 	reader.seekg(0, std::ios::beg);
-	bool LoadingFeats;
+	bool LoadingFeats=false;
 
 	std::string line;
 	while (getline(reader, line))
@@ -1124,27 +1367,43 @@ bool EntityClass::LoadFeats(std::ifstream & reader)
 			//	std::cout << "ResultAfterComment " << line << std::endl;
 		}//end remove comments block
 
+		if (line.find_first_not_of(' ') == std::string::npos)
+		{
+			continue;
+		}
 
 		if (line.find("End Feats:") != std::string::npos)
 		{
 			LoadingFeats= false;
+			break;
 		}
 		else if (line.find("Feats:") != std::string::npos)
 		{
 			LoadingFeats = true;
+			continue;
 		}
-		auto TempFeatPtr = new FeatClass;
-		TempFeatPtr->SetName(line);
-		Feats.push_back(TempFeatPtr);
+		if (LoadingFeats == true)
+		{
+			if (Encounter.GetMasterFeatList().count(line))
+			{
+				Feats.push_back(*(Encounter.GetMasterFeatList())[line]);
+			}
+			else
+			{
+				std::cout << line << " not found in masterlist, not loading feat" << std::endl;
+			}
+		}
 	}
-
-	for (auto i = Feats.begin(); i != Feats.end(); i++)
-	{
-		(*i)->LoadFeat();
-	}
-
-
+	DisplayFeats();
 	return success;
+}
+
+void EntityClass::DisplayFeats()
+{
+	for (auto it = Feats.begin(); it != Feats.end(); it++)
+	{
+		(*it).DisplayFeatFullInfo();
+	}
 }
 
 BodyLocation EntityClass::GetBodyLocation(std::string line)

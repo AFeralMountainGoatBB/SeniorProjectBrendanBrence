@@ -1,4 +1,4 @@
-Name: Bob the knife guy
+Name:Knife guy
 
 Ability Scores:
 
@@ -12,7 +12,8 @@ Charisma:5
 End Ability Scores:
 
 Equipped:
-MainHand:Dagger
+MainHand:Shortspear
+Body:Chain shirt Armor
 
 End Equipped:
 
@@ -22,7 +23,10 @@ Dagger
 End Backpack:
 
 Feats:
+WeaponFocus Polearm
+Power Attack
+WeaponSpecialization Polearm
 
 End Feats:
 
-Texture:Maceman1.png
+Texture:Uasdfas.png

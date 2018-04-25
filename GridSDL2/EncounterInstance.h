@@ -78,12 +78,8 @@ class EncounterInstance
 
 	//log functions
 	void AddLog(std::string LogEntry);
-	void AddStringLog(std::string LogEntry);
-	void AddTextureLog(std::string LogEntry);
-	void DeleteFromLog();
-	void UpIndex();
-	void DownIndex();
-	void RenderLog(SDL_Rect Viewport);
+
+	std::map<std::string, FeatClass*>& GetMasterFeatList() { return MasterFeatList; }
 
 private: 
 	static const int TileMapWidth = LEVEL_WIDTH / TILE_WIDTH;
@@ -97,12 +93,6 @@ private:
 	std::map<std::string, FeatClass*> MasterFeatList;
 	
 	Log ActionLog;
-
-	SDL_Color LogTextColor = { 0, 0, 0 };
-	std::deque<std::string>StringLog;
-	std::deque<LTexture*> TextureLog;
-	int LogMaximumSize = 100;
-	int LocationLogIndex = 0;
 
 	//resources stuff
 	std::string FontPath = "Data\\Fonts";

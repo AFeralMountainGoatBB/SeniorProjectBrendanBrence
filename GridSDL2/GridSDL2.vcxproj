@@ -22,6 +22,7 @@
     <ClCompile Include="39_tiling.cpp" />
     <ClCompile Include="Armor.cpp" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="FeatMenu.cpp" />
     <ClCompile Include="InventoryMenu.cpp" />
     <ClCompile Include="ItemContainer.cpp" />
     <ClCompile Include="Dot.cpp" />
@@ -34,10 +35,12 @@
     <ClCompile Include="kiss_widgets.c" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="MainMenu.cpp" />
+    <ClCompile Include="MeleeAttack.cpp" />
     <ClCompile Include="Objects.cpp" />
     <ClCompile Include="PickupItemsMenu.cpp" />
     <ClCompile Include="PlayerCharacter.cpp" />
     <ClCompile Include="Feats.cpp" />
+    <ClCompile Include="RangedAttack.cpp" />
     <ClCompile Include="ScenarioMenu.cpp" />
     <ClCompile Include="StaticFunctions.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -69,8 +72,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Armor.h" />
+    <ClInclude Include="AttackClass.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="ClassesAndLevels.h" />
+    <ClInclude Include="FeatMenu.h" />
     <ClInclude Include="InventoryMenu.h" />
     <ClInclude Include="ItemContainer.h" />
     <ClInclude Include="Dot.h" />

@@ -4,19 +4,7 @@
 #include "SharedEnums.h"
 #include "Texture.h"
 
-
-const int BUTTON_WIDTH = 300;
-const int BUTTON_HEIGHT = 200;
-const int TOTAL_BUTTONS = 4;
-
-enum LButtonSprite
-{
-	BUTTON_SPRITE_MOUSE_OUT = 0,
-	BUTTON_SPRITE_MOUSE_OVER_MOTION = 1,
-	BUTTON_SPRITE_MOUSE_DOWN = 2,
-	BUTTON_SPRITE_MOUSE_UP = 3,
-	BUTTON_SPRITE_TOTAL = 4
-};
+class Log;
 
 class button
 {
@@ -26,24 +14,26 @@ public:
 
 	//Sets top left position
 	void setPosition(int x, int y, int width, int height);
-
-	void setFunction(void (*funcptr)());
-
-	//Handles mouse event
-	void handleEvent(SDL_Event* e);
-
+	void SetTexture(std::string textureName, std::map<std::string, LTexture*> &TextureMap, std::string Path);
 	//Shows button sprite
-	void render(SDL_Renderer*& renderer);
+	void render(SDL_Renderer *& renderer);
+	
+	void SetName(std::string passedname) { name = passedname; }
+
+	int GetXPos() { return mPosition.x; }
+	int GetYPos() { return mPosition.y; }
+	int GetHeight() {return mPosition.h;}
+	int GetWidth() { return mPosition.w; }
+	int GetYOffset() { return YOffset; }
+	void SetYOffset(int y) { YOffset = y; }
 
 private:
-	std::string name;
+	std::string name = "button";
+	std::string TexturePath = "button.png";
 	LTexture* mTexture;
 	//Top left position
 	SDL_Rect mPosition;
-
-	void(*On_Click)();
-
-	//Currently used global sprite
-	LButtonSprite mCurrentSprite;
+	int YOffset;
+	int XOffset;
 
 };

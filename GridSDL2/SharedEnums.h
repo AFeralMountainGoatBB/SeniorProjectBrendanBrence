@@ -44,13 +44,14 @@ enum CreatureType {
 	//more to be added, maybe turned into class
 };
 
-enum AbilityType {
+enum AbilityScoreType {
 	STR=1, //strength
 	CON=3, //constitution
 	DEX=2, //dexterity
 	INT=4, //intelligence
 	WIS=5, //wisdom
-	CHA=6 //charisma
+	CHA=6, //charisma
+	UNKNOWNABILITYSCORETYPE=999
 };
 
 enum DamageType
@@ -91,12 +92,13 @@ enum WeaponType
 //starts at 0, ends at UNKNOWN
 enum CircumstanceType
 {
-	DUALWIELDING,
-	TWOHANDING,
-	POINTBLANK,
-	MELEE,
-	OPPORTUNITY, 
-	UNKNOWNCIRCUMSTANCE
+	DUALWIELDING, //weapon in each hand type of attack
+	TWOHANDING, //both hands on the weapon attack
+	POINTBLANK, //within 30 ft
+	MELEEATTACK, // melee attack
+	RANGEDATTACK, // ranged attack
+	OPPORTUNITYATTACK, //opportunity attack
+	UNKNOWNCIRCUMSTANCE=999
 };
 
 enum AttackRollType
@@ -124,12 +126,13 @@ enum BodyLocation {
 	LEGS, //magic boots
 	MAINHAND, //primary weapons or 2 hander
 	OFFHAND, //secondary weapons or 2 hander
-	TRADEGOOD,
+	TRADEGOOD, //unused as of now
 	UNKNOWNBODYSLOTTYPE=999
 };
 
 enum ArmorType
 {
+	UNARMORED = 0,
 	LIGHTARMOR = 1,
 	MEDIUMARMOR = 2,
 	HEAVYARMOR = 3,
@@ -155,6 +158,8 @@ enum ControlMode
 {
 	MOVEMODE, 
 	PICKUPMODE,
+	INVENTORYMODE,
+	FEATOPTIONMODE,
 	ATTACKMODE,
 	NOCONTROLMODE
 };
@@ -190,7 +195,7 @@ static std::map <BodyLocation, std::string> BodyLocationTextMap = {
 
 #ifndef ABILITY_SCORE_TEXT_MAP
 #define ABILITY_SCORE_TEXT_MAP
-static std::map<AbilityType, std::string> AbilityScoreTextMap =
+static std::map<AbilityScoreType, std::string> AbilityScoreTextMap =
 {
 	{STR, "Strength"},
 	{DEX, "Dexterity"},
@@ -219,8 +224,9 @@ static std::map<CircumstanceType, std::string> CircumstanceTypeTextMap =
 	{DUALWIELDING, "DualWielding"},
 	{TWOHANDING, "TwoHanding" },
 	{POINTBLANK, "PointBlank"},
-	{MELEE, "Melee" },
-	{OPPORTUNITY, "Opportunity"},
+	{MELEEATTACK, "Melee" },
+	{RANGEDATTACK, "Ranged"},
+	{OPPORTUNITYATTACK, "Opportunity"},
 	{UNKNOWNCIRCUMSTANCE , "Unknown"}
 
 };
@@ -313,4 +319,16 @@ static CircumstanceType FindCircumstanceType(std::string line)
 		}
 	}
 	return UNKNOWNCIRCUMSTANCE;
+}
+
+static AbilityScoreType FindAbilityScoreType(std::string line)
+{
+	for (auto i = AbilityScoreTextMap.begin(); i != AbilityScoreTextMap.end(); i++)
+	{
+		if (line.find((*i).second) != std::string::npos)
+		{
+			return (*i).first;
+		}
+	}
+	return UNKNOWNABILITYSCORETYPE;
 }

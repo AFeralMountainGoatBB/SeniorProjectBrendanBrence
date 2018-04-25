@@ -108,6 +108,15 @@
     <ClCompile Include="Log.cpp">
       <Filter>Source Files\InterfaceCPP</Filter>
     </ClCompile>
+    <ClCompile Include="MeleeAttack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RangedAttack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FeatMenu.cpp">
+      <Filter>Source Files\InterfaceCPP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="dot.bmp">
@@ -242,6 +251,12 @@
       <Filter>Header Files\DataHeaders</Filter>
     </ClInclude>
     <ClInclude Include="Log.h">
+      <Filter>Header Files\InterfaceHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="AttackClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FeatMenu.h">
       <Filter>Header Files\InterfaceHeaders</Filter>
     </ClInclude>
   </ItemGroup>

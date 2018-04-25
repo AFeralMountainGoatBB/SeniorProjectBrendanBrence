@@ -3,8 +3,6 @@
 
 EncounterInstance::EncounterInstance()
 {
-	
-
 }
 
 
@@ -175,27 +173,7 @@ bool EncounterInstance::loadMedia(LTexture &gDotTexture, LTexture &gTileTexture,
 		Textures["dot.bmp"] = &gDotTexture;
 	}
 
-/*	if (!KnifeTexture.loadFromFile("pixelknife.png", Renderer))
-	{
-		std::cout << "Failed to load knife texture!" << std::endl;
-		success = false;
-	}
-	else
-	{
-		Textures[GetTextureFolderPath() + "\\pixelknife.png"] = &KnifeTexture;
-	}
 
-	if (!mEntityTexture.loadFromFile("clericMace.png", Renderer))
-	{
-		std::cout << "Failed to load Entity texture" << std::endl;
-		success = false;
-	}
-	else
-	{
-		Textures[GetTextureFolderPath() +"\\clericMace.png"] = &mEntityTexture;
-		std::cout << " Loaded clericMace.png" << std::endl;
-	}
-	*/
 	//Load tile texture
 	if (!gTileTexture.loadFromFile(SpriteSet["TileSet"], Renderer))
 	{
@@ -386,9 +364,9 @@ bool EncounterInstance::setTiles(SDL_Rect gTileClips[])
 
 void EncounterInstance::DebugTileMap()
 {
-	for (int y =0; y < TileMap[0].size(); y++)
+	for (unsigned y = 0; y < TileMap[0].size(); y++)
 	{
-		for (int i = 0; i < TileMap.size(); i++)
+		for (unsigned i = 0; i < TileMap.size(); i++)
 		{
 			std::cout << TileMap[i][y].getType() << "  ";
 		}
@@ -463,9 +441,9 @@ bool EncounterInstance::touchesWall(SDL_Rect box)
 {
 	//std::cout << "Checking box" << std::endl;
 	//Go through the tiles
-	for (int y = 0; y < TileMap[0].size(); y++)
+	for (unsigned y = 0; y < TileMap[0].size(); y++)
 	{
-		for (int x = 0; x < TileMap.size(); x++)
+		for (unsigned x = 0; x < TileMap.size(); x++)
 		{
 			if ((TileMap[x][y].getType() >= TILE_CENTER) && (TileMap[x][y].getType() <= TILE_TOPLEFT))
 			{
@@ -495,9 +473,9 @@ void EncounterInstance::AllocateTileMap(int width, int height)
 
 void EncounterInstance::RenderTiles(SDL_Rect camera, LTexture &gTileTexture, SDL_Rect gTileClips[], SDL_Renderer*& gRenderer)
 {
-	for (int y = 0; y < TileMap[0].size(); y++)
+	for (unsigned y = 0; y < TileMap[0].size(); y++)
 	{
-		for (int x = 0; x < TileMap.size(); x++)
+		for (unsigned x = 0; x < TileMap.size(); x++)
 		{
 			//std::cout << "Rendering tile " << x << ", " << y << std::endl;
 			TileMap[x][y].render(camera, gTileTexture, gTileClips, gRenderer);
@@ -537,22 +515,19 @@ bool EncounterInstance::RunEncounter()
 	BottomViewPort.y = (SCREEN_HEIGHT / 4) * 3;
 	BottomViewPort.h = (SCREEN_HEIGHT / 4);
 	BottomViewPort.w = SCREEN_WIDTH;
-			
-	LTexture gTextTexture;
-	SDL_Color textColor = { 0, 0, 0 };
-	if (!gTextTexture.loadFromRenderedText("The quick brown fox jumps over the lazy dog", textColor, gRenderer, gFont))
-	{
-		printf("Failed to render text texture!\n");
-	}
 
 	ActionLog.AddLog(gRenderer, "Hi please work");
 	ActionLog.AddLog(gRenderer, "pleas fucking work");
 	ActionLog.AddLog(gRenderer, "Lemony snicket is dead");
 	ActionLog.AddLog(gRenderer, "I just checked on google");
 	ActionLog.AddLog(gRenderer, "Hes definitely dead, tell kira");
+	ActionLog.AddLog(gRenderer, "pos2");
+	ActionLog.AddLog(gRenderer, "Testing this out still, checking if this is at pos1");
+	ActionLog.AddLog(gRenderer, "Testing this out still, checking if this is at pos0");
+	ActionLog.Setup(TextureFolderPath, Textures, BottomViewPort, gFont);
 	ActionLog.SetLogConstraints(BottomViewPort);
 
-			bool quit = false;
+	bool quit = false;
 			
 			AllEntitySetTexture();
 			ActiveUnit = EntityList.front();
@@ -574,8 +549,9 @@ bool EncounterInstance::RunEncounter()
 					//Handle input for the dot
 				//	dot.handleEvent(e);
 					ActiveUnit->handleEvent(e);
+					ActionLog.HandleEvents(e);
 				}
-
+				SDL_RenderSetViewport(gRenderer, &BottomViewPort);
 				//Move the dot
 				//dot.move(*this);
 				//dot.setCamera(camera);
@@ -591,10 +567,18 @@ bool EncounterInstance::RunEncounter()
 					ActiveUnit->move(GetTileMap());
 					break;
 				case(ATTACKMODE):
-					ActiveUnit->EntityAttack(GetTileMap());
+					ActiveUnit->EntityAttack(GetTileMap(), *this);
 					break;
 				case(PICKUPMODE):
 					ActiveUnit->EntityPickup(GetTileMap());
+					ActiveUnit->SetControlMode(MOVEMODE);
+					break;
+				case(INVENTORYMODE):
+					ActiveUnit->EntityInventory(GetTileMap());
+					ActiveUnit->SetControlMode(MOVEMODE);
+					break;
+				case(FEATOPTIONMODE):
+					ActiveUnit->EntityFeatMenu();
 					ActiveUnit->SetControlMode(MOVEMODE);
 					break;
 				}
@@ -619,24 +603,19 @@ bool EncounterInstance::RunEncounter()
 				
 				//std::cout << "LevelRendered?" << std::endl;
 
-				//Render dot
-				//dot.render(camera, gDotTexture, gRenderer);
 				RenderAllEntities(camera, gRenderer);
-				gTextTexture.renderTile((SCREEN_WIDTH - gTextTexture.getWidth()) / 2, (SCREEN_HEIGHT - gTextTexture.getHeight()) / 2, gRenderer);
-
+				
 			//	std::cout << "People rendered" << std::endl;
 
 				SDL_RenderSetViewport(gRenderer, &topLeftViewport);
 				SDL_RenderCopy(gRenderer, MenuPort, NULL, NULL);
+
 				
 				//MenuPort.render(topLeftViewport.x, topLeftViewport.y, gRenderer);
 				SDL_RenderSetViewport(gRenderer, &BottomViewPort);
 				SDL_RenderCopy(gRenderer, BottomPort, NULL, NULL);
 				ActionLog.RenderLog(gRenderer);
 				//BottomPort.render(BottomViewPort.x, BottomViewPort.y, gRenderer);
-
-				//SDL_RenderCopy();
-				//SDL_RenderCopyEx();
 
 				//Update screen
 				SDL_RenderPresent(gRenderer);
@@ -650,60 +629,10 @@ bool EncounterInstance::RunEncounter()
 	return true;
 }
 
-void EncounterInstance::AddLog(std::string LogEntry)
+void EncounterInstance::AddLog(std::string Log)
 {
-	std::cout << LogEntry << std::endl;
-	AddStringLog(LogEntry);
-	AddTextureLog(LogEntry);
-	while(StringLog.size() >= LogMaximumSize)
-	{
-		//deletes from back, we insert from front
-		DeleteFromLog();
-	}
+	ActionLog.AddLog(gRenderer, Log);
 }
-void EncounterInstance::AddStringLog(std::string LogEntry)
-{
-	//push from front so we will pop from back
-	StringLog.push_front(LogEntry);
-}
-
-void EncounterInstance::AddTextureLog(std::string LogEntry )
-{
-	//create texture
-	LTexture* LogAdd = new LTexture;
-	//render it from text
-	LogAdd->loadFromRenderedText(LogEntry, LogTextColor, gRenderer, gFont);
-	//add it to the deque
-	TextureLog.push_front(LogAdd);
-}
-
-void EncounterInstance::DeleteFromLog()
-{
-	std::cout << "Deleting from log" << std::endl;
-	TextureLog.back()->free();
-	TextureLog.pop_back();
-	StringLog.pop_back();
-}
-void EncounterInstance::UpIndex()
-{
-	if (LocationLogIndex<StringLog.size())
-	{
-		LocationLogIndex++;
-	}
-}
-void EncounterInstance::DownIndex()
-{
-	if (LocationLogIndex > 0)
-	{
-		LocationLogIndex--;
-	}
-}
-void EncounterInstance::RenderLog(SDL_Rect Viewport )
-{
-
-
-}
-
 std::string EncounterInstance::GetTextureFolderPath()
 {
 	return TextureFolderPath;
@@ -885,18 +814,19 @@ bool EncounterInstance::ScenarioLoad(std::string Path)
 				try {
 					temploc = line.find(":") + 1;
 					line = line.substr(temploc, line.length());
-					line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
+					
 					//	std::cout << line << " No spaces, now we find path" << std::endl;
-
 					name = line.substr(0, line.find_first_of(","));
-					location = line.substr(line.find(",") + 1, line.length() - line.find(")") + 1);
+					line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
+					location = line.substr(line.find(",") + 1);
 					std::cout << "name: " << name << std::endl;
 
-					//std::cout << "Location: " << location << std::endl;
+					std::cout << "Location: " << location << std::endl;
 					location = location.substr(location.find_first_of("(") + 1, line.length() - location.find_first_of(")") + 1);
-					//	std::cout << "location: " << location << std::endl;
+					std::cout << "location: " << location << std::endl;
 					TempItemLocation.first = stoi(location.substr(0, location.find_first_of(",")));
-					TempItemLocation.second = stoi(location.substr(location.find_first_of(",") + 1, location.length()));
+					std::cout << location.substr(location.find_first_of(",") + 1, location.find_first_of(")") - location.find_first_of(",") + 1);
+					TempItemLocation.second = stoi(location.substr(location.find_first_of(",") + 1, location.find_first_of(")") - location.find_first_of(",")+1));
 				}
 				catch (std::exception const & error)
 				{
@@ -925,17 +855,33 @@ bool EncounterInstance::LoadObjectIntoTile(int x, int y, std::string name)
 {
 	if (MasterObjectList.count(name))
 	{
+		if (x < TileMap.size() && y < TileMap.size() && x >= 0 && y >= 0)
+		{	
 		std::cout << "Object " << name << " found, loading" << std::endl;
-		if (x < TileMap.size()&& y<TileMap.size() &&x>=0 && y>=0)
+		if (name.find("Armor") != std::string::npos || name.find("Shield") != std::string::npos)
 		{
-			std::cout << "Object loading" << std::endl;
-			ObjectClass* NewObject = new ObjectClass(*MasterObjectList[name]);
+			//std::cout << "Object loading" << std::endl;
+			ArmorObject* NewObject = new ArmorObject(*MasterObjectList[name]);
+			//NewObject->DisplayObjectWeaponFacts();
+			//NewObject->DisplayArmorInfo();
+			NewObject->SetLocation(x, y, TileMap);
+			//NewObject->SetTexture(Textures, TextureFolderPath);
+			ObjectList.push_back(NewObject);
+		//	ObjectList.back()->SetLocation(x, y, TileMap);
+			//ObjectList.back()->SetRendLocation(TileMap);
+			//ObjectList.back()->SetTexture(Textures, GetTextureFolderPath());
+		}
+		else 
+		{
+			//std::cout << "Object loading" << std::endl;
+			//ObjectClass* NewObject = new ObjectClass(*MasterObjectList[name]);
 			//NewObject->DisplayObjectWeaponFacts();
 			//NewObject->DisplayArmorInfo();
 			ObjectList.push_back(new ObjectClass(*MasterObjectList[name]));
 			ObjectList.back()->SetLocation(x, y, TileMap);
-			ObjectList.back()->SetRendLocation(TileMap);
+			//ObjectList.back()->SetRendLocation(TileMap);
 			ObjectList.back()->SetTexture(Textures, GetTextureFolderPath());
+		}
 		}
 		else
 		{
@@ -988,6 +934,7 @@ bool EncounterInstance::LoadWeaponList(std::string list)
 	
 				//std::cout << "New object: " << name << std::endl;
 				MasterObjectList.insert(std::pair<std::string, ObjectClass*>(name, new ObjectClass));
+				MasterObjectList[name]->SetTexture(Textures, TextureFolderPath);
 				line = line.substr(line.find(name + ',') + name.length() + 1);
 				//std::cout << "Line no name " << line << std::endl;
 
@@ -1189,28 +1136,38 @@ bool EncounterInstance::LoadArmorList(std::string list)
 
 				if (line.find("Light") != std::string::npos)
 				{
+					TempArmor->SetPathTexture("LightArmor.png");
 					TempArmor->AddArmorType(LIGHTARMOR);
+					TempArmor->SetBodySlot(BODY);
 				}
 				if (line.find("Medium") != std::string::npos)
 				{
+					TempArmor->SetPathTexture("MediumArmor.png");
 					TempArmor->AddArmorType(MEDIUMARMOR);
+					TempArmor->SetBodySlot(BODY);
 				}
 				if (line.find("Heavy") != std::string::npos)
 				{
+					TempArmor->SetPathTexture("HeavyArmor.png");
 					TempArmor->AddArmorType(HEAVYARMOR);
+					TempArmor->SetBodySlot(BODY);
 				}
 				if (line.find("TowerShield") != std::string::npos)
 				{
+					TempArmor->SetPathTexture("TowerShield.png");
 					TempArmor->AddArmorType(TOWERSHIELD);
+					TempArmor->SetBodySlot(OFFHAND);
 				}
 				else if (line.find("Shield")!=std::string::npos)
 				{
+					TempArmor->SetPathTexture("Shield.png");
 					TempArmor->AddArmorType(SHIELD);
+					TempArmor->SetBodySlot(OFFHAND);
 				}
-
+				TempArmor->SetTexture(Textures, TextureFolderPath);
 			//	std::cout << "Armor loaded" << std::endl;
 				MasterObjectList[name] = TempArmor;
-
+			//	MasterObjectList[name]->DisplayArmorInfo();
 				//display armor facts
 				//TempArmor->DisplayArmorInfo();
 			}
@@ -1259,7 +1216,6 @@ bool EncounterInstance::LoadFeatList(std::string list)
 }
 bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 {
-	
 	std::string line = "";
 	std::string name = "";
 	std::string description = "";
@@ -1275,36 +1231,38 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 	//remember at end of loop if each = true delete tempfeat and do not add it to masterlist, it will be empty
 	FeatClass* TempFeat = new FeatClass;
 	bool success = true;
-	while (getline(reader, line)&&Each ==false)
+	while (getline(reader, line) && Each == false)
 	{
 		try {
 			line = RemoveComments(line);
 			if (line.find("EACH") != std::string::npos)
 			{
 				Each = true;
-				if (line.find("WEAPONTYPE")!=std::string::npos)
+				if (line.find("WEAPONTYPE") != std::string::npos)
 				{
 					//limit it to certain groups soon
-					for (auto i = WeaponTypeTextMap.begin()++; i != WeaponTypeTextMap.end(), (*i).first!=SIMPLE; i++) 
+					for (auto i = WeaponTypeTextMap.begin()++; i != WeaponTypeTextMap.end(), (*i).first != SIMPLE; i++)
 					{
 						if (!AddEachWeaponFeat(reader, StartFeat, (*i).first))
 						{
 							success = false;
 						}
 					}
-				} 
-				else if(line.find("ARMORTYPE") != std::string::npos)
+				}
+				else if (line.find("ARMORTYPE") != std::string::npos)
 				{
 					for (auto i = ArmorTypeTextMap.begin(); i != ArmorTypeTextMap.end(); i++)
 					{
 						//AddEachArmorFeat();
-					}	
+					}
 				}
 				break;
 			} //end if find EACH
 			//std::cout << "Line loading feat:" << line << std::endl;
 			if (line.find("</Feat>") != std::string::npos)
 			{
+				MasterFeatList[TempFeat->GetName()] = TempFeat;
+				MasterFeatList[TempFeat->GetName()]->DisplayFeatFullInfo();
 				break;
 			}
 
@@ -1320,36 +1278,36 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 			{
 				description = line;
 				description = description.substr(line.find("\"") + 1, line.find_last_of("\"") - 1);
-				std::cout << "FeatDescription:" << description << std::endl;
+			//	std::cout << "FeatDescription:" << description << std::endl;
 				TempFeat->SetDescription(description);
 			}
 
 			if (line.find("Prerequisites:") != std::string::npos)
 			{
 				PreReq = line.substr(line.find(":") + 1);
-				std::cout << "PreReqs:" << PreReq << std::endl;
+				//std::cout << "PreReqs:" << PreReq << std::endl;
 				//todo when creating levelup system
 			}
 
 			if (line.find("Benefit:") != std::string::npos)
 			{
-				Benefit = line.substr(line.find(":")+1);
-				std::cout << "Benefit:" << Benefit << std::endl;
+				Benefit = line.substr(line.find(":") + 1);
+				//std::cout << "Benefit:" << Benefit << std::endl;
 				if (Benefit.find("RANGE(") != std::string::npos)
 				{
 					//UsesRange = true;
 					Bonuses = Benefit.substr(Benefit.find("RANGE("));
 					Bonuses = Bonuses.substr(Bonuses.find("RANGE(") + 6, Bonuses.find(")") - 6);
-					std::cout << "Bonuses range: " << Bonuses << std::endl;
+					//std::cout << "Bonuses range: " << Bonuses << std::endl;
 					std::string TempRange = Bonuses;
-					std::cout << TempRange.substr(0, TempRange.find("x")) << std::endl;
-					range.first=std::stoi(TempRange.substr(0, TempRange.find("x")));
-					range.second = std::stoi(TempRange.substr(TempRange.find("x")+1));
-					std::cout << range.first << "x" << range.second << std::endl;
+					//std::cout << TempRange.substr(0, TempRange.find("x")) << std::endl;
+					range.first = std::stoi(TempRange.substr(0, TempRange.find("x")));
+					range.second = std::stoi(TempRange.substr(TempRange.find("x") + 1));
+					//std::cout << range.first << "x" << range.second << std::endl;
 					TempFeat->SetRangeActivated(range.first, range.second);
 					TempFeat->SetUsesRangeAbility(true);
 				}
-				Benefit = Benefit.substr(Benefit.find(",")+1);
+				Benefit = Benefit.substr(Benefit.find(",") + 1);
 				while (Benefit.find(",") != std::string::npos || Benefit.find(".") != std::string::npos)
 				{
 					std::string TempString = "";
@@ -1363,13 +1321,13 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 					}
 					//remove spaces
 					TempString.erase(std::remove_if(TempString.begin(), TempString.end(), isspace), TempString.end());
-					
-					std::cout << "TempS: " << TempString << std::endl;
+
+				//	std::cout << "TempS: " << TempString << std::endl;
 					if (TempString.find("AttackRoll") != std::string::npos)
 					{
 						std::string Affects = TempString.substr(TempString.find("AttackRoll") + 10);
-						std::cout << "AttackRoll affects: " << Affects << std::endl;
-
+						//std::cout << "AttackRoll affects: " << Affects << std::endl;
+						
 						if (TempFeat->GetUsesRangeAbility())
 						{
 							CircumstanceType CType = FindCircumstanceType(Affects);
@@ -1431,7 +1389,7 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 						else
 						{
 							//range not found, so it is a fixed amount
-							std::cout << "Amount increase " << TempString.substr(0, TempString.find("AttackRoll")) << std::endl;
+						//	std::cout << "Amount increase " << TempString.substr(0, TempString.find("AttackRoll")) << std::endl;
 							int tempint1 = stoi(TempString.substr(0, TempString.find("AttackRoll")));
 							CircumstanceType CType = FindCircumstanceType(Benefit);
 							WeaponType TempWType = FindWeaponType(TempString);
@@ -1596,15 +1554,41 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 						} // end if(range found)
 						else //range not found, so it is a fixed amount
 						{
-						//std::cout << "Amount increase " << TempString.substr(0, TempString.find("Dodge")) << std::endl;
-						int tempint1 = stoi(TempString.substr(0, TempString.find("Dodge")));
-						CircumstanceType CType = FindCircumstanceType(Benefit);
-						if (CType != UNKNOWNCIRCUMSTANCE)
-						{
-							TempFeat->AddCircumstanceAttackDamageAdd(CType, tempint1);
+							//std::cout << "Amount increase " << TempString.substr(0, TempString.find("Dodge")) << std::endl;
+							int tempint1 = stoi(TempString.substr(0, TempString.find("Dodge")));
+							CircumstanceType CType = FindCircumstanceType(Benefit);
+							if (TempString.find("ALL") != std::string::npos)
+							{
+								for (auto i = CircumstanceTypeTextMap.begin(); i != CircumstanceTypeTextMap.end(); i++)
+								{
+									if (TempString.find("ALL-") != std::string::npos && TempString.find((*i).second) != std::string::npos)
+									{
+										continue;
+									}
+									if (tempint1 > 0)
+									{
+										TempFeat->AddCircumstanceArmorBonusAdd((*i).first, 0);
+									}
+									else if (tempint1 < 0)
+									{
+										TempFeat->AddCircumstanceArmorBonusSubtract((*i).first, 0);
+									}
+								}
+							}
+							else if (CType != UNKNOWNCIRCUMSTANCE)
+							{
+								if (tempint1 > 0)
+								{
+									TempFeat->AddCircumstanceArmorBonusAdd(CType, tempint1);
+								}
+								else if (tempint1 < 0)
+								{
+									TempFeat->AddCircumstanceArmorBonusSubtract(CType, tempint1);
+								}
+							}
+
 						}
-					}
-				} //end if Dodge found
+					} //end if Dodge found
 
 					if (TempString.find("Proficiency") != std::string::npos)
 					{
@@ -1626,35 +1610,260 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 						}
 					}
 
-					if (Benefit.find(",") == std::string::npos)
+					if (FindAbilityScoreType(TempString) != UNKNOWNABILITYSCORETYPE)
 					{
-						Benefit = Benefit.substr(Benefit.find(".") + 1);
+						AbilityScoreType AbType = FindAbilityScoreType(TempString);
+						std::string Affects = TempString.substr(TempString.find(AbilityScoreTextMap[AbType]) + AbilityScoreTextMap[AbType].length());
+
+						if (TempFeat->GetUsesRangeAbility())
+						{
+							CircumstanceType CType = FindCircumstanceType(Affects);
+							std::string sign = TempString.substr(TempString.find("RANGE") - 1, 1);
+							//std::cout << sign << std::endl;
+							if (Affects.find("ALL") != std::string::npos)
+							{
+								for (auto i = CircumstanceTypeTextMap.begin(); i != CircumstanceTypeTextMap.end(); i++)
+								{
+									if (Affects.find("ALL-") != std::string::npos)
+									{
+										if (Affects.find((*i).second) != std::string::npos)
+										{
+											continue;
+										}
+									}
+									if (sign == "-")
+									{
+										TempFeat->AddCircumstanceArmorBonusSubtract((*i).first, 0);
+									}
+									if (sign == "+")
+									{
+										TempFeat->AddCircumstanceArmorBonusAdd((*i).first, 0);
+									}
+								}
+							}
+							else if (CType != UNKNOWNCIRCUMSTANCE)
+							{
+								TempFeat->AddCircumstanceArmorBonusSubtract(CType, 0);
+							}
+						} // end if(range found)
+						else //range not found, so it is a fixed amount
+						{
+							//std::cout << "Amount increase " << TempString.substr(0, TempString.find("Dodge")) << std::endl;
+							int tempint1 = stoi(TempString.substr(0, TempString.find(AbilityScoreTextMap[AbType])));
+							CircumstanceType CType = FindCircumstanceType(Benefit);
+							if (TempString.find("ALL") != std::string::npos)
+							{
+								for (auto i = CircumstanceTypeTextMap.begin(); i != CircumstanceTypeTextMap.end(); i++)
+								{
+									if (TempString.find("ALL-") != std::string::npos && TempString.find((*i).second) != std::string::npos)
+									{
+										continue;
+									}
+									if (tempint1 > 0)
+									{
+										TempFeat->AddCircumstanceArmorBonusAdd((*i).first, tempint1);
+									}
+									else if (tempint1 < 0)
+									{
+										TempFeat->AddCircumstanceArmorBonusSubtract((*i).first, tempint1);
+									}
+								}
+							}
+							else if (CType != UNKNOWNCIRCUMSTANCE)
+							{
+								if (tempint1 > 0)
+								{
+									TempFeat->AddCircumstanceArmorBonusAdd(CType, tempint1);
+								}
+								else if (tempint1 < 0)
+								{
+									TempFeat->AddCircumstanceArmorBonusSubtract(CType, tempint1);
+								}
+							}
+						}
+					}
+
+					if (TempString.find("Fortitude") != std::string::npos || TempString.find("Will") != std::string::npos || TempString.find("Reflex") != std::string::npos)
+						{
+						AbilityScoreType AbType = UNKNOWNABILITYSCORETYPE;
+							if (TempString.find("Fortitude") != std::string::npos)
+							{
+								AbType = CON;
+							}
+							if (TempString.find("Will") != std::string::npos)
+							{
+								AbType = WIS;
+							}
+							if (TempString.find("Reflex") != std::string::npos)
+							{
+								AbType = DEX;
+							}
+							std::string Affects = TempString.substr(TempString.find(AbilityScoreTextMap[AbType]) + AbilityScoreTextMap[AbType].length());
+
+							if (TempFeat->GetUsesRangeAbility())
+							{
+								/*
+								CircumstanceType CType = FindCircumstanceType(Affects);
+								std::string sign = TempString.substr(TempString.find("RANGE") - 1, 1);
+								//std::cout << sign << std::endl;
+								if (Affects.find("ALL") != std::string::npos)
+								{
+									for (auto i = CircumstanceTypeTextMap.begin(); i != CircumstanceTypeTextMap.end(); i++)
+									{
+										if (Affects.find("ALL-") != std::string::npos)
+										{
+											if (Affects.find((*i).second) != std::string::npos)
+											{
+												continue;
+											}
+										}
+										if (sign == "-")
+										{
+											TempFeat->AddSaveBonus((*i).first, 0);
+										}
+										if (sign == "+")
+										{
+											TempFeat->AddCircumstanceArmorBonusAdd((*i).first, 0);
+										}
+									}
+								}
+								else if (CType != UNKNOWNCIRCUMSTANCE)
+								{
+									TempFeat->AddCircumstanceArmorBonusSubtract(CType, 0);
+								}
+								*/
+							} // end if(range found)
+							else //range not found, so it is a fixed amount
+							{
+								//std::cout << "Amount increase " << TempString.substr(0, TempString.find("Dodge")) << std::endl;
+								int tempint1 = stoi(TempString.substr(0, TempString.find(AbilityScoreTextMap[AbType])));
+								CircumstanceType CType = FindCircumstanceType(Benefit);
+								if (TempString.find("ALL") != std::string::npos)
+								{
+									TempFeat->AddSaveBonus(AbType, tempint1);
+								}
+							}
+
+							if (TempString.find("MovementBonus") != std::string::npos)
+							{
+								//todo
+							}
+
+							if (Benefit.find(",") == std::string::npos)
+							{
+								Benefit = Benefit.substr(Benefit.find(".") + 1);
+							}
+							else
+							{
+								Benefit = Benefit.substr(Benefit.find(",") + 1);
+							}
+
+						}
+
+					//unfinished, functional for standard feats
+					if (TempString.find("MovementSpeed") != std::string::npos)
+					{
+						std::string Affects = TempString.substr(TempString.find("MovementSpeed") + 13);
+						//std::cout << "Amount increase " << TempString.substr(0, TempString.find("Dodge")) << std::endl;
+						int tempint1 = stoi(TempString.substr(0, TempString.find("MovementSpeed")));
+						ArmorType AmType = FindArmorType(Benefit);
+						if (TempString.find("ALL") != std::string::npos)
+						{
+							for (auto i = CircumstanceTypeTextMap.begin(); i != CircumstanceTypeTextMap.end(); i++)
+							{
+								if (TempString.find("ALL-") != std::string::npos && TempString.find((*i).second) != std::string::npos)
+								{
+									continue;
+								}
+								if (tempint1 > 0)
+								{
+									TempFeat->AddCircumstanceArmorBonusAdd((*i).first, tempint1);
+								}
+								else if (tempint1 < 0)
+								{
+									TempFeat->AddCircumstanceArmorBonusSubtract((*i).first, tempint1);
+								}
+							}
+						}
+						else if (AmType != UNKNOWNARMORTYPE)
+						{
+							if (tempint1 > 0)
+							{
+								TempFeat->AddArmorMoveSpeedBonusAdd(AmType, tempint1);
+							}
+							else if (tempint1 < 0)
+							{
+								//TempFeat->AddArmorSpeedBonusSubtract(AmType, tempint1);
+							}
+						}
+					}
+
+					if (Benefit.find(",") != std::string::npos)
+					{
+						Benefit = Benefit.substr(Benefit.find(",") + 1);
 					}
 					else
 					{
-						Benefit = Benefit.substr(Benefit.find(",")+1);
+						Benefit = Benefit.substr(Benefit.find(".") + 1);
 					}
-					
-				}	
+					}
+				}//end if find(benefit):
 
-			} //end if find(benefit):
-		}//end of try statement
-		catch (std::exception & error)
-		{
-			std::cout << "Error in LoadFeat: " << error.what() << std::endl;
-			return false;
-		}
-		if (Each)
-		{
-			return success;
-		}
-		MasterFeatList[TempFeat->GetName()] = TempFeat;
-		MasterFeatList[TempFeat->GetName()]->DisplayFeatFullInfo();
-	}//end of while loop
-	
-	return true;
+			if (line.find("Special:")!=std::string::npos)
+			{
+				std::string Special = line.substr(line.find(":") + 1);
+				std::cout << "Special:" << Special << std::endl;
+				std::string TempString;
+				while (Special.find(",") != std::string::npos || Special.find(".") != std::string::npos)
+				{
+					if (Special.find(",") == std::string::npos)
+					{
+						TempString = Special.substr(0, Special.find("."));
+					}
+					else
+					{
+						TempString = Special.substr(0, Special.find(","));
+					}
+					//remove spaces
+					TempString.erase(std::remove_if(TempString.begin(), TempString.end(), isspace), TempString.end());
+					CircumstanceType CType = FindCircumstanceType(TempString);
+					std::cout << "TempString: " << TempString << std::endl;
+					if (CType != UNKNOWNCIRCUMSTANCE)
+					{
+						TempFeat->AddCircumstanceRequired(CType);
+					}
+					else if (TempString.find("Toggle") != std::string::npos)
+					{
+						TempFeat->SetToggleAbility(true);
+					}
+					if (Special.find(",") != std::string::npos)
+					{
+						Special = Special.substr(Special.find(",") + 1);
+					}
+					else
+					{
+						Special = Special.substr(Special.find(".") + 1);
+					}
+
+				}
+
+			}
+				}//end of try statement
+				catch (std::exception & error)
+				{
+					std::cout << "Error in LoadFeat: " << error.what() << std::endl;
+					return false;
+				}
+				if (Each)
+				{
+					return success;
+				}
+				
+			}//end of while loop
+			
+			return true;
 	}
-	
+
 
 //helper
 std::string EncounterInstance::RemoveComments(std::string line)
@@ -1697,12 +1906,12 @@ bool EncounterInstance::AddEachWeaponFeat(std::ifstream & reader, int StartPos, 
 			if (line.find("FeatName:") != std::string::npos)
 			{
 				line = line.substr(line.find("FeatName:"));
-				name = line.substr(line.find(":") + 1);
+				name = line.substr(line.find(":")+1);
 				std::string temp = "WEAPONTYPE EACH";
 				
 				name.replace(name.find("WEAPONTYPE"), temp.length(), WeaponTypeTextMap[Wtype]);
 				TempFeat->SetName(name);
-			//	std::cout << "New Feat Name " << name << std::endl;
+				std::cout << "New Feat Name " << name << std::endl;
 			}
 			
 			if (line.find("FeatDescription:") != std::string::npos)
@@ -1791,7 +2000,7 @@ bool EncounterInstance::AddEachWeaponFeat(std::ifstream & reader, int StartPos, 
 		}	
 	}
 	MasterFeatList[TempFeat->GetName()]= TempFeat;
-	MasterFeatList[TempFeat->GetName()]->DisplayFeatFullInfo();
+	//MasterFeatList[TempFeat->GetName()]->DisplayFeatFullInfo();
 	return true;
 }
 

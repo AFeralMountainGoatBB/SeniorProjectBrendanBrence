@@ -10,6 +10,9 @@ class ItemContainer: public ObjectClass
 public:
 	void AddItem(ObjectClass*);
 	void DisplayItems();
+	std::vector<ObjectClass*>& GetItems() { return ItemsPresent; }
+	void RemoveItemAtIndex(int index);
+	ObjectClass* GetItemAtIndex(int index);
 	
 	int GetTotalWeight();
 	void AddWeight();

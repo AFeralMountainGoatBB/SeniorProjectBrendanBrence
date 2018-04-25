@@ -49,7 +49,6 @@ void Tile::render(SDL_Rect& camera, LTexture &TileTexture, SDL_Rect gTileClips[]
 
 bool Tile::getPassable()
 {
-	bool tempBool;
 	if (mType >= TILE_CENTER && mType <= TILE_TOPLEFT || mOccupied==true)
 	{
 		return false;
@@ -105,6 +104,7 @@ EntityClass* Tile::GetOccupant()
 
 void Tile:: AddItem(ObjectClass* Item)
 {
+	
 	ItemsPresent.push_back(Item);
 	//ItemsPresent.back()->DisplayObjectWeaponFacts();
 }

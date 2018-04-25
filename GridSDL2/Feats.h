@@ -22,14 +22,13 @@ public:
 	void AddArmorProficiency(ArmorType addArmor) { ArmorProficiencyAdd.push_back(addArmor); }
 	std::vector<ArmorType>&GetArmorProficiencies() { return ArmorProficiencyAdd; }
 
-
 	std::map<WeaponType, int>& GetWeaponAttackBonuses() { return WeaponAttackBonusAdd; }
 	void AddWeaponAttackBonusAdd(WeaponType Wtype, int amount) { WeaponAttackBonusAdd[Wtype] = amount; }
 	std::map<WeaponType, int>& GetWeaponDamageBonuses() { return WeaponDamageBonusAdd; }
 	void AddWeaponDamageBonusAdd(WeaponType Wtype, int amount) { WeaponDamageBonusAdd[Wtype] = amount; }
 
 	std::map<WeaponType, int>& GetWeaponAttackBonusSubtract() { return WeaponAttackBonusSubtract; }
-	void AddWeaponAttackBonusSubtract(WeaponType Wtype, int amount) { WeaponAttackBonusAdd[Wtype] = amount; }
+	void AddWeaponAttackBonusSubtract(WeaponType Wtype, int amount) { WeaponAttackBonusSubtract[Wtype] = amount; }
 	std::map<WeaponType, int>& GetWeaponDamageBonusSubtract() { return WeaponDamageBonusSubtract; }
 	void AddWeaponDamageBonusSubtract(WeaponType Wtype, int amount) { WeaponDamageBonusAdd[Wtype] = amount; }
 
@@ -37,10 +36,8 @@ public:
 
 	std::vector<FeatClass*>&GetGeneralPreRequisites() { return GeneralPrereqs; }
 
-	void ToggleAbility();
-
-	bool GetUsesRangeAbility() { return UsesRangeAbility; }
-	void SetUsesRangeAbility(bool passed) { UsesRangeAbility = passed; }
+	bool GetUsesRangeAbility() { return UsesRangeValueAbility; }
+	void SetUsesRangeAbility(bool passed) { UsesRangeValueAbility = passed; }
 
 	std::pair<int, int> GetActivatedRange() { return RangeActivated; }
 	void SetRangeActivated(int lower, int upper) { RangeActivated.first = lower; RangeActivated.second = upper; }
@@ -63,7 +60,23 @@ public:
 	std::map<CircumstanceType, int>&GetCircumstanceArmorBonusSubtract() { return CircumstanceArmorBonusSubtract; }
 	void AddCircumstanceArmorBonusSubtract(CircumstanceType CType, int amount) { CircumstanceArmorBonusSubtract[CType] = amount; }
 
+	void AddSaveBonus(AbilityScoreType AbType, int amount) { SaveBonusAdd.push_back(std::pair<AbilityScoreType, int>( AbType, amount)); }
 
+	void AddArmorMoveSpeedBonusAdd(ArmorType Armor, int bonus) { MoveSpeedBonusAdd[Armor] = bonus; }
+
+	void AddCircumstanceRequired(CircumstanceType CType) { CircumstancesRequired.push_back(CType); }
+	std::vector<CircumstanceType>& GetCircumstancesRequired() { return CircumstancesRequired; }
+
+	bool IsActive() { return AbilityCurrentlyActive; }
+	void SwitchActive() { AbilityCurrentlyActive = !AbilityCurrentlyActive; }
+
+	bool IsToggleAbility() { return ToggleAbility; }
+	void SetToggleAbility(bool passed) { ToggleAbility = passed; }
+
+	int GetCurrentRangeValue() { return CurrentRangeValue; }
+
+	void IncreaseFeat();
+	void DecreaseFeat();
 private:
 	std::string FeatName = "";
 	std::string description = "";
@@ -86,20 +99,30 @@ private:
 	std::map<CircumstanceType, int>CircumstanceArmorBonusAdd;
 	std::map<CircumstanceType, int>CircumstanceArmorBonusSubtract;
 
+	std::map<ArmorType, int> ArmorBonusAdd;
+	std::map<ArmorType, int> ArmorBonusSubtract;
+
+	std::map<ArmorType, int> MoveSpeedBonusAdd;
+	std::map<ArmorType, int> MoveSpeedBonusSubtract;
+	
 	int BaseAttackBonusAdd = 0;
 	int DodgeBonusAdd = -1;
 	int DodgeBonusSubtract = -1;
 
+	std::vector<std::pair<AbilityScoreType, int>> AbilityScoreBonuses;
+	std::vector <std::pair<AbilityScoreType, int>> SaveBonusAdd;
+
 	std::vector<FeatClass*> GeneralPrereqs;
 	std::vector<std::pair<FeatClass*, WeaponType>> WeaponPrereqs;
 	std::vector<std::pair<FeatClass*, ArmorType>> ArmorPrereqs;
-	std::vector<CircumstanceType> CircumstanceRequired;
-	std::pair<AbilityType, int> RequiredAbilityScores;
+	std::vector<CircumstanceType> CircumstancesRequired;
+	std::pair<AbilityScoreType, int> RequiredAbilityScores;
 
-	bool AbilityActive = true;
-	bool ActivatedAbility = false;
-	bool UsesRangeAbility = false;
+	bool AbilityCurrentlyActive = true;
+	bool ToggleAbility = false;
+	bool UsesRangeValueAbility = false;
 	std::pair<int, int> RangeActivated = { 0,0 };
+	int CurrentRangeValue = 0;
 
 	int InitiativeBonus = 0;
 	int EquipActionsReduction = 0;

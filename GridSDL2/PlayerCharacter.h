@@ -18,7 +18,7 @@ private:
 	std::string ImagePath;
 	std::string CharacterName="Anonymous";
 
-	std::map<AbilityType, int> AbilityScores =
+	std::map<AbilityScoreType, int> AbilityScores =
 	{
 		{ STR, NULL },
 		{ DEX, NULL },

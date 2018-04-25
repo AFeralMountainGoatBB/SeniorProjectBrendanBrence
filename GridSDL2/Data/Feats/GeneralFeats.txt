@@ -1,42 +1,60 @@
 //general feats
 <Feat>
-FeatName: WeaponFocus WEAPONTYPE EACH
+FeatName:WeaponFocus WEAPONTYPE EACH
 FeatDescription: "Choose one type of weapon. You can also choose unarmed strike or grapple as your weapon for purposes of this feat. You gain +1 to attack rolls with this weapon type."
 
 Prerequisites: Proficient (WEAPONTYPE), BaseAttackBonus +1.
 
 Benefit: +1 AttackRoll (WEAPONTYPE).
 
-Special: WEAPONTYPE EACH 
+Special:None.
 </Feat>
 
 <Feat>
-FeatName: WeaponSpecialization WEAPONTYPE EACH
+FeatName:WeaponSpecialization WEAPONTYPE EACH
 FeatDescription: "Choose one type of weapon for which you have already selected the Weapon Focus feat. You can also choose unarmed strike or grapple as your weapon for purposes of this feat. You deal extra +2 damage when using this weapon."
 
 Prerequisites:Proficient (WEAPONTYPE), WeaponFocus (WEAPONTYPE), BaseAttackBonus +4.
 
 Benefit: +2 DamageRoll (WEAPONTYPE).
 
-Special: WEAPONTYPE EACH.
+Special:None.
 </Feat>
 
 <Feat>
-FeatName:PowerAttack
+FeatName:Power Attack
 FeatDescription: "On your action, before making attack rolls for a round, you may choose to subtract a number from all melee attack rolls and add the same number to all melee damage rolls. The penalty on attacks and bonus on damage apply until your next turn."
 
 Prerequisites: Strength 13.
 
 Benefit:RANGE(0x5), -RANGE AttackRoll ALLWEAPONS, +RANGE DamageRoll ALLWEAPONS-Light, +RANGE DamageRoll TwoHanding.
 
-Special:Activated, Melee.
+Special:Toggle, Melee.
 
 </Feat>
 
 <Feat>
-FeatName:CombatExpertise
+FeatName:Combat Expertise
 FeatDescription: "On your action, before making attack rolls for a round, you may choose to subtract a number from all melee attack rolls and add the same number to your AC. The penalty on attacks and bonus on damage apply until your next turn."
 
 Prerequisites: Int 13.
 Benefit:RANGE(0x5), -RANGE AttackRoll ALL, +RANGE Dodge ALL.
+Special:Toggle.
 </Feat>
+
+<Feat>
+FeatName:Rage
+FeatDescription: "A barbarian can fly into a rage a certain number of times per day. In a rage, a barbarian temporarily gains a +4 bonus to Strength, a +4 bonus to Constitution, and a +2 morale bonus on Will saves, but he takes a -2 penalty to Armor Class. -todo-He can use any feat he has except Combat Expertise. A fit of rage lasts for a number of rounds equal to 3 + the character’s (newly improved) Constitution modifier. A barbarian may prematurely end his rage."
+
+Benefit:+4 Strength ALL, +4 Constitution ALL, +2 Will ALL, -2 Dodge ALL.
+Special:Toggle.
+</Feat>
+
+<Feat>
+FeatName:Fast Movement
+FeatDescription:"A barbarian’s land speed is faster than the norm for his race by +10 feet. This benefit applies only when he is wearing no armor, light armor, or medium armor and not carrying a heavy load. Apply this bonus before modifying the barbarian’s speed because of any load carried or armor worn."
+
+Benefit:+1 MovementSpeed LightArmor, +1 MovementSpeed Unarmored, +1 MovementSpeed MediumArmor.
+Special:None.
+</Feat>
+

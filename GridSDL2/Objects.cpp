@@ -72,15 +72,17 @@ ObjectClass::ObjectClass( ObjectClass const &other)
 	CritMultiplier = other.CritMultiplier;
 	CritThreat = other.CritThreat;
 
-	int ArmorBonus = other.ArmorBonus;
-	int DamageReduction = other.DamageReduction;
-	int MaxDexBonus = other.MaxDexBonus;
-	int ArmorCheckPenalty = other.ArmorCheckPenalty;
-	int SpeedReduction = other.SpeedReduction;
-	int EquipActions = other.EquipActions;
-	bool IsShield = other.IsShield;
+	ArmorBonus = other.ArmorBonus;
+	 DamageReduction = other.DamageReduction;
+	 MaxDexBonus = other.MaxDexBonus;
+	ArmorCheckPenalty = other.ArmorCheckPenalty;
+	SpeedReduction = other.SpeedReduction;
+	EquipActions = other.EquipActions;
+	IsShield = other.IsShield;
 	
 	mTexture = other.mTexture;
+
+	ArmorTypes = other.ArmorTypes;
 }
 
 void ObjectClass::SetmBox(int x, int y, int w, int h)
@@ -121,6 +123,7 @@ void ObjectClass::SetLocation(int x, int y, std::vector < std::vector < Tile> > 
 	mLocation.first = x;
 	mLocation.second = y;
 	TileMap[x][y].AddItem(this);
+	SetRendLocation(TileMap);
 }
 
 std::pair<int, int> ObjectClass::GetLocation()
@@ -184,7 +187,7 @@ void ObjectClass::SetTexture(std::map<std::string, LTexture*> TextureMap, std::s
 	if (TextureMap.count(Path +"\\"+ mPathTexture))
 	{
 		mTexture = TextureMap[Path +"\\"+ mPathTexture];
-		//std::cout << mPathTexture << " Loaded into " << ObjectName << std::endl;
+		std::cout << mPathTexture << " Loaded into " << ObjectName << std::endl;
 		//mTexture->setWidth(OBJECT_WIDTH);
 		//mTexture->setHeight(OBJECT_HEIGHT);
 	}
@@ -219,7 +222,7 @@ std::string ObjectClass::GetName()
 
 BodyLocation ObjectClass::GetBodySlot()
 {
-	return this->BodySlot;
+	return BodySlot;
 }
 
 const float ObjectClass::GetBaseWeight()
@@ -434,7 +437,7 @@ void ObjectClass::SetIsShield(bool isShield)
 	IsShield = isShield;
 }
 
-std::vector<ArmorType>& ObjectClass::GetArmorTypes()
+std::vector<ArmorType> ObjectClass::GetArmorTypes()
 {
 	return this->ArmorTypes;
 }
@@ -455,9 +458,11 @@ void ObjectClass::DisplayArmorInfo()
 		std::cout << "Max Dex " << GetMaxDexBonus() << std::endl;
 		std::cout << "ACP " << GetArmorCheckPenalty() << std::endl;
 
-		for (auto i = GetArmorTypes().begin(); i != GetArmorTypes().end(); i++)
+		std::cout << "Entering loop display armor" << std::endl;
+		for (auto i = ArmorTypes.begin(); i != ArmorTypes.end(); i++)
 		{
-			std::cout << ArmorTypeTextMap[(*i)] << std::endl;
+			std::cout << "Entered loop" << std::endl;
+			//std::cout << ArmorTypeTextMap[(*i)] << std::endl;
 		}
 
 		std::cout << "Weight: " << GetBaseWeight() << "lb." << std::endl;

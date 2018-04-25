@@ -5,4 +5,5 @@ ComputerCharacter:Dummy, (5,1), 2
 ComputerCharacter: SwordMan, (1,0), 2
 ComputerCharacter: SpearMan, (0,3), 2
 //testcomment
-Item: Dagger, (1,1)
+Item:Dagger, (1,1)
+Item:Chain shirt Armor, (3,1)

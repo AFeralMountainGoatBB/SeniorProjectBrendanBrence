@@ -13,8 +13,8 @@ public:
 	void SetmBox(int x, int y, int w, int h);
 	void DisplayObjectWeaponFacts();
 
-	std::string GetName();
-	void SetName(std::string name);
+	virtual std::string GetName();
+	virtual void SetName(std::string name);
 
 	//WeaponType GetWeaponTypes();
 	void AddWeaponType(WeaponType WeaponType);
@@ -36,28 +36,28 @@ public:
 
 	//render and location functions
 	//sets location
-	void SetLocation(int x, int y, std::vector < std::vector < Tile> > &TileMap);
+	virtual void SetLocation(int x, int y, std::vector < std::vector < Tile> > &TileMap);
 	//sets where the entity will render
-	void SetRendLocation(std::vector<std::vector<Tile>> &TileVector);
+	virtual void SetRendLocation(std::vector<std::vector<Tile>> &TileVector);
 	//calculates the middle of the tile the entity will render at
-	std::pair<int, int> CalcRendLocation(std::vector<std::vector<Tile>> &Map);
+	virtual std::pair<int, int> CalcRendLocation(std::vector<std::vector<Tile>> &Map);
 
 	//returns the location
-	std::pair<int, int> GetLocation();
+	virtual std::pair<int, int> GetLocation();
 
 	//Centers the camera over the entity
 	void setCamera(SDL_Rect& camera);
 
 	//Shows the entity on the screen
-	LTexture* GetTexture();
-	void SetTexture(std::map<std::string, LTexture*> TextureMap, std::string Path);
-	void render(SDL_Rect& camera, SDL_Renderer *& Renderer);
+	virtual LTexture* GetTexture();
+	virtual void SetTexture(std::map<std::string, LTexture*> TextureMap, std::string Path);
+	virtual void render(SDL_Rect& camera, SDL_Renderer *& Renderer);
 	//end render and location functions
 
 	void RemoveObject(std::vector<std::vector<Tile>> &Map, int index);
 
-	BodyLocation GetBodySlot();
-	void SetBodySlot(BodyLocation);
+	virtual BodyLocation GetBodySlot();
+	virtual void SetBodySlot(BodyLocation location) { BodySlot = location; }
 
 	const int GetRangeIncrement();
 	void SetRangeIncrement(int increment);
@@ -98,6 +98,8 @@ public:
 		CritThreat = other->CritThreat;
 	}
 
+	virtual void SetPathTexture(std::string path) { mPathTexture = path; }
+	virtual std::string GetPathTexture() { return mPathTexture; }
 private:
 	//render stuff (also some model stuff)
 	SDL_Rect mBox = { 0,0,70,70 };
@@ -159,7 +161,7 @@ public:
 	virtual bool GetIsShield();
 	virtual void SetIsShield(bool isShield);
 
-	virtual std::vector<ArmorType>& GetArmorTypes();
+	virtual std::vector<ArmorType> GetArmorTypes();
 	virtual void AddArmorType(ArmorType added);
 
 	virtual void DisplayArmorInfo();

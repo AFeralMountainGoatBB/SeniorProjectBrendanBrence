@@ -1,4 +1,51 @@
 #include "Log.h"
+Log::Log()
+{
+
+}
+Log::Log(std::string TextureFolderPath, std::map<std::string, LTexture*> &TextureMap, SDL_Rect viewport, TTF_Font* Font)
+{
+	LogConstraints.x = viewport.x;
+	LogConstraints.y = viewport.y;
+	LogConstraints.w = viewport.w;
+	LogConstraints.h = viewport.h;
+
+	LogFont = Font;
+	//DownIndexButton.click = &Log::DownIndex;
+
+	UpIndexButton.setPosition(LogConstraints.x, LogConstraints.y+80, 30, 30);
+	DownIndexButton.setPosition(LogConstraints.x, LogConstraints.y, 30, 30);
+	UpIndexButton.SetTexture("UpArrow.png", TextureMap, TextureFolderPath);
+	DownIndexButton.SetTexture("DownArrow.png", TextureMap, TextureFolderPath);
+}
+
+void Log::Setup(std::string TextureFolderPath, std::map<std::string, LTexture*> &TextureMap, SDL_Rect viewport, TTF_Font* Font)
+{
+	LogConstraints.x = viewport.x;
+	LogConstraints.y = viewport.y;
+	LogConstraints.w = viewport.w;
+	LogConstraints.h = viewport.h;
+
+	LogFont = Font;
+	//UpIndexButton();
+	//DownIndexButton(&Log::DownIndex);
+
+	UpIndexButton.SetName("UpIndexButton");
+	DownIndexButton.SetName("DownIndexButton");
+	UpIndexButton.setPosition(viewport.x+20, viewport.h-viewport.h*.8, 30, 30);
+	DownIndexButton.setPosition(viewport.x+20, viewport.h-viewport.h*.2, 30, 30);
+	UpIndexButton.SetTexture("UpArrow.png", TextureMap, TextureFolderPath);
+	DownIndexButton.SetTexture("DownArrow.png", TextureMap, TextureFolderPath);
+	UpIndexButton.SetYOffset(viewport.y);
+	DownIndexButton.SetYOffset(viewport.y);
+	//UpIndexButton.setFunction(&UpIndex);
+}
+
+void Log::HandleEvents(SDL_Event& e)
+{
+	EventUpIndex(e, UpIndexButton);
+	EventDownIndex(e, DownIndexButton);
+}
 
 void Log:: SetLogConstraints(int x, int y, int w, int h)
 {
@@ -11,7 +58,7 @@ void Log:: SetLogConstraints(int x, int y, int w, int h)
 void Log::SetLogConstraints(SDL_Rect other)
 {
 	LogConstraints = other;
-	std::cout << "Constraints for log: x:" << LogConstraints.x << " y: " << LogConstraints.y << std::endl;
+//	std::cout << "Constraints for log: x:" << LogConstraints.x << " y: " << LogConstraints.y << std::endl;
 }
 
 void Log::SetFont(TTF_Font* Font)
@@ -49,24 +96,50 @@ void Log::AddTextureLog(SDL_Renderer *& Renderer, std::string LogEntry)
 
 void Log::DeleteFromLog()
 {
-	std::cout << "Deleting from log" << std::endl;
+	//std::cout << "Deleting from log" << std::endl;
 	TextureLog.back()->free();
 	TextureLog.pop_back();
 	StringLog.pop_back();
 }
-void Log::UpIndex()
+
+void Log::EventUpIndex(SDL_Event& e, button button )
 {
-	if (LocationLogIndex<StringLog.size())
+	if (e.type == SDL_MOUSEBUTTONDOWN)
 	{
-		LocationLogIndex++;
+		//Get mouse position
+		int x, y;
+		SDL_GetMouseState(&x, &y);
+		//Check if mouse is in button
+		//check if mouse is inside the button 
+		if (x > button.GetXPos() && x < button.GetYPos() + button.GetWidth() && y < button.GetYPos() + button.GetHeight() + button.GetYOffset() && y > button.GetYPos() +button.GetYOffset())
+		{
+			//std::cout << "Button pressed" << std::endl;
+			if (LocationLogIndex<StringLog.size()-LinesToRender)
+			{
+				LocationLogIndex++;
+			}
+		}
 	}
 }
-void Log::DownIndex()
+
+void Log::EventDownIndex(SDL_Event &e, button button)
 {
-	if (LocationLogIndex > 0)
+	if (e.type == SDL_MOUSEBUTTONDOWN)
 	{
-		LocationLogIndex--;
+		//Get mouse position
+		int x, y;
+		SDL_GetMouseState(&x, &y);
+		//check if mouse is inside the button 
+		if (x > button.GetXPos() && x < button.GetYPos() + button.GetWidth() && y < button.GetYPos() + button.GetHeight() + button.GetYOffset() && y > button.GetYPos() + button.GetYOffset())
+		{
+			//std::cout << "Button pressed" << std::endl;
+			if (LocationLogIndex > 0)
+			{
+				LocationLogIndex--;
+			}
+		}
 	}
+	
 }
 void Log::RenderLog(SDL_Renderer *& Renderer)
 {
@@ -78,5 +151,6 @@ void Log::RenderLog(SDL_Renderer *& Renderer)
 		TextureLog[i + LocationLogIndex]->renderTile(LogConstraints.x+50, currentY, Renderer);
 		currentY -= 21;
 	}
-	
+	UpIndexButton.render(Renderer);
+	DownIndexButton.render(Renderer);
 }
