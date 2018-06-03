@@ -22,8 +22,8 @@ int main(int argc, char* args[])
 
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 	GameInstance Master;
-	//int retval = Master.StartGame();
-	int retval = Master.EncounterRun(Master.GetScenarioPath()+"\\"+"Battle of the bridge.txt");
-	//int retval = Master.MenuOperation();
+	
+	//int retval = Master.EncounterRun(Master.GetScenarioPath()+"\\"+"Battle of the bridge.txt");
+	int retval = Master.MenuOperation();
 	return retval;
 }

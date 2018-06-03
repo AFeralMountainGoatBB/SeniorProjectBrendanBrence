@@ -26,6 +26,8 @@ PickupItemsMenu::PickupItemsMenu()
 	kiss_button_new(&button_cancel, &MainWindow, "Cancel", entry.rect.x + entry.rect.w - kiss_edge - kiss_normal.w, entry.rect.y + entry.rect.h + kiss_normal.h);
 	kiss_button_new(&Main_ok_button, &MainWindow, "OK", button_cancel.rect.x - 2 * kiss_normal.w, button_cancel.rect.y);	
 
+	entry.selectedIndex = -1;
+
 	MainWindow.visible = 1;
 	//end setup
 
@@ -75,11 +77,12 @@ void PickupItemsMenu::vscrollbar1_event(kiss_vscrollbar *vscrollbar, SDL_Event *
 void PickupItemsMenu::button_ok1_event(kiss_button *button, SDL_Event *e, kiss_window *window1, kiss_label *label_sel,
 	kiss_entry *entry, kiss_label *label_res, int *draw, std::vector<ObjectClass*> ObjectVector)
 {
+	if (entry->selectedIndex < 0)
+		return;
 	char buf[KISS_MAX_LENGTH];
 	if (kiss_button_event(button, e, draw)) {
 		kiss_string_copy(buf, 
 		kiss_maxlength(kiss_textfont, window1->rect.w - 2 * kiss_vslider.w, label_sel->text, entry->text), label_sel->text, entry->text);
-		
 		this->SelectedItem = ObjectVector[entry->selectedIndex];
 		window1->focus = 0;
 		button->prelight = 0;

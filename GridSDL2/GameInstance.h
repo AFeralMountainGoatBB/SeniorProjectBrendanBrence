@@ -29,6 +29,8 @@ public:
 
 	int EncounterRun(std::string path);
 
+	void SetSelectedScenario(std::string path);
+
 	void Quit();
 
 	/*Heirarchy of these calls
@@ -42,5 +44,6 @@ public:
 	void SetScenarioPath(std::string path);
 private:
 	std::string ScenarioPaths="Data\\Scenarios";
+	std::string selectedScenario = "";
 
 };

@@ -59,7 +59,6 @@ bool LTexture::loadFromFile(std::string path, SDL_Renderer *&Renderer)
 	return mTexture != NULL;
 }
 
-
 void LTexture::free()
 {
 	//Free texture if it exists

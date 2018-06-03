@@ -4,203 +4,81 @@
 //bool for full attack?
 void MeleeAttack::AttackNormal(EntityClass & Source, EntityClass &Target, EncounterInstance &Instance)
 {
+	TempFeats = Source.GetActiveFeats();
 	std::string DamageResult = "";
-	std::string AttackResult = Source.GetName() + " attacks " + Target.GetName()+ ":";
+	std::string AttackResult = Source.GetName() + " attacks " + Target.GetName()+ ": ";
 	std::vector<CircumstanceType> Circumstances;
 	Circumstances.push_back(MELEEATTACK);
 	if (Source.IsTwoHanding())
 	{
 		Circumstances.push_back(TWOHANDING);
 	}
-	ObjectClass* TempObjPtr;
-	int TotalAttackRollBonus = 0;
-	//get mainhand weapon, check for bonuses / penalties add up
-	TempObjPtr = Source.GetEquipmentInSlot(MAINHAND);
-	if (TempObjPtr == nullptr)
-	{
-		*TempObjPtr = Source.GetUnarmedStrike();
-	}
-	std::vector<WeaponType> TempWeaponTypes = TempObjPtr->GetWeaponType();
-	int CritMult = TempObjPtr->GetCritInformation().second;
 	
-	TempFeats = Source.GetActiveFeats();
-	//check for proficency
-	bool isProficient = CheckProficiency(Source);
-	std::vector<FeatClass> ProfFeats;
-	//make sure the current circumstances match the circumstances required by the feat.
-	for (auto i = TempFeats.begin(); i != TempFeats.end();)
+	//get mainhand weapon, check for bonuses / penalties add up
+	Weapon = Source.GetEquipmentInSlot(MAINHAND);
+	if (Weapon == nullptr)
 	{
-		if (!std::includes( Circumstances.begin(), Circumstances.end(), (*i).GetCircumstancesRequired().begin(), (*i).GetCircumstancesRequired().end()))
-		{
-			TempFeats.erase(i);
-		}
-		else
-		{
-			i++;
-		}
+		*Weapon = Source.GetUnarmedStrike();
 	}
+	std::vector<WeaponType> TempWeaponTypes = Weapon->GetWeaponType();
 
-
-	int TotalFeatBonus = 0;
-	//get the feats that match the weapontype attackroll for bonuses(add)
-	for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
-	{
-		for (auto Type = TempWeaponTypes.begin(); Type != TempWeaponTypes.end(); Type++)
-		{
-			if ((*it).GetWeaponAttackBonuses().count(*Type)) //true if > 0
-			{
-				TotalFeatBonus +=  ((*it).GetWeaponAttackBonuses())[*Type];
-			}
-		}
-	}
-	//get the feats that match the weapontype attackroll for bonuses(subtract)
-	for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
-	{
-		for (auto Type = TempWeaponTypes.begin(); Type != TempWeaponTypes.end(); Type++)
-		{
-			if ((*it).GetWeaponAttackBonusSubtract().count(*Type)) //true if > 0
-			{
-				TotalFeatBonus += ((*it).GetWeaponAttackBonusSubtract())[*Type];
-			}
-		}
-	}
-
-	//add circumstance feats to hit in
-	for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
-	{
-		for (auto Type = Circumstances.begin(); Type != Circumstances.end(); Type++)
-		{
-			if ((*it).GetCircumstanceAttackBonusAdd().count(*Type))
-			{
-				TotalFeatBonus +=  ((*it).GetCircumstanceAttackBonusAdd())[(*Type)];
-			}
-			if ((*it).GetCircumstanceAttackBonusSubtract().count(*Type))
-			{
-				TotalFeatBonus += ((*it).GetCircumstanceAttackBonusSubtract())[(*Type)];
-			}
-		}
-	}
+	int TotalAttackRollBonus = TotalWeaponTypeAttackBonus(Source, Weapon);
 
 	//check if opponent is prone (+4 to hit melee)
 	if (Target.IsProne())
 	{
 		TotalAttackRollBonus += 4;
 	}
-	if (isProficient != true)
-	{
-		TotalAttackRollBonus -= 4;
-	}
-	TotalAttackRollBonus += TotalFeatBonus;
-	//add base attack bonus and strength bonus!
-	int BaBAndStrength = Source.GetBaseAttackBonus()+Source.GetAbilityModifier(UsesAttributeForAttackRoll);
-	TotalAttackRollBonus += BaBAndStrength;
 
-	int CritThreatBonus = 0;
+	//roll dice and add bonus
 	int RollAmount = DiceRoll(D20);
-	AttackResult += std::to_string(RollAmount) + "+" + std::to_string(BaBAndStrength);
-	if (TotalAttackRollBonus - BaBAndStrength > 0)
+	AttackResult += std::to_string(RollAmount) + "+" + std::to_string(TotalAttackRollBonus);
+	if (TotalAttackRollBonus > 0)
 	{
 		AttackResult += "+"; 
 	}
-	AttackResult+=std::to_string(TotalAttackRollBonus - BaBAndStrength);
-	bool criticalThreat = false;
-	if (RollAmount >= TempObjPtr->GetCritInformation().first)
+	AttackResult += "=" + std::to_string(RollAmount + TotalAttackRollBonus);
+	if (RollAmount >= Weapon->GetCritInformation().first)
 	{
-		criticalThreat = true;
+		Critical = true;	
 		//todo calc crit bonuses
 	}
-	std::cout << Source.GetName() << " Attack roll total bonus: " << TotalAttackRollBonus << " Rolls a " << RollAmount << "=" << RollAmount+TotalAttackRollBonus << std::endl;
-	//this should be sum of all roll bonuses at this point! check against target's defence
-	std::cout << "Defender " << Target.GetName() << " total armor class is" << Target.GetArmorClass() << std::endl;
-	AttackResult += "=" + std::to_string(RollAmount + TotalAttackRollBonus);
+	
 	AttackResult += " AC: " + std::to_string(Target.GetArmorClass());
-	int TotalDamageBonus = 0;
 	if (Target.GetArmorClass() <= (RollAmount + TotalAttackRollBonus))
-	{	//attack connected
+	{
+		int TotalDamageBonus = CalcTotalDamageBonus(Source, Target, Instance);
+		//attack connected
 		AttackResult += " *Hit*";
-		if (criticalThreat)
-		{
+
+		if (Critical)
+		{		
 			AttackResult += " *Threat*";
-		}
-		//weapontypes
-		for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
-		{
-			for (auto Type = TempWeaponTypes.begin(); Type != TempWeaponTypes.end(); Type++)
-			{
-				if ((*it).GetWeaponDamageBonuses().count(*Type)) //true if > 0
-				{
-					TotalDamageBonus += ((*it).GetWeaponDamageBonuses())[*Type];
-				}
-			}
-		}
-		for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
-		{
-			for (auto Type = TempWeaponTypes.begin(); Type != TempWeaponTypes.end(); Type++)
-			{
-				if ((*it).GetWeaponDamageBonusSubtract().count(*Type)) //true if > 0
-				{
-					TotalDamageBonus += ((*it).GetWeaponDamageBonusSubtract())[*Type];
-				}
-			}
-		}
-		//circumstance bonuses to damage
-		for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
-		{
-			for (auto Type = Circumstances.begin(); Type != Circumstances.end(); Type++)
-			{
-				if ((*it).GetCircumstanceAttackDamageAdd().count(*Type))
-				{
-					TotalDamageBonus += ((*it).GetCircumstanceAttackDamageAdd())[(*Type)];
-				}
-				if ((*it).GetCircumstanceAttackDamageSubtract().count(*Type))
-				{
-					TotalDamageBonus += ((*it).GetCircumstanceAttackDamageSubtract())[(*Type)];
-				}
-			}
-		}
-		//damage calculations
-		//calc damage
-		//get weapon damage bonuses, then circumstance damage bonuses, added all together, add str bonus
-		if (Source.IsTwoHanding() || find(TempWeaponTypes.begin(), TempWeaponTypes.end(), LIGHT)!=TempWeaponTypes.end())
-		{
-			TotalDamageBonus += (Source.GetAbilityModifier(STR)*1.5);
-		}
-		else
-		{
-			TotalDamageBonus += Source.GetAbilityModifier(STR);
-		}
-		if (criticalThreat)
-		{
 			RollAmount = DiceRoll(D20);
-			if ((RollAmount + TotalAttackRollBonus + CritThreatBonus)>=Target.GetArmorClass())
+			AttackResult += "Crit Check = " + std::to_string(RollAmount + TotalAttackRollBonus);
+			if ((RollAmount + TotalAttackRollBonus /*+ CritThreatBonus*/) >= Target.GetArmorClass())
 			{
-				//std::cout << "Critical hit" << std::endl;
-				AttackResult += "*Critical x" + std::to_string(CritMult) + "*";
-			}
-			else
+			AttackResult += " Success! x" + std::to_string(Weapon->GetCritInformation().second) + " Damage*";
+			}else
 			{
-				//std::cout << "Crit fail" << std::endl;
-				criticalThreat = false;
-				AttackResult += "*Crit Fail*";
-			}
+			//std::cout << "Crit fail" << std::endl;
+			Critical = false;
+			AttackResult += "*Crit Fail*";
+			}	
 		}
-		
-		std::cout << AttackResult << std::endl;
+		int CritMult = Weapon->GetCritInformation().second;
 		
 		DamageResult += Source.GetName() + " Damages " + Target.GetName()+" ";
 
 		int totalDamageRoll = 0;
-		for (int i = 0; i < TempObjPtr->GetDamageDice().first; i++)
+		for (int i = 0; i < Weapon->GetDamageDice().first; i++)
 		{
-			totalDamageRoll += DiceRoll(TempObjPtr->GetDamageDice().second);
+			totalDamageRoll += DiceRoll(Weapon->GetDamageDice().second);
 		}
-		if (criticalThreat)
-		{
-			totalDamageRoll = totalDamageRoll * CritMult;
-		}
-		DamageResult += std::to_string(TempObjPtr->GetDamageDice().first) + "d" + std::to_string(TempObjPtr->GetDamageDice().second);
+		totalDamageRoll += TotalDamageBonus;
+		DamageResult += std::to_string(Weapon->GetDamageDice().first) + "d" + std::to_string(Weapon->GetDamageDice().second);
 
-		if (TotalDamageBonus > 0)
+		if (TotalDamageBonus >= 0)
 		{
 			DamageResult += "+" + std::to_string(TotalDamageBonus);
 		}
@@ -208,15 +86,20 @@ void MeleeAttack::AttackNormal(EntityClass & Source, EntityClass &Target, Encoun
 		{
 			DamageResult += std::to_string(TotalDamageBonus);
 		}
-		
+		if (Critical)
+		{
+			totalDamageRoll = totalDamageRoll * CritMult;
+		}
 		if (totalDamageRoll < 1)
 		{
 			totalDamageRoll = 1;
 		}
-		DamageResult += "=" + std::to_string(TotalDamageBonus + totalDamageRoll);
-		/*std::cout << Source.GetName() << "hits and deals" << TotalDamageBonus + totalDamageRoll << 
-			" to " << Target.GetName() << " DR absorbs"; //<< Target.GetTotalDamageReduction();
-		*/
+
+		DamageResult += "=" + std::to_string(totalDamageRoll)+ " ";
+		if (Critical)
+		{
+			DamageResult += "(X" + std::to_string(CritMult) +") ";
+		}
 		DamageResult += Target.GetName() + " Resists " + std::to_string(Target.GetTotalDamageReduction());
 		//do damage
 
@@ -229,7 +112,6 @@ void MeleeAttack::AttackNormal(EntityClass & Source, EntityClass &Target, Encoun
 		Instance.AddLog(AttackResult);
 	}
 	
-
 	return;
 }
 
@@ -311,7 +193,7 @@ int MeleeAttack::TotalWeaponTypeAttackBonus(EntityClass &Source, ObjectClass* We
 {
 	int TotalAttackBonus = 0;
 	auto TempWeaponTypes = Weapon->GetWeaponType();
-	//get the feats that match the weapontype attackroll for bonuses(add)
+	//get the feats that match the weapontype attackroll for bonuses(add) (subtract)
 	for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
 	{
 		for (auto Type = TempWeaponTypes.begin(); Type != TempWeaponTypes.end(); Type++)
@@ -319,20 +201,14 @@ int MeleeAttack::TotalWeaponTypeAttackBonus(EntityClass &Source, ObjectClass* We
 			if ((*it).GetWeaponAttackBonuses().count(*Type)) //true if > 0
 			{
 				TotalAttackBonus += ((*it).GetWeaponAttackBonuses())[*Type];
-			}
-		}
-	}
-	//get the feats that match the weapontype attackroll for bonuses(subtract)
-	for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
-	{
-		for (auto Type = TempWeaponTypes.begin(); Type != TempWeaponTypes.end(); Type++)
-		{
+			}	
 			if ((*it).GetWeaponAttackBonusSubtract().count(*Type)) //true if > 0
 			{
-				TotalAttackBonus += ((*it).GetWeaponAttackBonusSubtract())[*Type];
+				TotalAttackBonus -= ((*it).GetWeaponAttackBonusSubtract())[*Type];
 			}
 		}
 	}
+	
 	//add circumstance feats to hit in
 	for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
 	{
@@ -344,8 +220,66 @@ int MeleeAttack::TotalWeaponTypeAttackBonus(EntityClass &Source, ObjectClass* We
 			}
 			if ((*it).GetCircumstanceAttackBonusSubtract().count(*Type))
 			{
-				TotalAttackBonus += ((*it).GetCircumstanceAttackBonusSubtract())[(*Type)];
+				TotalAttackBonus -= ((*it).GetCircumstanceAttackBonusSubtract())[(*Type)];
 			}
 		}
 	}
+	bool isProficient = CheckProficiency(Source);
+	if (isProficient != true)
+	{
+		TotalAttackBonus -= 4;
+	}
+
+	int BaBAndStrength = Source.GetBaseAttackBonus() + Source.GetAbilityModifier(UsesAttributeForAttackRoll);
+	TotalAttackBonus += BaBAndStrength;
+
+	return TotalAttackBonus;
+}
+
+int MeleeAttack::CalcTotalDamageBonus(EntityClass &Source, EntityClass &Target, EncounterInstance &Instance)
+{
+	int TotalDamageBonus = 0;
+	//add damage bonuses
+	//weapontypes
+	for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
+	{
+		for (auto Type = Weapon->GetWeaponType().begin(); Type != Weapon->GetWeaponType().end(); Type++)
+		{
+			if ((*it).GetWeaponDamageBonuses().count(*Type)) //true if > 0
+			{
+				TotalDamageBonus += ((*it).GetWeaponDamageBonuses())[*Type];
+			}
+			if ((*it).GetWeaponDamageBonusSubtract().count(*Type)) //true if > 0
+			{
+				TotalDamageBonus -= ((*it).GetWeaponDamageBonusSubtract())[*Type];
+			}
+		}
+	}
+	//circumstance bonuses to damage
+	for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
+	{
+		for (auto Type = Circumstances.begin(); Type != Circumstances.end(); Type++)
+		{
+			if ((*it).GetCircumstanceAttackDamageAdd().count(*Type))
+			{
+				TotalDamageBonus += ((*it).GetCircumstanceAttackDamageAdd())[(*Type)];
+			}
+			if ((*it).GetCircumstanceAttackDamageSubtract().count(*Type))
+			{
+				TotalDamageBonus -= ((*it).GetCircumstanceAttackDamageSubtract())[(*Type)];
+			}
+		}
+	}
+	//damage calculations
+	//calc damage
+	//get weapon damage bonuses, then circumstance damage bonuses, added all together, add str bonus
+	if (Source.IsTwoHanding() || find(Weapon->GetWeaponType().begin(), Weapon->GetWeaponType().end(), LIGHT) != Weapon->GetWeaponType().end())
+	{
+		TotalDamageBonus += (Source.GetAbilityModifier(STR)*1.5);
+	}
+	else
+	{
+		TotalDamageBonus += Source.GetAbilityModifier(STR);
+	}
+	return TotalDamageBonus;
 }

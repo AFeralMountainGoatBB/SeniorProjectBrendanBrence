@@ -348,7 +348,7 @@ void InventoryMenu::EquipButtonEvent(kiss_button *button, SDL_Event *e, int *qui
 		else if (index > 2)//backpack object
 		{
 			auto TempPtr = Source.GetBackPack().GetItemAtIndex(index - 3);
-			//std::cout << "Equipping " << TempPtr->GetName() << std::endl;
+			std::cout << "Equipping " << TempPtr->GetName() << std::endl;
 			//std::cout << BodyLocationTextMap[ TempPtr->GetBodySlot() ]<< std::endl;
 			if (TempPtr->GetBodySlot() == BODY)
 			{
@@ -366,7 +366,7 @@ void InventoryMenu::EquipButtonEvent(kiss_button *button, SDL_Event *e, int *qui
 			}
 			else if (TempPtr->GetBodySlot() == MAINHAND || TempPtr->GetBodySlot() == OFFHAND)
 			{
-				if (Source.EquipAsWeapon(TempPtr))
+				if (Source.EquipAsWeapon(TempPtr)==true)
 				{
 					std::cout << TempPtr->GetName() << " Equipped from backpack" << std::endl;
 					Source.GetBackPack().RemoveItemAtIndex(index - 3);
@@ -376,6 +376,7 @@ void InventoryMenu::EquipButtonEvent(kiss_button *button, SDL_Event *e, int *qui
 					std::cout << "Item cannot be equipped now" << std::endl;
 				}
 			}
+			//if ()
 		} //end if index>2
 
 		std::cout << "Equip/Unequip button pressed" << std::endl;

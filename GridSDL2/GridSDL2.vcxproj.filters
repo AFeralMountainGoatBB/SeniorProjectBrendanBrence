@@ -117,15 +117,15 @@
     <ClCompile Include="FeatMenu.cpp">
       <Filter>Source Files\InterfaceCPP</Filter>
     </ClCompile>
+    <ClCompile Include="TargetSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="dot.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="button.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="tiles.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="kiss_combo.png">
@@ -258,6 +258,9 @@
     </ClInclude>
     <ClInclude Include="FeatMenu.h">
       <Filter>Header Files\InterfaceHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="TargetSystem.h">
+      <Filter>Header Files\EntityTypesHFiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

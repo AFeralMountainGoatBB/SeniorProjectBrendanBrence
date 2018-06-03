@@ -2,7 +2,7 @@ Name:Knife guy
 
 Ability Scores:
 
-Strength: 10
+Strength: 16
 Dexterity: 15
 Constitution: 13
 Intelligence: 12
@@ -29,4 +29,4 @@ WeaponSpecialization Polearm
 
 End Feats:
 
-Texture:Uasdfas.png
+Texture:Maceman1.png

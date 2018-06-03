@@ -7,6 +7,7 @@
 #include "EntityClass.h"
 #include "PickupItemsMenu.h"
 #include "Log.h"
+#include "TargetSystem.h"
 
 class EncounterInstance
 {
@@ -26,8 +27,8 @@ class EncounterInstance
 
 	//pointer to the activeUnit whose turn it is
 	EntityClass* ActiveUnit;
-
-	std::unique_ptr<ObjectClass> Dagger= std::make_unique<ObjectClass>();
+	void RollInitative(); 
+	void NextInInitiative();
 	//todo
 	//vector<creatures>
 
@@ -40,7 +41,7 @@ class EncounterInstance
 
 	EncounterInstance();
 
-	//loading functions
+	void HandleEvents(SDL_Event &e);
 	
 	bool init(SDL_Renderer *&gRenderer, SDL_Window *&gWindow); // initializes SDL and window we are rendering too
 	bool LoadAllMedia(SDL_Renderer *&Renderer, SDL_Rect &gTileClips);
@@ -80,14 +81,17 @@ class EncounterInstance
 	void AddLog(std::string LogEntry);
 
 	std::map<std::string, FeatClass*>& GetMasterFeatList() { return MasterFeatList; }
-
+	
+	TargetSystem& GetTargetSystem() { return TargetSys; }
+	
 private: 
 	static const int TileMapWidth = LEVEL_WIDTH / TILE_WIDTH;
 	static const int TileMapHeight = LEVEL_HEIGHT / TILE_HEIGHT;
 	std::vector < std::vector < Tile> > TileMap;
 	std::vector<EntityClass*> EntityList;
-	std::vector<EntityClass*> InitiativeList;
+	std::list<EntityClass*> InitiativeList;
 	std::vector<ObjectClass*> ObjectList;
+	TargetSystem TargetSys;
 	
 	std::map<std::string, ObjectClass*> MasterObjectList;
 	std::map<std::string, FeatClass*> MasterFeatList;

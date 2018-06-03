@@ -93,6 +93,20 @@ void ObjectClass::SetmBox(int x, int y, int w, int h)
 	mBox.h = h;
 }
 
+bool ObjectClass::IsRangedWeapon()
+{
+	if (std::find(WeaponTypes.begin(), WeaponTypes.end(), RANGED) != WeaponTypes.end()
+		|| std::find(WeaponTypes.begin(), WeaponTypes.end(), THROWN) != WeaponTypes.end())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+	
+}
+
 void ObjectClass::setCamera(SDL_Rect& camera)
 {
 	//Center the camera over the entity

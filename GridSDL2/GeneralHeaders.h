@@ -20,7 +20,7 @@ namespace fs = std::experimental::filesystem;
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 1040;
-const int SCREEN_HEIGHT = 650;
+const int SCREEN_HEIGHT = 710;
 
 //The dimensions of the level
 const int LEVEL_WIDTH = 1280;

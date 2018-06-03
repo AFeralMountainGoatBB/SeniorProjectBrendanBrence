@@ -5,7 +5,7 @@ FeatMenu::FeatMenu()
 {
 	quit = 0;
 	draw = 1;
-	textbox_width = 250;
+	textbox_width = 400;
 	textbox_height = 250;
 	renderer = kiss_init("FeatMenu", &objects, 640, 480);
 	if (!renderer)
@@ -21,10 +21,10 @@ FeatMenu::FeatMenu()
 	kiss_window_new(&MainWindow, NULL, 1, 0, 0, kiss_screen_width, kiss_screen_height);
 
 
-	kiss_textbox_new(&Feats, &MainWindow, 1, &a1, kiss_screen_width *.3, 3 * kiss_normal.h - kiss_screen_height / 15, textbox_width, textbox_height);
+	kiss_textbox_new(&Feats, &MainWindow, 1, &a1, kiss_screen_width *0.15, 3 * kiss_normal.h - kiss_screen_height / 15, textbox_width+50, textbox_height);
 	kiss_vscrollbar_new(&vscrollbar1, &MainWindow, Feats.rect.x + textbox_width, Feats.rect.y, textbox_height);
 	kiss_label_new(&FeatsTextBoxLabel, &MainWindow, "Feats", Feats.rect.x + kiss_edge, Feats.rect.y - kiss_textfont.lineheight);
-	kiss_entry_new(&entry, &MainWindow, 1, "Select Item to interact with", kiss_screen_width / 10, Feats.rect.y + textbox_height, 2 * textbox_width + 2 * kiss_up.w + kiss_edge);
+	kiss_entry_new(&entry, &MainWindow, 1, "Select Item to interact with", kiss_screen_width / 10, Feats.rect.y + textbox_height, textbox_width + 2 * kiss_up.w + kiss_edge);
 	
 	kiss_button_new(&ToggleFeatButton, &MainWindow, "Toggle", kiss_screen_width*.5 - (.5*kiss_normal.w), entry.rect.y + entry.rect.h + 10);
 	kiss_button_new(&IncreaseFeatButton, &MainWindow, "+", ToggleFeatButton.rect.x+60, ToggleFeatButton.rect.y);

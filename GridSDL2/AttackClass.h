@@ -35,7 +35,7 @@ public:
 AbilityScoreType UsesAttributeForAttackRoll=STR;
 AbilityScoreType UsesAttributeForDamageRoll=STR;
 private:
-	bool CritThreat;
+	bool Critical=false;
 	std::vector<FeatClass> TempFeats;
 	std::string AttackResult;
 	std::string DamageResult;
@@ -43,20 +43,27 @@ private:
 	ObjectClass* Weapon;
 	bool CheckProficiency(EntityClass &Source);
 	int TotalWeaponTypeAttackBonus(EntityClass &Source, ObjectClass* Weapon);
-	int TotalCircumstanceAttackBonus(EntityClass &Source, std::vector<CircumstanceType> circumstances);
 };
 
 class RangedAttack :public AttackClass
 {
 public:
 	RangedAttack();
-	std::string AttackNormal();
-	std::string AttackDualWield();
+	void AttackNormal();
+	void AttackDualWield();
 
 	AbilityScoreType UsesAttributeForAttackRoll = DEX;
 	AbilityScoreType UsesAttributeForDamageroll = DEX;
 	int RangeOfAttack;
 private:
+	bool Critical = false;
+	std::vector<FeatClass> TempFeats;
+	std::string AttackResult;
+	std::string DamageResult;
+	std::vector<CircumstanceType> Circumstances;
+	ObjectClass* Weapon;
+	bool CheckProficiency(EntityClass &Source);
+	int TotalWeaponTypeAttackBonus(EntityClass &Source, ObjectClass* Weapon);
 };
 
 class SpecialAttack :public AttackClass

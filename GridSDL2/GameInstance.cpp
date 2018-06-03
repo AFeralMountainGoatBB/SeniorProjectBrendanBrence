@@ -90,12 +90,20 @@ int GameInstance::MenuOperation()
 		case SCENARIOMENU: 
 		{
 			ScenarioMenu SMenu;
-			Selected = (MenuOptions)SMenu.ScenarioMenuRun(*this);
+			Selected=(MenuOptions)SMenu.ScenarioMenuRun(*this);
+			
 			break;
 		}
 		case ENCOUNTER:
 		{
-			EncounterRun("PlaceHolder");//loads and runs encounter selected by ScenarioMenuRun
+			if (selectedScenario != "") 
+			{
+				Selected=(MenuOptions)EncounterRun(selectedScenario);//loads and runs encounter selected by ScenarioMenuRun
+				selectedScenario = "";
+			}
+				
+			else
+				Selected = MAINMENU;
 			break;
 		}
 		case QUIT:
@@ -140,4 +148,8 @@ std::string GameInstance::GetScenarioPath()
 void GameInstance::SetScenarioPath(std::string path)
 {
 	ScenarioPaths = path;
+}
+void GameInstance::SetSelectedScenario(std::string path)
+{
+	selectedScenario = path;
 }

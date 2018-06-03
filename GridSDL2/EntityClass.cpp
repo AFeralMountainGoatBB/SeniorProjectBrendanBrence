@@ -35,16 +35,20 @@ void EntityClass::SetTexture(std::map<std::string, LTexture*> &TextureMap, std::
 	if (TextureMap.count(Path + "\\" + mPathTexture)) 
 	{
 		mTexture = TextureMap[Path + "\\" + mPathTexture];
-		std::cout << mPathTexture << " Loaded into " << EntityName <<  std::endl;
+		//std::cout << mPathTexture << " Loaded into " << EntityName <<  std::endl;
 	}
 	else
 	{
 		std::cout << "No matching texture found " << Path << "\\" << mPathTexture << std::endl;
 		mTexture = TextureMap[Path + "\\" + "QuestionMark.png"];
 	}
+
+	/*if (TeamSide != 1)
+	{
+		mTexture->setColor(255, 0, 0);
+	}*/
 	
 }
-
 
 LTexture* EntityClass::GetTexture()
 {
@@ -98,10 +102,10 @@ std::string EntityClass:: GetName()
 
 /*----------------END MUTATORS-----------------*/
 
-bool EntityClass::EntityAttack(std::vector<std::vector<Tile>> &TileVector, EncounterInstance& Instance)
+bool EntityClass::EntityMeleeAttack(std::vector<std::vector<Tile>> &TileVector, EncounterInstance& Instance)
 {
-	//call EntityAttackTile, if not null call selected attack roll
-	EntityClass* Target = EntityAttackTile(TileVector);
+	//call EntityMeleeAttackTile, if not null call selected attack roll
+	EntityClass* Target = EntityMeleeAttackTile(TileVector);
 	if (Target != NULL)
 	{
 		MeleeAttack Attack;
@@ -118,59 +122,32 @@ bool EntityClass::EntityAttack(std::vector<std::vector<Tile>> &TileVector, Encou
 	return false;
 }
 
-bool EntityClass::MeleeAttackRoll(EntityClass &Target)
+bool EntityClass::EntityRangedAttack(std::vector<std::vector<Tile>> &TileVector, EncounterInstance& Instance)
 {
-	//get total bonuses
-	//roll d20+bonuses
-	//compare to target's AC
-	//return true if hit, return false if miss
-	
-	int TotalBonuses = BaseAttackBonus;
-	int AttackRoll = TotalBonuses + DiceRoll(D20);
-	std::cout << EntityName << " attack roll = " << AttackRoll << std::endl;
-	if (AttackRoll >= Target.GetArmorClass())
+	//call EntityRangedAttackTile, if not null call selected attack roll, if null then return false
+	EntityClass* Target = EntityRangedAttackTile(TileVector, Instance);
+	if (Target != NULL)
 	{
-		//then the attack was a success, return true
-		return true;
+		std::cout << Target->EntityName << std::endl;
+		MeleeAttack Attack;
+		if (!AttackBothHands)
+		{
+			Attack.AttackNormal(*this, *Target, Instance);
+		}
+		else if (AttackBothHands)
+		{
+			Attack.AttackDualWield(*this, *Target, Instance);
+		}
 	}
 	else
 	{
-		//then the attack fails
-		return false;
+		std::cout << "Can't attack empty tile" << std::endl;
 	}
+
+	return false;
 }
 
-int EntityClass::MeleeAttackDamage(EntityClass &Target)
-{
-	int TotalDamage = 0;
-	//get weapon type and required proficency
-	TotalDamage += DiceRoll(D3);
-	//add all bonuses to damage together, including proficiency bonuses
-	//roll damage and add together
-	//return total damage
-	std::cout << "Dealing " << TotalDamage << " damage";
-	return TotalDamage;
-}
-
-void EntityClass::TakeDamage(int Damage, DamageType DamageType)
-{
-	//find any resistances, immunities calculate as full resistance
-	//subtract resisted damage from total damage
-	//subtract Damage reduction from total damage
-	//finally subtract from health pool
-	HitPoints -= Damage;
-}
-
-int EntityClass::GetTotalDamageReduction()
-{
-	//go through equipment and add up damage reduction.
-	//go through feats and add up damage reduction + resistances
-	//add together, return total
-
-	return 1;
-}
-
-EntityClass* EntityClass::EntityAttackTile(std::vector<std::vector<Tile>> &TileVector)
+EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &TileVector)
 {
 	if (MoveDirection == STATIONARY)
 	{
@@ -292,6 +269,74 @@ EntityClass* EntityClass::EntityAttackTile(std::vector<std::vector<Tile>> &TileV
 	return NULL;
 }
 
+EntityClass* EntityClass::EntityRangedAttackTile(std::vector<std::vector<Tile>> &TileVector, EncounterInstance &Instance)
+{
+	return TileVector[Instance.GetTargetSystem().GetLocation().first][Instance.GetTargetSystem().GetLocation().second].GetOccupant();
+}
+
+
+bool EntityClass::MeleeAttackRoll(EntityClass &Target)
+{
+	//get total bonuses
+	//roll d20+bonuses
+	//compare to target's AC
+	//return true if hit, return false if miss
+	
+	int TotalBonuses = BaseAttackBonus;
+	int AttackRoll = TotalBonuses + DiceRoll(D20);
+	std::cout << EntityName << " attack roll = " << AttackRoll << std::endl;
+	if (AttackRoll >= Target.GetArmorClass())
+	{
+		//then the attack was a success, return true
+		return true;
+	}
+	else
+	{
+		//then the attack fails
+		return false;
+	}
+}
+
+int EntityClass::MeleeAttackDamage(EntityClass &Target)
+{
+	int TotalDamage = 0;
+	//get weapon type and required proficency
+	TotalDamage += DiceRoll(D3);
+	//add all bonuses to damage together, including proficiency bonuses
+	//roll damage and add together
+	//return total damage
+	std::cout << "Dealing " << TotalDamage << " damage";
+	return TotalDamage;
+}
+
+void EntityClass::TakeDamage(int Damage, DamageType DamageType)
+{
+	//find any resistances, immunities calculate as full resistance
+	//subtract resisted damage from total damage
+	//subtract Damage reduction from total damage
+	//finally subtract from health pool
+	HitPoints -= Damage;
+}
+
+int EntityClass::GetTotalDamageReduction()
+{
+	int TotalDamageReduction = 0;
+	//go through equipment and add up damage reduction.
+	for (auto it = Equipment.begin(); it != Equipment.end(); it++)
+	{
+		if ((*it).second != NULL)
+		{
+			TotalDamageReduction += (*it).second->GetDamageReduction();
+		}
+	}
+	//go through feats and add up damage reduction + resistances TODO
+	//add together, return total
+
+	return TotalDamageReduction;
+}
+
+
+
 const int EntityClass::GetArmorClass()
 {
 //	std::cout << EntityName << " has armor class of " << ArmorClass << std::endl;
@@ -401,11 +446,13 @@ bool EntityClass::DoesSlotExist(BodyLocation Location)
 
 bool EntityClass::EquipAsWeapon(ObjectClass* Weapon)
 {
+	std::cout <<"Number of offhand slots" << Equipment.count(OFFHAND) << std::endl;
 	if (Weapon->GetTwoHanded())
 	{
-		if (GetEquipmentInSlot(MAINHAND) == NULL && GetEquipmentInSlot(OFFHAND) == NULL)
+		std::cout << "Two handed weapon" << std::endl;
+		if (GetEquipmentInSlot(MAINHAND) == nullptr && GetEquipmentInSlot(OFFHAND) == nullptr)
 		{
-			if (EquipMainHandWeapon(Weapon) && EquipOffHandWeapon(Weapon))
+			if (EquipMainHandWeapon(Weapon)==true && EquipOffHandWeapon(Weapon)==true)
 			{
 				return true;
 			}
@@ -421,12 +468,15 @@ bool EntityClass::EquipAsWeapon(ObjectClass* Weapon)
 	}
 	else
 	{
-		if (GetEquipmentInSlot(MAINHAND) == NULL || GetEquipmentInSlot(OFFHAND) == NULL)
+		if (GetEquipmentInSlot(MAINHAND) ==nullptr || GetEquipmentInSlot(OFFHAND) == nullptr)
 		{
-			if (!EquipMainHandWeapon(Weapon))
+			std::cout << "Equipment slot available" << std::endl;
+			if (EquipMainHandWeapon(Weapon)==false)
 			{
-				if (!EquipOffHandWeapon(Weapon))
+				std::cout << "Failed equipping in mainhand, occupied" << std::endl;
+				if (EquipOffHandWeapon(Weapon)==false)
 				{
+					std::cout << "Equipped in offhand" << std::endl;
 					return false;
 				}
 				else
@@ -436,43 +486,54 @@ bool EntityClass::EquipAsWeapon(ObjectClass* Weapon)
 			}
 			else 
 			{
-				return true;
+				return false;
 			}
 		}
-	}	
+	}
+	std::cout << "EquipAsWeapon returning false" << std::endl;
+	return false;
 }
 
 bool EntityClass::EquipMainHandWeapon(ObjectClass* Weapon)
 {
-	if (GetEquipmentInSlot(MAINHAND) == NULL)
+	if (GetEquipmentInSlot(MAINHAND) == nullptr)
 	{
+		std::cout << "Mainhand Free" << std::endl;
 		Equipment.find(MAINHAND)->second = Weapon;
 		return true; //successfull equip
 	}
 	else
 	{
+		std::cout << "Mainhand Occupied EquipManhand" << std::endl;
 		return false;
 	}
 }
 
 bool EntityClass::EquipOffHandWeapon(ObjectClass* Weapon)
 {
-	if (GetEquipmentInSlot(OFFHAND) == NULL)
+	std::cout << "Trying to equip offhand" << std::endl;
+	if (GetEquipmentInSlot(OFFHAND) == nullptr)
 	{
+		std::cout << "Offhand free" << std::endl;
 		Equipment.find(OFFHAND)->second = Weapon;
 		return true; // succesfull equip
 	}
 	else
 	{
+		std::cout << "offhand occupied" << std::endl;
 		return false;
 	}
 }
 
-void EntityClass::handleEvent(SDL_Event& e)
+//void EntityClass::HandleTurn (SDL_Event& e, EncounterInstance & Instance)
+
+void EntityClass::handleEvent(SDL_Event& e, EncounterInstance & Instance)
 {
+	
 	//If a key was pressed
 	if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
 	{
+		
 		//change the location
 		switch (e.key.keysym.sym)
 		{
@@ -496,9 +557,9 @@ void EntityClass::handleEvent(SDL_Event& e)
 		case SDLK_LEFT: MoveDirection = WEST; break;
 		case SDLK_RIGHT: MoveDirection = EAST; break;
 		case SDLK_1: 
-			if (GetControlMode() != ATTACKMODE && GetControlMode()!=NOCONTROLMODE) 
+			if (GetControlMode() != MELEEATTACKMODE && GetControlMode()!=NOCONTROLMODE) 
 			{
-			SetControlMode(ATTACKMODE);
+			SetControlMode(MELEEATTACKMODE);
 			}
 			else if(GetControlMode()!=NOCONTROLMODE)
 			{
@@ -507,6 +568,29 @@ void EntityClass::handleEvent(SDL_Event& e)
 			std::cout << "Switching attack mode" << std::endl;
 			break;
 		case SDLK_2:
+		{
+			if (this->GetEquipmentInSlot(MAINHAND) != nullptr)
+			{
+				if (this->GetEquipmentInSlot(MAINHAND)->IsRangedWeapon())
+				{
+					SetControlMode(RANGEDATTACKMODE);
+					Instance.GetTargetSystem().SetActive(true);
+					break;
+				}
+			}
+			else if (this->GetEquipmentInSlot(OFFHAND) != nullptr)
+			{
+				if (this->GetEquipmentInSlot(OFFHAND)->IsRangedWeapon())
+				{
+					SetControlMode(RANGEDATTACKMODE);
+					Instance.GetTargetSystem().SetActive(true);
+					break;
+				}
+			}
+			std::cout << "No ranged weapon found" << std::endl;
+			break;
+		}
+		case SDLK_3:
 			if (GetControlMode() != PICKUPMODE && GetControlMode() != NOCONTROLMODE)
 			{
 				SetControlMode(PICKUPMODE);
@@ -516,7 +600,7 @@ void EntityClass::handleEvent(SDL_Event& e)
 				SetControlMode(MOVEMODE);
 			}
 			break;
-		case SDLK_3:
+		case SDLK_4:
 			if (GetControlMode() != INVENTORYMODE && GetControlMode() != NOCONTROLMODE)
 			{
 				SetControlMode(INVENTORYMODE);
@@ -525,7 +609,8 @@ void EntityClass::handleEvent(SDL_Event& e)
 			{
 				SetControlMode(MOVEMODE);
 			}
-		case SDLK_4:
+			break;
+		case SDLK_5:
 			if (GetControlMode() != FEATOPTIONMODE && GetControlMode() != NOCONTROLMODE)
 			{
 				SetControlMode(FEATOPTIONMODE);
@@ -534,6 +619,8 @@ void EntityClass::handleEvent(SDL_Event& e)
 			{
 				SetControlMode(MOVEMODE);
 			}
+			break;
+		
 		}
 	
 	}
@@ -699,8 +786,8 @@ void EntityClass::move(std::vector<std::vector<Tile>> &TileVector)
 void EntityClass::setCamera(SDL_Rect& camera)
 {
 	//Center the camera over the entity
-	camera.x = (mBox.x + ENTITY_WIDTH / 2) - SCREEN_WIDTH / 2;
-	camera.y = (mBox.y + ENTITY_HEIGHT / 2) - SCREEN_HEIGHT / 2;
+	camera.x = (mBox.x + ENTITY_WIDTH / 2) - SCREEN_WIDTH *0.333;
+	camera.y = (mBox.y + ENTITY_HEIGHT / 2) - SCREEN_HEIGHT*0.375;
 
 	//Keep the camera in bounds
 	if (camera.x < 0)
@@ -739,7 +826,7 @@ void EntityClass::SetRendLocation(std::vector<std::vector<Tile>> &TileVector)
 	std::pair<int, int> tempLoc = CalcRendLocation(TileVector);
 	mBox.x = tempLoc.first;
 	mBox.y = tempLoc.second;
-	std::cout << "New rend location=" << mBox.x << " " << mBox.y << std::endl;
+	//std::cout << "New rend location=" << mBox.x << " " << mBox.y << std::endl;
 }
 
 std::pair<int, int> EntityClass::CalcRendLocation(std::vector<std::vector<Tile>> &TileVector)
@@ -832,6 +919,50 @@ void EntityClass::SetControlMode(ControlMode NewControl)
 	this->ControlSetting = NewControl;
 }
 
+int EntityClass::GetAbilityModifier(AbilityScoreType ability)
+{
+	int temp = (int)(floor((AbilityScore[ability] - 10) / 2));
+	if (ability == DEX && temp > GetMaxDex())
+	{
+		return GetMaxDex();
+	}
+	else
+	{
+		return temp;
+	}
+}
+
+int EntityClass::GetMaxDex()
+{
+	int max=0;
+	for (auto it = Equipment.begin(); it != Equipment.end(); it++)
+	{
+		if ((*it).second != NULL)
+		{
+			if (max > (*it).second->GetMaxDexBonus())
+			{
+				max = (*it).second->GetMaxDexBonus();
+			}		
+		}
+	}
+	return max;
+}
+void EntityClass::RollInitiative()
+{
+	//get all active feat bonuses for initiative
+	std::vector<FeatClass> TempFeats = GetActiveFeats();
+	int TotalIntBonus = 0;
+	for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
+	{
+		//no feats implemented with init yet
+	}
+
+	//add them to the existing dex bonus to get initiative bonus
+	TotalIntBonus+= GetAbilityModifier(DEX);
+	Initiative = (DiceRoll(D20) + TotalIntBonus);
+	std::cout << EntityName << " rolled " << Initiative << " on initiative" << std::endl;
+
+}
 
 bool EntityClass::IsTwoHanding()
 {
@@ -968,13 +1099,13 @@ void EntityClass::DropFromBackPack(int index, std::vector<std::vector<Tile>>& Ti
 
 bool EntityClass::EquipObject(ObjectClass* item)
 {
-	std::cout << "Equipping " << item->GetName() << " in the " << BodyLocationTextMap[item->GetBodySlot()] << std::endl;
+	//std::cout << "Equipping " << item->GetName() << " in the " << BodyLocationTextMap[item->GetBodySlot()] << std::endl;
 	if (item->GetBodySlot() == MAINHAND || item->GetBodySlot() == OFFHAND)
 	{
-		std::cout << "Attempting to equip as a weapon" << std::endl;
+	//	std::cout << "Attempting to equip as a weapon" << std::endl;
 		if (this->EquipAsWeapon(item))
 		{
-			std::cout << "Equipped as a legitimate weapon" << std::endl;
+			//std::cout << "Equipped as a legitimate weapon" << std::endl;
 			return true;
 		}
 	}
@@ -1051,6 +1182,7 @@ bool EntityClass::LoadEntity(std::string name, std::pair<int, int> Location, boo
 	LoadEquipment(reader, Instance.GetObjectList());
 	LoadFeats(reader, Instance);
 	//LoadProperties(reader);
+	TeamSide = side;
 	this->SetLocation(Location.first, Location.second, Instance.GetTileMap());
 
 	std::cout << "Loaded entity: " << this->EntityName << std::endl;
@@ -1093,7 +1225,6 @@ bool EntityClass::LoadNameDescriptionAndTexture(std::ifstream &reader)
 			this->mPathTexture = line;
 			GotTexture = true;
 		}
-		
 	}
 	return false;
 }

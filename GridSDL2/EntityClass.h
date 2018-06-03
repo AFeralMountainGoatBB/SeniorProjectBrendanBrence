@@ -5,6 +5,7 @@
 #include "ItemContainer.h"
 #include "Feats.h"
 #include "AttackClass.h"
+//#include "TargetSystem.h"
 
 class Tile;
 class LTexture;
@@ -49,14 +50,18 @@ public:
 	void SetControlMode(ControlMode NewControl);
 
 	//Takes key presses and adjusts the entity's movements
-	void handleEvent(SDL_Event& e);
+	virtual void handleEvent(SDL_Event& e, EncounterInstance &Instance);
 
 	//Moves the entity and checks for out of bounds and collision
-	void move(std::vector<std::vector<Tile>> &TileVector);
+	virtual void move(std::vector<std::vector<Tile>> &TileVector);
+	void RollInitiative();
 
 	//combat functions
-	bool EntityAttack(std::vector<std::vector<Tile>> &TileVector, EncounterInstance & Instance);
-	EntityClass* EntityAttackTile(std::vector<std::vector<Tile>> &TileVector);
+	bool EntityMeleeAttack(std::vector<std::vector<Tile>> &TileVector, EncounterInstance & Instance);
+	EntityClass* EntityMeleeAttackTile(std::vector<std::vector<Tile>> &TileVector);
+	bool EntityRangedAttack(std::vector<std::vector<Tile>>&TileVector, EncounterInstance &Instance);
+	EntityClass* EntityRangedAttackTile(std::vector<std::vector<Tile>> &TileVector, EncounterInstance &Instance);
+
 	int GetBaseAttackBonus() { return BaseAttackBonus; }
 	ObjectClass GetUnarmedStrike();
 	bool MeleeAttackRoll(EntityClass &Target);
@@ -75,21 +80,21 @@ public:
 
 
 	//sets location
-	void SetLocation(int x, int y, std::vector < std::vector < Tile> > &TileMap);
+	virtual  void SetLocation(int x, int y, std::vector < std::vector < Tile> > &TileMap);
 	//sets where the entity will render
-	void SetRendLocation(std::vector<std::vector<Tile>> &TileVector);
+	virtual void SetRendLocation(std::vector<std::vector<Tile>> &TileVector);
 	//calculates the middle of the tile the entity will render at
-	std::pair<int, int> CalcRendLocation(std::vector<std::vector<Tile>> &Map);
-	void SetPath(std::string Path);
-	std::string GetPath();
+	virtual std::pair<int, int> CalcRendLocation(std::vector<std::vector<Tile>> &Map);
+	virtual void SetPath(std::string Path);
+	virtual std::string GetPath() { return mPathTexture; }
 	//returns the location
-	std::pair<int, int> GetLocation();
+	virtual std::pair<int, int> GetLocation();
 
 	//Centers the camera over the entity
-	void setCamera(SDL_Rect& camera);
+	virtual void setCamera(SDL_Rect& camera);
 
 	//Shows the entity on the screen
-	void render(SDL_Rect& camera, SDL_Renderer *& Renderer);
+	virtual void render(SDL_Rect& camera, SDL_Renderer *& Renderer);
 
 	//Getters
 	const int GetHitPoints();
@@ -110,9 +115,9 @@ public:
 	void SetName(std::string name);
 	std::string GetName();
 
-	void SetTexture(std::map<std::string, LTexture*> &map, std::string path);
+	virtual void SetTexture(std::map<std::string, LTexture*> &map, std::string path);
 
-	LTexture* GetTexture();
+	virtual LTexture* GetTexture();
 
 	void DisplayEntireInventory();
 	void DisplayFeats();
@@ -153,20 +158,31 @@ public:
 	bool IsProne() { return isProne; }
 	void SwitchProne() { isProne = !isProne; }
 
-	int GetAbilityModifier(AbilityScoreType ability) { return (int)(floor((AbilityScore[ability] - 10) / 2)); }
+	int GetAbilityModifier(AbilityScoreType ability);
 	int GetAbilityScore(AbilityScoreType ability) { return AbilityScore[ability]; }
+	int GetMaxDex();
+
+
 
 	bool IsTwoHanding();
 	bool IsDualWielding();
 
 	ItemContainer& GetBackPack();
+
+	virtual bool GetBlocksMovement() { return BlocksMovement; }
+	virtual void SwitchBlocksMovement() { BlocksMovement = !BlocksMovement; }
+	virtual void SetBlocksMovement(bool passed) { BlocksMovement = passed; }
+
+	int GetInitiative() { return Initiative; }
+	//TargetSystem* GetSelector() { return &Selector; }
 protected:
 
 private:
-
+//	TargetSystem Selector;
+	int Initiative = 0;
 	//Collision box of the entity
 	SDL_Rect mBox;
-
+	bool BlocksMovement = true;
 	bool AttackBothHands = false;
 	//The location on the map the object is in (what tile)
 	std::pair<unsigned, unsigned> mLocation = { 0,0 }; //first is x value, second is y value
@@ -197,7 +213,7 @@ private:
 	{CHA, NULL}
 	};
 
-	std::vector<CreatureType> Type;
+	//std::vector<CreatureType> Type;
 
 	//std::vector<ObjectClass> Equipment;
 	//std::vector<FeatClass> Feats;

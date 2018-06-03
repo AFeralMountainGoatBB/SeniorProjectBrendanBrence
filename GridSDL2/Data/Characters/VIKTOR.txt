@@ -6,7 +6,7 @@ Dexterity: 15
 Constitution: 13
 Intelligence: 12
 Wisdom: 14
-Charisma:5
+Charisma:100
 
 End Ability Scores:
 
@@ -25,4 +25,4 @@ Feats:
 
 End Feats:
 
-Texture:Maceman1.png
+Texture:Miller-Victor.jpeg

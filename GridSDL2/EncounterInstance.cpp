@@ -5,8 +5,6 @@ EncounterInstance::EncounterInstance()
 {
 }
 
-
-
 bool EncounterInstance::init(SDL_Renderer *&gRenderer, SDL_Window *&gWindow)
 {
 	//Initialization flag
@@ -128,7 +126,7 @@ bool EncounterInstance::LoadAllMedia(SDL_Renderer *&Renderer, SDL_Rect &gTileCli
 		}
 
 	}
-	std::cout << "Test" << Textures[GetTextureFolderPath() + "\\tiles.png"]->getWidth() << std::endl;
+	//std::cout << "Test" << Textures[GetTextureFolderPath() + "\\tiles.png"]->getWidth() << std::endl;
 	
 	
 	if (!gTileTexture.loadFromFile(SpriteSet["TileSet"], Renderer))
@@ -494,6 +492,81 @@ std::map<std::string, LTexture*>& EncounterInstance::GetTextures()
 	return Textures;
 }
 
+void EncounterInstance::RollInitative()
+{
+	InitiativeList.clear(); //make list empty
+
+	//roll init for every entity and insert it into the list at the correct spot
+	for (auto it = EntityList.begin(); it != EntityList.end(); it++)
+	{
+		std::cout << (*it)->GetName() << std::endl;
+		(*it)->RollInitiative();
+
+		for (auto ins = InitiativeList.begin(); ins != InitiativeList.end();)
+		{
+			if ((*it)->GetInitiative() > (*ins)->GetInitiative())
+			{
+				InitiativeList.insert(ins, (*it));
+				break;
+			}
+			ins++;
+			//check if it is the last element in initative
+			if (ins == (InitiativeList.end()))
+			{
+				InitiativeList.push_back((*it));
+			}
+		}
+		if (InitiativeList.empty())
+		{
+			InitiativeList.push_back((*it));
+		}
+	}
+
+	std::cout << "Initiative:" << std::endl;
+	for (auto it = InitiativeList.begin(); it != InitiativeList.end(); it++)
+	{
+		std::cout << "    " << (*it)->GetName() << std::endl;
+	}
+}
+
+void EncounterInstance::NextInInitiative()
+{
+	for (auto it = InitiativeList.begin(); it != InitiativeList.end(); it++)
+	{
+		if (ActiveUnit == (*it))
+		{
+			it++;
+			if (it == InitiativeList.end())
+			{
+				ActiveUnit = InitiativeList.front();
+			}
+			else
+			{
+				ActiveUnit = (*it);
+			}
+			std::cout << "Next Init" << std::endl;
+			return;
+		}
+	}
+	std::cout << "Next Init failed" << std::endl;
+}
+
+void EncounterInstance::HandleEvents(SDL_Event &e)
+{
+	//If a key was pressed
+	if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+	{
+		//change the location
+		switch (e.key.keysym.sym)
+		{
+		case SDLK_SPACE:
+		{
+			NextInInitiative();
+			break;
+		}	
+		}
+	}
+}
 
 bool EncounterInstance::RunEncounter()
 {
@@ -517,10 +590,10 @@ bool EncounterInstance::RunEncounter()
 	BottomViewPort.w = SCREEN_WIDTH;
 
 	ActionLog.AddLog(gRenderer, "Hi please work");
-	ActionLog.AddLog(gRenderer, "pleas fucking work");
-	ActionLog.AddLog(gRenderer, "Lemony snicket is dead");
-	ActionLog.AddLog(gRenderer, "I just checked on google");
-	ActionLog.AddLog(gRenderer, "Hes definitely dead, tell kira");
+	ActionLog.AddLog(gRenderer, "random lines");
+	ActionLog.AddLog(gRenderer, "information");
+	ActionLog.AddLog(gRenderer, "attack action");
+	ActionLog.AddLog(gRenderer, "position 3");
 	ActionLog.AddLog(gRenderer, "pos2");
 	ActionLog.AddLog(gRenderer, "Testing this out still, checking if this is at pos1");
 	ActionLog.AddLog(gRenderer, "Testing this out still, checking if this is at pos0");
@@ -528,9 +601,10 @@ bool EncounterInstance::RunEncounter()
 	ActionLog.SetLogConstraints(BottomViewPort);
 
 	bool quit = false;
-			
+	
 			AllEntitySetTexture();
-			ActiveUnit = EntityList.front();
+			RollInitative();
+			ActiveUnit = InitiativeList.front();
 			std::cout << "Active unit is named:" << ActiveUnit->GetName() << std::endl;
 		//	ActiveUnit->SetTexture(GetTextures(), GetTextureFolderPath());
 			std::cout << "Camera created, sdl event created, textures created and assigned, entering running loop" << std::endl;
@@ -545,16 +619,21 @@ bool EncounterInstance::RunEncounter()
 					{
 						quit = true;
 					}
-
-					//Handle input for the dot
-				//	dot.handleEvent(e);
-					ActiveUnit->handleEvent(e);
+					if (TargetSys.GetActive())
+					{
+						TargetSys.handleEvent(e);
+						TargetSys.move(TileMap);
+					}
+					else
+					{
+						//ActiveUnit->HandleTurn(e, *this);
+						ActiveUnit->handleEvent(e, *this);
+					}
+					
 					ActionLog.HandleEvents(e);
+					this->HandleEvents(e);
 				}
 				SDL_RenderSetViewport(gRenderer, &BottomViewPort);
-				//Move the dot
-				//dot.move(*this);
-				//dot.setCamera(camera);
 
 				//move the entity
 				//std::cout << "Moving man" << std::endl;
@@ -566,8 +645,8 @@ bool EncounterInstance::RunEncounter()
 				case(MOVEMODE):
 					ActiveUnit->move(GetTileMap());
 					break;
-				case(ATTACKMODE):
-					ActiveUnit->EntityAttack(GetTileMap(), *this);
+				case(MELEEATTACKMODE):
+					ActiveUnit->EntityMeleeAttack(GetTileMap(), *this);
 					break;
 				case(PICKUPMODE):
 					ActiveUnit->EntityPickup(GetTileMap());
@@ -581,11 +660,24 @@ bool EncounterInstance::RunEncounter()
 					ActiveUnit->EntityFeatMenu();
 					ActiveUnit->SetControlMode(MOVEMODE);
 					break;
+				case(RANGEDATTACKMODE):
+					if (TargetSys.GetControlMode() == SELECTTARGETMODE)
+					{
+						ActiveUnit->SetControlMode(MOVEMODE);
+						ActiveUnit->EntityRangedAttack(GetTileMap(), *this);
+					}
+					break;
 				}
 
-				ActiveUnit->setCamera(camera);
 		//		std::cout << "Man Moved" << std::endl;
-
+				if (TargetSys.GetActive())
+				{
+					TargetSys.setCamera(camera);
+				}
+				else
+				{
+					ActiveUnit->setCamera(camera);
+				}
 				//Clear screen
 				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 				SDL_RenderClear(gRenderer);
@@ -624,7 +716,6 @@ bool EncounterInstance::RunEncounter()
 		//Free resources and close SDL
 		close(gDotTexture, gTileTexture, gRenderer, gWindow);
 	
-
 	return 0;
 	return true;
 }
@@ -640,10 +731,13 @@ std::string EncounterInstance::GetTextureFolderPath()
 
 void EncounterInstance::AllEntitySetTexture()
 {
+	//std::cout << "Setting textures for entities" << std::endl;
 	for (auto i = EntityList.begin(); i != EntityList.end(); i++)
 	{
 		(*i)->SetTexture(GetTextures(), GetTextureFolderPath());
 	}
+	TargetSys.SetTexture(GetTextures(), GetTextureFolderPath());
+	std::cout << "Settings textures successfull" << std::endl;
 }
 
 void EncounterInstance::RenderAllEntities(SDL_Rect& camera, SDL_Renderer *& Renderer)
@@ -652,12 +746,13 @@ void EncounterInstance::RenderAllEntities(SDL_Rect& camera, SDL_Renderer *& Rend
 	{
 		(*i)->render(camera, Renderer);
 	}
+	TargetSys.render(camera, Renderer);
 }
 
 bool EncounterInstance::LoadSpriteSet()
 {
 	//tileset sheet path
-	SpriteSet["TileSet"] = "tiles2.png";
+	SpriteSet["TileSet"] = GetTextureFolderPath() + "//tiles2.png";
 	//objects sheet path
 
 	return true;
@@ -926,11 +1021,12 @@ bool EncounterInstance::LoadWeaponList(std::string list)
 				{
 					continue;
 				}
-				//std::cout << "Raw line: " << line << std::endl;	
+				std::cout << "Raw line: " << line << std::endl;	
 
 				name = line.substr(0, line.find_first_of(","));
 
-				line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end()); //remove all spaces
+				auto f = [](unsigned char c) { return isspace((int)c); };
+				line.erase(std::remove_if(line.begin(), line.end(), f), line.end()); //remove all spaces
 	
 				//std::cout << "New object: " << name << std::endl;
 				MasterObjectList.insert(std::pair<std::string, ObjectClass*>(name, new ObjectClass));
@@ -1863,7 +1959,6 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 			
 			return true;
 	}
-
 
 //helper
 std::string EncounterInstance::RemoveComments(std::string line)

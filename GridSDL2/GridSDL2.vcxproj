@@ -43,6 +43,7 @@
     <ClCompile Include="RangedAttack.cpp" />
     <ClCompile Include="ScenarioMenu.cpp" />
     <ClCompile Include="StaticFunctions.cpp" />
+    <ClCompile Include="TargetSystem.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Tile.cpp" />
   </ItemGroup>
@@ -65,7 +66,6 @@
     <Image Include="kiss_up.png" />
     <Image Include="kiss_vslider.png" />
     <Image Include="kiss_wood.png" />
-    <Image Include="tiles.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="lazy.map" />
@@ -96,6 +96,7 @@
     <ClInclude Include="ScenarioMenu.h" />
     <ClInclude Include="SharedEnums.h" />
     <ClInclude Include="StaticFunctions.h" />
+    <ClInclude Include="TargetSystem.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Tile.h" />
   </ItemGroup>

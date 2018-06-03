@@ -1,5 +1,5 @@
 //light melee weapons
-Dagger, 			1d4, 19/x2, 10ft, 1lb, Pierce, Light, Close
+Dagger, 			1d4, 19/x2, 10ft, 1lb, Pierce, Thrown, Light, Close
 Punching Dagger,	1d4, 20/x3,  0ft, 1lb, Pierce, Light, Close
 Spiked Gauntlet,	1d4, 20/x2,  0ft, 1lb, Pierce, Light, Unarmed
 Light Mace, 		1d6, 20/x2,	 0ft, 4lb, Blunt, Light, Mace
