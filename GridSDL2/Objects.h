@@ -70,6 +70,7 @@ public:
 
 	bool IsRangedWeapon();
 	bool IsThrowingWeapon();
+	bool IsLightWeapon();
 
 	void operator=(const ObjectClass* other)
 	{

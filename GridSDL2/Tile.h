@@ -21,6 +21,7 @@ public:
 	std::vector<ObjectClass*>& GetItemsPresent(); //returns the entire vector of objects present
 	void AddItem(ObjectClass* Item);
 	Tile RemoveObject(ObjectClass*);
+	bool EntityPresent();
 	void RemoveObjectString(std::string ObjectName);
 
 	void ClearOccupant();

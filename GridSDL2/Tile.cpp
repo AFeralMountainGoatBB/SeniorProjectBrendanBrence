@@ -142,3 +142,8 @@ ObjectClass* Tile::GetTopObject()
 {
 	return ItemsPresent;
 }
+
+ bool Tile::EntityPresent()
+ {
+	 return mOccupied;
+ }

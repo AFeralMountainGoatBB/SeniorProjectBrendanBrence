@@ -1,4 +1,4 @@
-Name:SwordMan
+Name:VIKTOR
 Ability Scores:
 
 Strength: 10

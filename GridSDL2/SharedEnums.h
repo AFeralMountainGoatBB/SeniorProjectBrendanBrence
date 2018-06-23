@@ -2,17 +2,6 @@
 #include <map>
 #include <string>
 #include <iostream>
-/*
-SIZE    AC  SP*	Hide	Actual size     general weight  occupies    Reach Tall/Long  Carrying Capacity Biped / other
-_____________________________________________________________________________________
-Tiny	+2	−8	+8		1 ft.–2 ft.		1 lb.–8 lb.		2-1/2 ft.	0 ft.	0 ft.		×1/2	×3/4
-Small	+1	−8	+4		2 ft.–4 ft.		8 lb.–60 lb.	5 ft.		5 ft.	5 ft.		×3/4	×1
-Medium	+0	+0	+0		4 ft.–8 ft.		60 lb.–500 lb.	5 ft.		5 ft.	5 ft.		×1		×1-1/2
-Large	−1	+4	−4		8 ft.–16 ft.	500 lb.–2 tons	10 ft.		10 ft.	5 ft.		×2		×3
-Hugeee	−2	+8	−8		16 ft.–32 ft.	2 tons–16 tons	15 ft.		15 ft.	10 ft.		×4		×6
-
-*Special attack mod
-*/
 
 enum EntitySize {
 	TINY, // rats and tiny creatures
@@ -98,6 +87,7 @@ enum CircumstanceType
 	MELEEATTACK, // melee attack
 	RANGEDATTACK, // ranged attack
 	OPPORTUNITYATTACK, //opportunity attack
+	TARGETHASCOVER,
 	UNKNOWNCIRCUMSTANCE=999
 };
 

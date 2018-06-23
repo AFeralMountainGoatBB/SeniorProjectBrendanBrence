@@ -107,6 +107,33 @@ bool ObjectClass::IsRangedWeapon()
 	
 }
 
+bool ObjectClass::IsThrowingWeapon()
+{
+	if (std::find(WeaponTypes.begin(), WeaponTypes.end(), THROWN) != WeaponTypes.end())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+}
+
+bool ObjectClass::IsLightWeapon()
+{
+	if (std::find(WeaponTypes.begin(), WeaponTypes.end(), LIGHT) != WeaponTypes.end())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+}
+
+
 void ObjectClass::setCamera(SDL_Rect& camera)
 {
 	//Center the camera over the entity

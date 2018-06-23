@@ -374,20 +374,20 @@ void EncounterInstance::DebugTileMap()
 
 void EncounterInstance::ClipTileSheet(SDL_Rect gTileClips[])
 {
-	gTileClips[TILE_RED].x = 0;
-	gTileClips[TILE_RED].y = 0;
-	gTileClips[TILE_RED].w = TILE_WIDTH;
-	gTileClips[TILE_RED].h = TILE_HEIGHT;
+	gTileClips[TILE_GRASS].x = 0;
+	gTileClips[TILE_GRASS].y = 0;
+	gTileClips[TILE_GRASS].w = TILE_WIDTH;
+	gTileClips[TILE_GRASS].h = TILE_HEIGHT;
 
-	gTileClips[TILE_GREEN].x = 0;
-	gTileClips[TILE_GREEN].y = 80;
-	gTileClips[TILE_GREEN].w = TILE_WIDTH;
-	gTileClips[TILE_GREEN].h = TILE_HEIGHT;
+	gTileClips[TILE_DIRT].x = 0;
+	gTileClips[TILE_DIRT].y = 80;
+	gTileClips[TILE_DIRT].w = TILE_WIDTH;
+	gTileClips[TILE_DIRT].h = TILE_HEIGHT;
 
-	gTileClips[TILE_BLUE].x = 0;
-	gTileClips[TILE_BLUE].y = 160;
-	gTileClips[TILE_BLUE].w = TILE_WIDTH;
-	gTileClips[TILE_BLUE].h = TILE_HEIGHT;
+	gTileClips[TILE_STONE].x = 0;
+	gTileClips[TILE_STONE].y = 160;
+	gTileClips[TILE_STONE].w = TILE_WIDTH;
+	gTileClips[TILE_STONE].h = TILE_HEIGHT;
 
 	gTileClips[TILE_TOPLEFT].x = 80;
 	gTileClips[TILE_TOPLEFT].y = 0;
@@ -429,10 +429,10 @@ void EncounterInstance::ClipTileSheet(SDL_Rect gTileClips[])
 	gTileClips[TILE_RIGHT].w = TILE_WIDTH;
 	gTileClips[TILE_RIGHT].h = TILE_HEIGHT;
 
-	gTileClips[TILE_BOTTOMRIGHT].x = 240;
-	gTileClips[TILE_BOTTOMRIGHT].y = 160;
-	gTileClips[TILE_BOTTOMRIGHT].w = TILE_WIDTH;
-	gTileClips[TILE_BOTTOMRIGHT].h = TILE_HEIGHT;
+	gTileClips[TILE_WATER].x = 240;
+	gTileClips[TILE_WATER].y = 160;
+	gTileClips[TILE_WATER].w = TILE_WIDTH;
+	gTileClips[TILE_WATER].h = TILE_HEIGHT;
 }
 
 bool EncounterInstance::touchesWall(SDL_Rect box)
@@ -619,7 +619,7 @@ bool EncounterInstance::RunEncounter()
 					{
 						quit = true;
 					}
-					if (TargetSys.GetActive())
+					if (TargetSys.GetActive()==true)
 					{
 						TargetSys.handleEvent(e);
 						TargetSys.move(TileMap);
@@ -665,6 +665,7 @@ bool EncounterInstance::RunEncounter()
 					{
 						ActiveUnit->SetControlMode(MOVEMODE);
 						ActiveUnit->EntityRangedAttack(GetTileMap(), *this);
+						TargetSys.SetControlMode(MOVEMODE);
 					}
 					break;
 				}

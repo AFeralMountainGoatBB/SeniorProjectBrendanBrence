@@ -120,6 +120,9 @@
     <ClCompile Include="TargetSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MapAlgorithms.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="dot.bmp">
@@ -261,6 +264,9 @@
     </ClInclude>
     <ClInclude Include="TargetSystem.h">
       <Filter>Header Files\EntityTypesHFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="MapAlgorithms.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

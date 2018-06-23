@@ -20,15 +20,16 @@ void MeleeAttack::AttackNormal(EntityClass & Source, EntityClass &Target, Encoun
 	{
 		*Weapon = Source.GetUnarmedStrike();
 	}
-	std::vector<WeaponType> TempWeaponTypes = Weapon->GetWeaponType();
-
-	int TotalAttackRollBonus = TotalWeaponTypeAttackBonus(Source, Weapon);
-
-	//check if opponent is prone (+4 to hit melee)
-	if (Target.IsProne())
+	if (Weapon->IsLightWeapon())
 	{
-		TotalAttackRollBonus += 4;
+		if (Source.GetAbilityModifier(DEX) >= Source.GetAbilityModifier(STR))
+		{
+			UsesAttributeForAttackRoll = DEX;
+			UsesAttributeForDamageRoll = DEX;
+		}
 	}
+	
+	int TotalAttackRollBonus = TotalWeaponTypeAttackBonus(Source, Weapon);
 
 	//roll dice and add bonus
 	int RollAmount = DiceRoll(D20);
@@ -230,8 +231,8 @@ int MeleeAttack::TotalWeaponTypeAttackBonus(EntityClass &Source, ObjectClass* We
 		TotalAttackBonus -= 4;
 	}
 
-	int BaBAndStrength = Source.GetBaseAttackBonus() + Source.GetAbilityModifier(UsesAttributeForAttackRoll);
-	TotalAttackBonus += BaBAndStrength;
+	int BaBAndAttb = Source.GetBaseAttackBonus() + Source.GetAbilityModifier(UsesAttributeForAttackRoll);
+	TotalAttackBonus += BaBAndAttb;
 
 	return TotalAttackBonus;
 }

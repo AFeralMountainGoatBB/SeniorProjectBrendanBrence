@@ -22,6 +22,6 @@ Heavy Crossbow,		1d10, 19/x2, 120 ft,	8 lb,	Pierce, Ranged, Crossbow
 Crossbow bolts, 	 1d4, 20/x2,    0ft,    1 lb,	Improvised, Ammo, Close
 Light Crossbow, 	 1d8, 19/x2,  80 ft,	4 lb,	Pierce, Ranged, Crossbow
 
-Dart,				 1d4, 20/x2,  20 ft,   .5 lb,	Pierce, Thrown
-Javelin,			 1d6, 20/x2,  30 ft,	2 lb,	Pierce, Thrown
+Dart,				 1d4, 20/x2,  20 ft,   .5 lb,	Pierce, Light, Thrown
+Javelin,			 1d6, 20/x2,  30 ft,	2 lb,	Pierce, Light, Thrown
 Sling,				 1d4, 20/x2,  50 ft,	0 lb,	Blunt, Ranged

@@ -46,8 +46,8 @@ public:
 	int ENTITY_WIDTH = 80;
 	int ENTITY_HEIGHT = 80;
 
-	ControlMode GetControlMode();
-	void SetControlMode(ControlMode NewControl);
+	virtual ControlMode GetControlMode();
+	virtual void SetControlMode(ControlMode NewControl);
 
 	//Takes key presses and adjusts the entity's movements
 	virtual void handleEvent(SDL_Event& e, EncounterInstance &Instance);

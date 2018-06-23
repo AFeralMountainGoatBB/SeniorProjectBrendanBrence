@@ -129,7 +129,7 @@ bool EntityClass::EntityRangedAttack(std::vector<std::vector<Tile>> &TileVector,
 	if (Target != NULL)
 	{
 		std::cout << Target->EntityName << std::endl;
-		MeleeAttack Attack;
+		RangedAttack Attack;
 		if (!AttackBothHands)
 		{
 			Attack.AttackNormal(*this, *Target, Instance);

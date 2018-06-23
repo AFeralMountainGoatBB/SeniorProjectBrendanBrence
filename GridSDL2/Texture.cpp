@@ -116,10 +116,6 @@ void LTexture::renderEntity(int x, int y, SDL_Renderer*& Renderer, SDL_Rect* cli
 	SDL_Rect renderQuad = { x, y, mWidth, mHeight };
 	//std::cout << "Renderquad created" << std::endl;
 
-	//Set clip rendering dimensions
-	//clip is the box we are clipping tiles from, 
-	//important for sprite sheets, will mess up from entities moving around if we do not rewrite this, 
-	//will size the destination size
 	if (clip != NULL)
 	{
 		renderQuad.w = clip->w;

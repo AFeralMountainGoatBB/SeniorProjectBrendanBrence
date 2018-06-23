@@ -36,7 +36,10 @@ public:
 	void SetBlocksMovement(bool passed) { BlocksMovement = passed; }
 	
 	bool GetActive() { return Active; }
-	void SetActive(bool passed) { Active = passed; }
+	void SetActive(bool passed) { Active = passed;  }
+
+	ControlMode GetControlMode() { return ControlSetting; }
+	void SetControlMode(ControlMode NewControl) { ControlSetting = NewControl; }
 
 private:
 	std::string LevelName = "";
@@ -50,4 +53,5 @@ private:
 	int TARGET_HEIGHT = 80;
 
 	SDL_Rect mBox;
+	ControlMode ControlSetting = MOVEMODE;
 };

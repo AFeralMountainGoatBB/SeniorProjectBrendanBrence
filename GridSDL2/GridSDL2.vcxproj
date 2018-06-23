@@ -35,6 +35,7 @@
     <ClCompile Include="kiss_widgets.c" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="MainMenu.cpp" />
+    <ClCompile Include="MapAlgorithms.cpp" />
     <ClCompile Include="MeleeAttack.cpp" />
     <ClCompile Include="Objects.cpp" />
     <ClCompile Include="PickupItemsMenu.cpp" />
@@ -88,6 +89,7 @@
     <ClInclude Include="kiss_sdl.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="MapAlgorithms.h" />
     <ClInclude Include="Objects.h" />
     <ClInclude Include="PickupItemsMenu.h" />
     <ClInclude Include="PlayerCharacter.h" />
