@@ -10,7 +10,9 @@
 #include <map>
 #include <utility>
 #include <deque>
+#include <set>
 
+//this is the kiss sdl library that is used to setup most menus in the game, it is written in C
 extern "C" {
 #include "kiss_sdl.h"
 }
@@ -32,7 +34,8 @@ const int TILE_HEIGHT = 80;
 const int TOTAL_TILES = 192;
 const int TOTAL_TILE_SPRITES = 12;
 
-//The different tile sprites
+//The different tile settings, tiles 0->2 do not block movement, the rest do
+//all blocking tiles (except water) block line of sight/ranged attacks
 const int TILE_GRASS = 0;
 const int TILE_DIRT = 1;
 const int TILE_STONE = 2;

@@ -84,6 +84,9 @@ class EncounterInstance
 	
 	TargetSystem& GetTargetSystem() { return TargetSys; }
 	
+	int GetMapHeight() { return TileMapHeight; }
+	int GetMapWidth() { return TileMapWidth; }
+
 private: 
 	static const int TileMapWidth = LEVEL_WIDTH / TILE_WIDTH;
 	static const int TileMapHeight = LEVEL_HEIGHT / TILE_HEIGHT;

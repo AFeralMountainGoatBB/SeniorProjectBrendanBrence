@@ -36,8 +36,10 @@
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="MapAlgorithms.cpp" />
+    <ClCompile Include="MapAsGraph.cpp" />
     <ClCompile Include="MeleeAttack.cpp" />
     <ClCompile Include="Objects.cpp" />
+    <ClCompile Include="PathfindingAlgorithm.cpp" />
     <ClCompile Include="PickupItemsMenu.cpp" />
     <ClCompile Include="PlayerCharacter.cpp" />
     <ClCompile Include="Feats.cpp" />
@@ -72,6 +74,7 @@
     <None Include="lazy.map" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIDecisions.h" />
     <ClInclude Include="Armor.h" />
     <ClInclude Include="AttackClass.h" />
     <ClInclude Include="Button.h" />
@@ -90,7 +93,9 @@
     <ClInclude Include="Log.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="MapAlgorithms.h" />
+    <ClInclude Include="MapAsGraph.h" />
     <ClInclude Include="Objects.h" />
+    <ClInclude Include="PathfindingAlgorithm.h" />
     <ClInclude Include="PickupItemsMenu.h" />
     <ClInclude Include="PlayerCharacter.h" />
     <ClInclude Include="Feats.h" />

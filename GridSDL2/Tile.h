@@ -49,6 +49,9 @@ public:
 		PosY = other->PosY;
 
 	}
+
+	int GetXPosition() { return PosX; }
+	int GetYPosition() { return PosY; }
 	
 private:
 	//The attributes of the tile

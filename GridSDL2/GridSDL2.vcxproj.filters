@@ -123,6 +123,12 @@
     <ClCompile Include="MapAlgorithms.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MapAsGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PathfindingAlgorithm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="dot.bmp">
@@ -266,6 +272,15 @@
       <Filter>Header Files\EntityTypesHFiles</Filter>
     </ClInclude>
     <ClInclude Include="MapAlgorithms.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PathfindingAlgorithm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MapAsGraph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AIDecisions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

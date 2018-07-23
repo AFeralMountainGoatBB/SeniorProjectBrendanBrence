@@ -319,6 +319,7 @@ bool EncounterInstance::setTiles(SDL_Rect gTileClips[])
 			{
 			//	std::cout << "Tile type loaded" << std::endl;
 				TileMap[XPos][YPos] = new Tile(x, y, tileType);
+			//	TileMap[XPos][YPos].
 				//tiles[i] = new Tile(x, y, tileType);
 			}
 			//If we don't recognize the tile type

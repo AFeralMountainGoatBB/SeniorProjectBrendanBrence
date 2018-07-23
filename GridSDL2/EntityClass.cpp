@@ -8,6 +8,7 @@
 #include "Armor.h"
 #include "InventoryMenu.h"
 #include "FeatMenu.h"
+#include "PathfindingAlgorithm.h"
 
 EntityClass::EntityClass(int xInitial, int yInitial, int HPMax=0, int HPCurrent=0, EntitySize ThisSize=MEDIUM)
 {	
@@ -24,7 +25,6 @@ EntityClass::EntityClass(int xInitial, int yInitial, int HPMax=0, int HPCurrent=
 EntityClass::EntityClass()
 {
 	mBox.x = 0;
-	mBox.y = 0;
 	mBox.w = ENTITY_WIDTH;
 	mBox.h = ENTITY_HEIGHT;
 	std::cout << "Entity size, H, w : " << mBox.w << " " << mBox.h << std::endl;
@@ -621,6 +621,15 @@ void EntityClass::handleEvent(SDL_Event& e, EncounterInstance & Instance)
 			}
 			break;
 		
+		case SDLK_p:
+			std::cout << "Attempting to pathfind using BFS" << std::endl << std::endl;;
+			PathFinder BFS;
+			BFS.TestBreadthFirst(Instance.GetTileMap(), this->GetLocation().first, this->GetLocation().second);
+
+			std::cout << "Attempting to pathfind using DIJK" << std::endl << std::endl;
+			PathFinder DIJK;
+			DIJK.TestDijkstra(Instance.GetTileMap(), this->GetLocation().first, this->GetLocation().second);
+			break;
 		}
 	
 	}
