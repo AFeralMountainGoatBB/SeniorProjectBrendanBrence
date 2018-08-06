@@ -11,7 +11,7 @@ Charisma:100
 End Ability Scores:
 
 Equipped:
-MainHand:Dagger
+MainHand:Spear
 Body:Leather Armor
 
 End Equipped:

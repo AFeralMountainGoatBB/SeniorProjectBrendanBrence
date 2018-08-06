@@ -48,11 +48,12 @@ void TargetSystem::handleEvent(SDL_Event& e)
 		}
 	}
 }
-void TargetSystem::move(std::vector<std::vector<Tile>> &TileVector)
+bool TargetSystem::move(std::vector<std::vector<Tile>> &TileVector)
 {
+	bool success = false;
 	if (MoveDirection == STATIONARY)
 	{
-		return;
+		return false;
 	}
 	switch (MoveDirection)
 	{
@@ -63,10 +64,12 @@ void TargetSystem::move(std::vector<std::vector<Tile>> &TileVector)
 		if (mLocation.second != 0)
 		{
 			mLocation.second--;
+			success = true;
 		}
 		else
 		{
 			std::cout << "Cannot move there" << std::endl;
+			success = false;
 		}
 	
 		break;
@@ -77,10 +80,12 @@ void TargetSystem::move(std::vector<std::vector<Tile>> &TileVector)
 		{
 			mLocation.first++;
 			mLocation.second--;
+			success = true;
 		}
 		else
 		{
 			std::cout << "Cannot move there" << std::endl;
+			success = false;
 		}
 		break;
 
@@ -88,10 +93,12 @@ void TargetSystem::move(std::vector<std::vector<Tile>> &TileVector)
 		if (mLocation.first < TileVector.size() - 1)
 		{
 			mLocation.first++;
+			success = true;
 		}
 		else
 		{
 			std::cout << "Cannot move there" << std::endl;
+			success = false;
 		}
 		break;
 
@@ -102,22 +109,25 @@ void TargetSystem::move(std::vector<std::vector<Tile>> &TileVector)
 		{
 			mLocation.first++;
 			mLocation.second++;
+			success = true;
 		}
 		else
 		{
 			std::cout << "Cannot move there" << std::endl;
+			success = false;
 		}
 		break;
 
 	case SOUTH:
 		if (mLocation.second < TileVector[0].size() - 1)
 		{
-	
+			success = true;
 			mLocation.second++;
 		}
 		else
 		{
 			std::cout << "Cannot move there" << std::endl;
+			success = false;
 		}
 		break;
 
@@ -129,10 +139,12 @@ void TargetSystem::move(std::vector<std::vector<Tile>> &TileVector)
 			
 			mLocation.second++;
 			mLocation.first--;
+			success = true;
 		}
 		else
 		{
 			std::cout << "Cannot move there" << std::endl;
+			success = false;
 		}
 			break;
 
@@ -140,10 +152,12 @@ void TargetSystem::move(std::vector<std::vector<Tile>> &TileVector)
 		if (mLocation.first != 0)
 		{
 			mLocation.first--;
+			success = true;
 		}
 		else
 		{
 			std::cout << "Cannot move there" << std::endl;
+			success = false;
 		}
 		
 		break;
@@ -155,10 +169,12 @@ void TargetSystem::move(std::vector<std::vector<Tile>> &TileVector)
 		{
 			mLocation.first--;
 			mLocation.second--;
+			success = true;
 		}
 		else
 		{
 			std::cout << "Cannot move there" << std::endl;
+			success = false;
 		}
 		break;
 	} //end switch statement
@@ -166,6 +182,7 @@ void TargetSystem::move(std::vector<std::vector<Tile>> &TileVector)
 
 	SetRendLocation(TileVector);
 	MoveDirection = STATIONARY;
+	return success;
 }
 
 void TargetSystem::SetLocation(int x, int y, std::vector < std::vector < Tile> > &TileMap) 

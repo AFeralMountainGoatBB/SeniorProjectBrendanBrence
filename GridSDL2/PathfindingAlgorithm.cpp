@@ -75,15 +75,17 @@ void PathFinder::dijkstra_search (MapAsGraph graph, GraphLocation start, GraphLo
 			break;
 		}
 		auto TempGraph = graph.Getneighbors(current);
-		std::cout << "     x:" << current.x << " y:" << current.y << "Neighbors:" << std::endl;
-		for (auto it = TempGraph.begin(); it != TempGraph.end(); it++)
-		{
-			std::cout << "x:" << (*it).first.x << "  y:" << (*it).first.y << std::endl;
-		}
+		//std::cout << "     x:" << current.x << " y:" << current.y << "Neighbors:" << std::endl;
+		//for (auto it = TempGraph.begin(); it != TempGraph.end(); it++)
+		//{
+		//	std::cout << "x:" << (*it).first.x << "  y:" << (*it).first.y << std::endl;
+		//}
 		for (auto it = TempGraph.begin(); it != TempGraph.end(); it++)
 		{
 			double new_cost = cost_so_far[current] + (*it).second;
-			if (cost_so_far.find((*it).first) == cost_so_far.end() || new_cost < cost_so_far[(*it).first]) 
+			if (cost_so_far.find((*it).first) == cost_so_far.end() 
+				||
+				new_cost < cost_so_far[(*it).first]) 
 			{
 				cost_so_far[(*it).first] = new_cost;
 				came_from[(*it).first] = current;
@@ -99,7 +101,6 @@ void PathFinder::TestDijkstra(std::vector<std::vector<Tile>>&Map, int x, int y)
 	GraphLocation End(15, 11);
 	MapAsGraph CurrentGraph;
 	CurrentGraph.MapToGraph(Map);
-	std::map<GraphLocation, double> cost_so_far;
 	dijkstra_search(CurrentGraph, Start, End, came_from_graph, cost_so_far);
 	DisplayPath(reconstruct_path(Start, End, came_from_graph));
 	draw_grid(CurrentGraph, 5, &cost_so_far, nullptr);
@@ -114,6 +115,10 @@ void PathFinder::draw_grid(MapAsGraph& graph, int field_width, std::map<GraphLoc
 			//std::cout << "left width set" << std::endl;
 			if (graph.GetWalls().find(id) != graph.GetWalls().end()) {
 				std::cout << std::string(field_width, '#');
+			}
+			else if (graph.GetEntities().find(id)!=graph.GetEntities().end()) 
+			{
+				std::cout << "%";
 			}
 			else if (point_to != nullptr && point_to->count(id)) 
 			{
@@ -157,3 +162,24 @@ void PathFinder::DisplayPath(std::vector<GraphLocation> path)
 		std::cout << "x:" << (*it).x << "  y:" << (*it).y << std::endl;
 	}
 }
+
+std::vector<GraphLocation> PathFinder::UseDijkstra(std::vector<std::vector<Tile>>&TileMap, int xSource, int ySource, int xGoal, int yGoal)
+{
+	GraphLocation Start(xSource, ySource);
+	GraphLocation End(xGoal, yGoal);
+	MapAsGraph CurrentGraph;
+	CurrentGraph.MapToGraph(TileMap);
+	//std::cout << "CurrentGraphMade" << std::endl;
+	dijkstra_search(CurrentGraph, Start, End, came_from_graph, cost_so_far);
+	DisplayPath(reconstruct_path(Start, End, came_from_graph));
+	//draw_grid(CurrentGraph, 5, &cost_so_far, nullptr);
+	return reconstruct_path(Start, End, came_from_graph);
+}
+
+int PathFinder:: GetTotalDistance(int xGoal, int yGoal)
+{
+	GraphLocation Goal = { xGoal, yGoal };
+	int TempCost = cost_so_far[Goal];
+	return TempCost;
+}
+

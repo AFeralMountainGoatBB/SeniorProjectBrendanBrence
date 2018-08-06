@@ -129,6 +129,9 @@
     <ClCompile Include="PathfindingAlgorithm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AIPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="dot.bmp">
@@ -280,8 +283,11 @@
     <ClInclude Include="MapAsGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AIDecisions.h">
+    <ClInclude Include="AIPlayer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityInfoDisplay.h">
+      <Filter>Header Files\InterfaceHeaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

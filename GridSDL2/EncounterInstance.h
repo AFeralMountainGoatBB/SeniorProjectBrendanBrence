@@ -9,6 +9,8 @@
 #include "Log.h"
 #include "TargetSystem.h"
 
+class AIPlayer;
+
 class EncounterInstance
 {
 	public:

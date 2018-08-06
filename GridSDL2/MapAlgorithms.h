@@ -20,9 +20,11 @@ public:
 	std::pair<bool,bool> CheckAll(std::pair<int, int> Source, std::pair<int, int> Target, std::vector<std::vector<Tile>> & TileMap);
 	std::pair<bool, bool> CheckTile(int x, int y, std::vector<std::vector<Tile>> & TileMap);
 
+	std::pair<bool, bool> GetBlockedOrObstructed() { return BlockedOrObstructed; }
+
 private:
 	std::vector< std::pair< std::pair<double, double>, std::pair<double, double>>> PairsToCheck;
-	std::pair<bool, bool> BlockedOrObstructed = { false,false };
+	std::pair<bool, bool> BlockedOrObstructed = { false,false }; //first is blocked, true if los blocked, second is obstructed, true if obstructed shot
 	std::pair<bool, bool> TopLeft = { true, false };
 	std::pair<bool, bool> TopRight = { true , false };
 	std::pair<bool, bool> BottomLeft = { true , false };

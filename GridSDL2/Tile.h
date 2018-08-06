@@ -32,6 +32,7 @@ public:
 	int getType();
 
 	bool getPassable();
+	bool getPassableTileType();
 
 	//Get the collision box
 	SDL_Rect getBox();

@@ -13,10 +13,8 @@ public:
 	std::vector<ObjectClass*>& GetItems() { return ItemsPresent; }
 	void RemoveItemAtIndex(int index);
 	ObjectClass* GetItemAtIndex(int index);
-	
-	int GetTotalWeight();
-	void AddWeight();
-	void SubtractWeight();
+
+	bool isItemPresent(std::string name);
 
 private:
 	std::vector<ObjectClass *> ItemsPresent;

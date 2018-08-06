@@ -22,7 +22,12 @@ public:
 	
 	void draw_grid(MapAsGraph& graph, int field_width, std::map<GraphLocation, double>* distances = nullptr, std::map<GraphLocation, GraphLocation>* point_to = nullptr, std::vector<GraphLocation>* path = nullptr);
 
+	std::vector<GraphLocation> UseDijkstra(std::vector<std::vector<Tile>>&TileMap, int xSource, int ySource, int xGoal, int yGoal);
+
+	int GetTotalDistance(int xGoal, int yGoal);
+
 private:
 
 	std::map <GraphLocation, GraphLocation> came_from_graph;
+	std::map<GraphLocation, double> cost_so_far;
 };

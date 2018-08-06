@@ -18,7 +18,7 @@ void MeleeAttack::AttackNormal(EntityClass & Source, EntityClass &Target, Encoun
 	Weapon = Source.GetEquipmentInSlot(MAINHAND);
 	if (Weapon == nullptr)
 	{
-		*Weapon = Source.GetUnarmedStrike();
+		Weapon = &Source.GetUnarmedStrike();
 	}
 	if (Weapon->IsLightWeapon())
 	{

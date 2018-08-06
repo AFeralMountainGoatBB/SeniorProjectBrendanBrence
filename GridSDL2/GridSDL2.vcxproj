@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="39_tiling.cpp" />
+    <ClCompile Include="AIPlayer.cpp" />
     <ClCompile Include="Armor.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="FeatMenu.cpp" />
@@ -74,11 +75,12 @@
     <None Include="lazy.map" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AIDecisions.h" />
+    <ClInclude Include="AIPlayer.h" />
     <ClInclude Include="Armor.h" />
     <ClInclude Include="AttackClass.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="ClassesAndLevels.h" />
+    <ClInclude Include="EntityInfoDisplay.h" />
     <ClInclude Include="FeatMenu.h" />
     <ClInclude Include="InventoryMenu.h" />
     <ClInclude Include="ItemContainer.h" />

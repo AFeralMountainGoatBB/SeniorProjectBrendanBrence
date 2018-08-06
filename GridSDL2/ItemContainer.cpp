@@ -39,3 +39,16 @@ bool ItemContainer::LoadAll()
 
 	return success;
 }
+
+bool ItemContainer::isItemPresent(std::string name)
+{
+	for (auto it = ItemsPresent.begin(); it != ItemsPresent.end(); it++)
+	{
+		if ((*it)->GetName() == name)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}

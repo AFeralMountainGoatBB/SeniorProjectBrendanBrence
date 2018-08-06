@@ -1,5 +1,6 @@
 #include "EncounterInstance.h"
 #include "Armor.h"
+#include "AIPlayer.h"
 
 EncounterInstance::EncounterInstance()
 {
@@ -560,8 +561,10 @@ void EncounterInstance::HandleEvents(SDL_Event &e)
 		//change the location
 		switch (e.key.keysym.sym)
 		{
-		case SDLK_SPACE:
+		case SDLK_SPACE: //next turn!
 		{
+			//reset values
+			ActiveUnit->EndTurnResets();
 			NextInInitiative();
 			break;
 		}	
@@ -603,6 +606,8 @@ bool EncounterInstance::RunEncounter()
 
 	bool quit = false;
 	
+	AIPlayer EnemyPlayers;
+
 			AllEntitySetTexture();
 			RollInitative();
 			ActiveUnit = InitiativeList.front();
@@ -669,6 +674,10 @@ bool EncounterInstance::RunEncounter()
 						TargetSys.SetControlMode(MOVEMODE);
 					}
 					break;
+				case (AIMODE):
+					EnemyPlayers.AITurn(TileMap, *ActiveUnit, *this);
+					ActiveUnit->SetControlMode(MOVEMODE);
+					break;
 				}
 
 		//		std::cout << "Man Moved" << std::endl;
@@ -701,11 +710,14 @@ bool EncounterInstance::RunEncounter()
 				
 			//	std::cout << "People rendered" << std::endl;
 
+				//this is information of the selected unit renderport
 				SDL_RenderSetViewport(gRenderer, &topLeftViewport);
 				SDL_RenderCopy(gRenderer, MenuPort, NULL, NULL);
 
+
 				
 				//MenuPort.render(topLeftViewport.x, topLeftViewport.y, gRenderer);
+				//this is the log viewport
 				SDL_RenderSetViewport(gRenderer, &BottomViewPort);
 				SDL_RenderCopy(gRenderer, BottomPort, NULL, NULL);
 				ActionLog.RenderLog(gRenderer);

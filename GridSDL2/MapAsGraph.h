@@ -32,6 +32,10 @@ public:
 	bool passable(GraphLocation id) const {
 		return walls.find(id) == walls.end();
 	}
+	
+	bool EntityPresent(GraphLocation id) const {
+		return !(Entities.find(id) == Entities.end());
+	}
 
 	double cost(GraphLocation& from, GraphLocation& to)
 	{
@@ -57,12 +61,14 @@ public:
 	int GetWidth() { return width; }
 
 	std::set<GraphLocation>& GetWalls() { return walls; }
+	std::set<GraphLocation>& GetEntities() { return Entities; }
 
 private:
 	static std::vector<GraphLocation> directions;
 	int width = LEVEL_WIDTH / TILE_WIDTH;
 	int height = LEVEL_HEIGHT / TILE_HEIGHT;
 	std::set<GraphLocation> walls;
+	std::set<GraphLocation> Entities;
 };
 
 static bool operator < (GraphLocation a, GraphLocation b) {

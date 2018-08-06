@@ -7,7 +7,7 @@ public:
 	TargetSystem();
 	void HandleTurn(SDL_Event& e);
 	void handleEvent(SDL_Event& e);
-	void move(std::vector<std::vector<Tile>> &TileVector);
+	bool move(std::vector<std::vector<Tile>> &TileVector);
 
 	void SetLocation(int x, int y, std::vector < std::vector < Tile> > &TileMap);
 	//sets where the entity will render

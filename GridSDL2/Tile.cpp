@@ -59,6 +59,18 @@ bool Tile::getPassable()
 	}
 }
 
+bool Tile::getPassableTileType()
+{
+	if (mType >= TILE_CENTER && mType <= TILE_TOPLEFT)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
 int Tile::getType()
 {
 	return mType;

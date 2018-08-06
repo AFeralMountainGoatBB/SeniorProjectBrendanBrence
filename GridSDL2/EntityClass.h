@@ -53,13 +53,14 @@ public:
 	virtual void handleEvent(SDL_Event& e, EncounterInstance &Instance);
 
 	//Moves the entity and checks for out of bounds and collision
-	virtual void move(std::vector<std::vector<Tile>> &TileVector);
+	virtual bool move(std::vector<std::vector<Tile>> &TileVector);
 	void RollInitiative();
 
 	//combat functions
 	bool EntityMeleeAttack(std::vector<std::vector<Tile>> &TileVector, EncounterInstance & Instance);
 	EntityClass* EntityMeleeAttackTile(std::vector<std::vector<Tile>> &TileVector);
 	bool EntityRangedAttack(std::vector<std::vector<Tile>>&TileVector, EncounterInstance &Instance);
+	bool EntityRangedAttack(std::vector<std::vector<Tile>>&TileVector, EncounterInstance &Instance, EntityClass* Target);
 	EntityClass* EntityRangedAttackTile(std::vector<std::vector<Tile>> &TileVector, EncounterInstance &Instance);
 
 	int GetBaseAttackBonus() { return BaseAttackBonus; }
@@ -162,7 +163,8 @@ public:
 	int GetAbilityScore(AbilityScoreType ability) { return AbilityScore[ability]; }
 	int GetMaxDex();
 
-
+	int GetSide() { return TeamSide; }
+	int SetSide(int passed) { TeamSide = passed; }
 
 	bool IsTwoHanding();
 	bool IsDualWielding();
@@ -175,11 +177,18 @@ public:
 
 	int GetInitiative() { return Initiative; }
 	//TargetSystem* GetSelector() { return &Selector; }
+	bool GetIsAlive() { return isAlive;}
+	void SetIsAlive(bool passed) { isAlive = passed; }
+
+	bool isMeleeUnit();
+
+	Direction GetMoveDirection() { return MoveDirection; }
+	void SetMoveDirection(Direction Passed) { MoveDirection = Passed; }
+	void EndTurnResets() { ResetMovementLeft(); ResetActionLeft(); ResetReactionLeft(); }
 protected:
 
 private:
-//	TargetSystem Selector;
-	int Initiative = 0;
+
 	//Collision box of the entity
 	SDL_Rect mBox;
 	bool BlocksMovement = true;
@@ -198,6 +207,7 @@ private:
 	ObjectClass UnarmedStrike;
 
 	bool isProne = false;
+	bool isAlive = true;
 	/*Inherent statistics start*/
 	//the string rep of the name of the entity, mostly for flavor and for user interaction
 	std::string EntityName = "Anonymous";
@@ -212,12 +222,6 @@ private:
 	{WIS, NULL},
 	{CHA, NULL}
 	};
-
-	//std::vector<CreatureType> Type;
-
-	//std::vector<ObjectClass> Equipment;
-	//std::vector<FeatClass> Feats;
-
 	
 	std::map<BodyLocation, ObjectClass*> Equipment =
 	{ //11 slots
@@ -242,6 +246,13 @@ private:
 	
 	int HitPoints=HitPointMaximum;
 	EntitySize ThisSize;
+
+	void ResetMovementLeft() { MovementLeft = 3.0; }
+	void ResetActionLeft() { ActionLeft = true; }
+	void ResetReactionLeft() { ReactionLeft = true; }
+	
+	double MovementLeft = 3.0;
+	int Initiative = 0;
 	/*Inherent Statistics end*/
 
 	/*Derived Statistics Start*/
@@ -249,6 +260,8 @@ private:
 	int BaseAttackBonus=0;
 	int ArmorClass=10;
 
+	bool ActionLeft = true;
+	bool ReactionLeft = true;
 
 	/*Derived Statistics End*/
 
