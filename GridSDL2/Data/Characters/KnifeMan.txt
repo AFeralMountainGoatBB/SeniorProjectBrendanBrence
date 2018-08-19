@@ -12,7 +12,7 @@ Charisma:5
 End Ability Scores:
 
 Equipped:
-MainHand:Shortspear
+MainHand:Longsword
 Body:Chain shirt Armor
 
 End Equipped:
@@ -26,6 +26,8 @@ Feats:
 WeaponFocus Polearm
 Power Attack
 WeaponSpecialization Polearm
+Simple Weapon Proficiency
+Martial Weapon Proficiency
 
 End Feats:
 

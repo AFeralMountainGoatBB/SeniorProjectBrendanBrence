@@ -79,6 +79,7 @@ ObjectClass::ObjectClass( ObjectClass const &other)
 	SpeedReduction = other.SpeedReduction;
 	EquipActions = other.EquipActions;
 	IsShield = other.IsShield;
+	RangeIncrement = other.RangeIncrement;
 	
 	mTexture = other.mTexture;
 
@@ -122,7 +123,25 @@ bool ObjectClass::IsThrowingWeapon()
 
 bool ObjectClass::IsLightWeapon()
 {
+	if (WeaponTypes.empty() == true)
+	{
+		return false;
+	}
+		
 	if (std::find(WeaponTypes.begin(), WeaponTypes.end(), LIGHT) != WeaponTypes.end())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+}
+
+bool ObjectClass::IsMeleeWeapon()
+{
+	if (std::find(WeaponTypes.begin(), WeaponTypes.end(), MELEE) != WeaponTypes.end())
 	{
 		return true;
 	}
@@ -314,6 +333,10 @@ void ObjectClass::AddWeaponType(WeaponType AddType)
 
 std::vector<WeaponType>& ObjectClass:: GetWeaponType()
 {
+	if (WeaponTypes.empty() == true)
+	{
+		WeaponTypes.push_back(IMPROVISED);
+	}
 	return WeaponTypes;
 }
 
@@ -403,16 +426,6 @@ void ObjectClass::DisplayObjectWeaponFacts()
 	std::cout << "End " << ObjectName << std::endl << std::endl;
 	//end weaponfacts
 }
-
-const int ObjectClass::GetRangeIncrement()
-{
-	return RangeIncrement;
-}
-void ObjectClass::SetRangeIncrement(int RIncrem)
-{
-	RangeIncrement = RIncrem;
-}
-
 
 const int ObjectClass::GetArmorBonus()
 {

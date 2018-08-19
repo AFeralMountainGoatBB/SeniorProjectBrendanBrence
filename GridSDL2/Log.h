@@ -22,8 +22,8 @@ public:
 	void SetLogConstraints(int x, int y, int w, int h);
 	void SetLogConstraints(SDL_Rect other);
 
-	int GetXLogConstraint() { return LogConstraints.x; }
-	int GetYLogConstraint() { return LogConstraints.y; }
+	int GetXPanelConstraint() { return LogConstraints.x; }
+	int GetYPanelConstraint() { return LogConstraints.y; }
 
 	void SetFont(TTF_Font* Font);
 	void HandleEvents(SDL_Event& e);
@@ -39,7 +39,7 @@ private:
 	int LogMaximumSize = 100;
 	int LocationLogIndex = 0;
 	int LinesToRender = 6;
-	int LINEHEIGHT=20;
+	int LINEHEIGHT = 20;
 	std::string texturePath;
 
 };

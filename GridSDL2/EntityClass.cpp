@@ -56,11 +56,6 @@ LTexture* EntityClass::GetTexture()
 }
 /*--------------START GETTERS -------------------*/
 
-const int EntityClass::GetHitPoints()
-{
-	return this->HitPoints;
-}
-
 const bool EntityClass::IsBroke()
 {
 	if (HitPoints <= HitPointMaximum / 2)
@@ -104,7 +99,7 @@ std::string EntityClass:: GetName()
 
 bool EntityClass::EntityMeleeAttack(std::vector<std::vector<Tile>> &TileVector, EncounterInstance& Instance)
 {
-	std::cout << "Im attacking now" << std::endl;
+	//std::cout << "Im attacking now" << std::endl;
 	//call EntityMeleeAttackTile, if not null call selected attack roll
 	EntityClass* Target = EntityMeleeAttackTile(TileVector);
 	if (Target != NULL)
@@ -413,40 +408,6 @@ EntityClass* EntityClass::EntityRangedAttackTile(std::vector<std::vector<Tile>> 
 }
 
 
-bool EntityClass::MeleeAttackRoll(EntityClass &Target)
-{
-	//get total bonuses
-	//roll d20+bonuses
-	//compare to target's AC
-	//return true if hit, return false if miss
-	
-	int TotalBonuses = BaseAttackBonus;
-	int AttackRoll = TotalBonuses + DiceRoll(D20);
-	std::cout << EntityName << " attack roll = " << AttackRoll << std::endl;
-	if (AttackRoll >= Target.GetArmorClass())
-	{
-		//then the attack was a success, return true
-		return true;
-	}
-	else
-	{
-		//then the attack fails
-		return false;
-	}
-}
-
-int EntityClass::MeleeAttackDamage(EntityClass &Target)
-{
-	int TotalDamage = 0;
-	//get weapon type and required proficency
-	TotalDamage += DiceRoll(D3);
-	//add all bonuses to damage together, including proficiency bonuses
-	//roll damage and add together
-	//return total damage
-	std::cout << "Dealing " << TotalDamage << " damage";
-	return TotalDamage;
-}
-
 void EntityClass::TakeDamage(int Damage, DamageType DamageType)
 {
 	//find any resistances, immunities calculate as full resistance
@@ -487,16 +448,9 @@ ObjectClass* EntityClass::GetEquipmentInSlot(BodyLocation Location)
 	}
 	return nullptr;
 }
-ObjectClass EntityClass::GetUnarmedStrike()
+void EntityClass::GenerateUnarmedStrike(EncounterInstance &Instance)
 {
-	ObjectClass UnarmedStrike;
-	UnarmedStrike.AddWeaponType(UNARMED);
-	UnarmedStrike.AddWeaponType(LIGHT);
-	UnarmedStrike.AddDamageType(BLUNT);
-	UnarmedStrike.SetBaseWeight(0.0);
-	UnarmedStrike.SetCritInformation(20, 2);
-	UnarmedStrike.SetDamageDice(std::pair<int, DiceType>(1, D3));
-	return UnarmedStrike;
+	this->UnarmedStrike = Instance.GetObjectFromMasterList("Unarmed Strike");
 
 }
 void EntityClass::TwoHandWeapon()
@@ -755,6 +709,9 @@ void EntityClass::handleEvent(SDL_Event& e, EncounterInstance & Instance)
 			{
 				SetControlMode(MOVEMODE);
 			}
+			break;
+		case SDLK_9:
+			this->DisplayFeats();
 			break;
 
 		case SDLK_o:
@@ -1118,6 +1075,7 @@ void EntityClass::SetControlMode(ControlMode NewControl)
 int EntityClass::GetAbilityModifier(AbilityScoreType ability)
 {
 	int temp = (int)(floor((AbilityScore[ability] - 10) / 2));
+	std::cout << "Checking dex, normal: " << temp << std::endl;
 	if (ability == DEX && temp > GetMaxDex())
 	{
 		return GetMaxDex();
@@ -1130,10 +1088,10 @@ int EntityClass::GetAbilityModifier(AbilityScoreType ability)
 
 int EntityClass::GetMaxDex()
 {
-	int max=0;
+	int max=10;
 	for (auto it = Equipment.begin(); it != Equipment.end(); it++)
 	{
-		if ((*it).second != NULL)
+		if ((*it).second != nullptr)
 		{
 			if (max > (*it).second->GetMaxDexBonus())
 			{
@@ -1380,6 +1338,8 @@ bool EntityClass::LoadEntity(std::string name, std::pair<int, int> Location, boo
 	//LoadProperties(reader);
 	TeamSide = side;
 	this->SetLocation(Location.first, Location.second, Instance.GetTileMap());
+	//generate their unarmed attack
+	GenerateUnarmedStrike(Instance);
 
 	std::cout << "Loaded entity: " << this->EntityName << std::endl;
 	return true;

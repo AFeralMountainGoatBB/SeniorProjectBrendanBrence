@@ -23,7 +23,6 @@ public:
 
 	std::pair<int, DiceType> GetDamageDice();
 	void SetDamageDice(std::pair<int,DiceType> DamageDice);
-	std::pair<int, DiceType> CalculateDamageDice();
 
 	bool GetTwoHanded();
 	void SetTwoHanded(bool isTwoHanded);
@@ -59,8 +58,8 @@ public:
 	virtual BodyLocation GetBodySlot();
 	virtual void SetBodySlot(BodyLocation location) { BodySlot = location; }
 
-	const int GetRangeIncrement();
-	void SetRangeIncrement(int increment);
+	int GetRangeIncrement() { return RangeIncrement; }
+	void SetRangeIncrement(int passed) { this->RangeIncrement = passed; }
 
 	const float GetBaseWeight();
 	void SetBaseWeight(float Weight);
@@ -71,6 +70,7 @@ public:
 	bool IsRangedWeapon();
 	bool IsThrowingWeapon();
 	bool IsLightWeapon();
+	bool IsMeleeWeapon();
 
 	void operator=(const ObjectClass* other)
 	{
@@ -115,7 +115,7 @@ private:
 	//Model information
 	std::string ObjectName= "";
 	std::string ObjectDescription = "";
-	std::vector<WeaponType> WeaponTypes = { IMPROVISED }; //types of weapon this is, default improvised
+	std::vector<WeaponType> WeaponTypes = { }; //types of weapon this is, default improvised
 	std::vector<DamageType> DamageTypes = {};
 
 	std::pair<int, DiceType> DamageDice = { 1, D3 };

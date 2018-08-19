@@ -2,53 +2,30 @@
 #include "EntityClass.h"
 #include "EncounterInstance.h"
 //bool for full attack?
+
 void MeleeAttack::AttackNormal(EntityClass & Source, EntityClass &Target, EncounterInstance &Instance)
 {
-	TempFeats = Source.GetActiveFeats();
+	DetermineAndSetWeapon(Source); //semi redundant, guards against nullptr exceptions
+	
 	std::string DamageResult = "";
 	std::string AttackResult = Source.GetName() + " attacks " + Target.GetName()+ ": ";
-	std::vector<CircumstanceType> Circumstances;
-	Circumstances.push_back(MELEEATTACK);
-	if (Source.IsTwoHanding())
-	{
-		Circumstances.push_back(TWOHANDING);
-	}
 	
-	//get mainhand weapon, check for bonuses / penalties add up
-	Weapon = Source.GetEquipmentInSlot(MAINHAND);
-	if (Weapon == nullptr)
-	{
-		Weapon = &Source.GetUnarmedStrike();
-	}
-	if (Weapon->IsLightWeapon())
-	{
-		if (Source.GetAbilityModifier(DEX) >= Source.GetAbilityModifier(STR))
-		{
-			UsesAttributeForAttackRoll = DEX;
-			UsesAttributeForDamageRoll = DEX;
-		}
-	}
-	
-	int TotalAttackRollBonus = TotalWeaponTypeAttackBonus(Source, Weapon);
+	int TotalAttackRollBonus = this->CalcTotalAttackBonus(Source);
 
 	//roll dice and add bonus
 	int RollAmount = DiceRoll(D20);
 	AttackResult += std::to_string(RollAmount) + "+" + std::to_string(TotalAttackRollBonus);
-	if (TotalAttackRollBonus > 0)
-	{
-		AttackResult += "+"; 
-	}
+	
 	AttackResult += "=" + std::to_string(RollAmount + TotalAttackRollBonus);
 	if (RollAmount >= Weapon->GetCritInformation().first)
 	{
 		Critical = true;	
-		//todo calc crit bonuses
 	}
 	
 	AttackResult += " AC: " + std::to_string(Target.GetArmorClass());
 	if (Target.GetArmorClass() <= (RollAmount + TotalAttackRollBonus))
 	{
-		int TotalDamageBonus = CalcTotalDamageBonus(Source, Target, Instance);
+		int TotalDamageBonus = CalcTotalDamageBonus(Source);
 		//attack connected
 		AttackResult += " *Hit*";
 
@@ -118,12 +95,13 @@ void MeleeAttack::AttackNormal(EntityClass & Source, EntityClass &Target, Encoun
 
 bool MeleeAttack::CheckProficiency(EntityClass &Source)
 {
-	std::vector<WeaponType> TempWeaponTypes = Weapon->GetWeaponType();
+	auto TempWeaponTypes = Weapon->GetWeaponType();
 	std::vector<FeatClass> ProfFeats;
 	for (auto i = TempFeats.begin(); i != TempFeats.end(); i++)
 	{
 		if ((i)->GetWeaponProficiencies().size()>0)
 		{
+			//std::cout << "Found a weapon proficiency feat: " << (*i).GetName() << std::endl;
 			ProfFeats.push_back(*i);
 		}
 	}
@@ -131,12 +109,14 @@ bool MeleeAttack::CheckProficiency(EntityClass &Source)
 	//check for the type of weapon and if there are matching feats
 	for (auto Type = TempWeaponTypes.begin(); Type != TempWeaponTypes.end(); Type++)
 	{
+		//std::cout << "checking for type " << WeaponTypeTextMap[(*Type)] << std::endl;
 		//check the proficency feats
 		for (auto i = ProfFeats.begin(); i != ProfFeats.end(); i++)
 		{
 			auto it = find((i)->GetWeaponProficiencies().begin(), (i)->GetWeaponProficiencies().end(), (*Type));
-			if (!(it == (i)->GetWeaponProficiencies().end())) //found
+			if ((it != (i)->GetWeaponProficiencies().end())) //found
 			{
+				//std::cout << "Found proficient feat for weapontype: " << WeaponTypeTextMap[(*Type)] << " feat is: " << (*i).GetName() << std::endl;
 				return true;
 			}
 		}
@@ -150,50 +130,47 @@ void MeleeAttack::AttackDualWield(EntityClass&Source, EntityClass & Target, Enco
 	return;
 }
 
-int MeleeAttack::CalcTotalAttackBonus(EntityClass & Source, EntityClass &Target, EncounterInstance &Instance)
-{
-	Circumstances.push_back(MELEEATTACK);
-	if (Source.IsTwoHanding())
-	{
-		Circumstances.push_back(TWOHANDING);
-	}
-	
-	//get mainhand weapon, check for bonuses / penalties add up
-	Weapon = Source.GetEquipmentInSlot(MAINHAND);
+int MeleeAttack::CalcTotalAttackBonus(EntityClass & Source)
+{	
+	int TotalAttackRollBonus = 0;	
 	if (Weapon == nullptr)
 	{
-		*Weapon = Source.GetUnarmedStrike();
-	}
-	std::vector<WeaponType> TempWeaponTypes = Weapon->GetWeaponType();
-	int CritMult = Weapon->GetCritInformation().second;
-	int TotalAttackRollBonus = 0;
-
-	std::vector<FeatClass> TempFeats = Source.GetActiveFeats();
-	//check for proficency
-	bool isProficient = CheckProficiency(Source);
-	int TotalWeaponAttackBonus = TotalWeaponTypeAttackBonus(Source, Weapon);
-	//check if opponent is prone (+4 to hit melee)
-	if (Target.IsProne())
-	{
-		TotalAttackRollBonus += 4;
-	}
-	if (isProficient != true)
-	{
-		TotalAttackRollBonus -= 4;
+		DetermineAndSetWeapon(Source);
+		DetermineAttbUsed(Source);
 	}
 
-	TotalAttackRollBonus += TotalWeaponAttackBonus;
-	//add base attack bonus and strength bonus!
+	int TotalFeatBonus = TotalFeatAttackBonus(Source);
+	
+	TotalAttackRollBonus += TotalFeatBonus;
+
+	//add base attack bonus and strength bonus (or dex bonus)!
 	int BaBAndStrength = Source.GetBaseAttackBonus() + Source.GetAbilityModifier(UsesAttributeForAttackRoll);
 	TotalAttackRollBonus += BaBAndStrength;
 
 	return TotalAttackRollBonus;
 }
 
-int MeleeAttack::TotalWeaponTypeAttackBonus(EntityClass &Source, ObjectClass* WeaponCalc)
+int MeleeAttack::TotalFeatAttackBonus(EntityClass &Source)
 {
 	int TotalAttackBonus = 0;
+
+	TempFeats = Source.GetActiveFeats();
+
+	if (std::find(Circumstances.begin(), Circumstances.end(), MELEEATTACK) == Circumstances.end())
+	{
+		Circumstances.push_back(MELEEATTACK);
+	}
+	
+	if (Source.IsTwoHanding())
+	{
+		if (std::find(Circumstances.begin(), Circumstances.end(), TWOHANDING) == Circumstances.end())
+		{
+			Circumstances.push_back(TWOHANDING);
+		}
+	}
+
 	auto TempWeaponTypes = Weapon->GetWeaponType();
+	std::cout << "Checking feat bonuses for weapon type for weapon: " << Weapon->GetName() << std::endl;	
 	//get the feats that match the weapontype attackroll for bonuses(add) (subtract)
 	for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
 	{
@@ -201,15 +178,18 @@ int MeleeAttack::TotalWeaponTypeAttackBonus(EntityClass &Source, ObjectClass* We
 		{
 			if ((*it).GetWeaponAttackBonuses().count(*Type)) //true if > 0
 			{
+				std::cout << "Found feat: " << (*it).GetName() << " applies to: " << Weapon->GetName() << std::endl;
+				std::cout << (*it).GetName() << "adds " << (*it).GetWeaponAttackBonuses()[*Type] << " to attack " << std::endl;
 				TotalAttackBonus += ((*it).GetWeaponAttackBonuses())[*Type];
 			}	
 			if ((*it).GetWeaponAttackBonusSubtract().count(*Type)) //true if > 0
 			{
+				std::cout << "Found feat: " << (*it).GetName() << " applies to: " << Weapon->GetName() << std::endl;
+				std::cout << (*it).GetName() << " subtracts " << (*it).GetWeaponAttackBonuses()[*Type] << " from attack " << std::endl;
 				TotalAttackBonus -= ((*it).GetWeaponAttackBonusSubtract())[*Type];
 			}
 		}
 	}
-	
 	//add circumstance feats to hit in
 	for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
 	{
@@ -225,20 +205,25 @@ int MeleeAttack::TotalWeaponTypeAttackBonus(EntityClass &Source, ObjectClass* We
 			}
 		}
 	}
+
+	//check for proficency
 	bool isProficient = CheckProficiency(Source);
 	if (isProficient != true)
 	{
+		std::cout << "Character not proficient" << std::endl;
 		TotalAttackBonus -= 4;
 	}
-
-	int BaBAndAttb = Source.GetBaseAttackBonus() + Source.GetAbilityModifier(UsesAttributeForAttackRoll);
-	TotalAttackBonus += BaBAndAttb;
-
+	std::cout << "Total feat attack bonus" << TotalAttackBonus << std::endl;
 	return TotalAttackBonus;
 }
 
-int MeleeAttack::CalcTotalDamageBonus(EntityClass &Source, EntityClass &Target, EncounterInstance &Instance)
+int MeleeAttack::CalcTotalDamageBonus(EntityClass &Source)
 {
+	if (Weapon == nullptr)
+	{
+		DetermineAndSetWeapon(Source);
+		DetermineAttbUsed(Source);
+	}
 	int TotalDamageBonus = 0;
 	//add damage bonuses
 	//weapontypes
@@ -283,4 +268,26 @@ int MeleeAttack::CalcTotalDamageBonus(EntityClass &Source, EntityClass &Target, 
 		TotalDamageBonus += Source.GetAbilityModifier(STR);
 	}
 	return TotalDamageBonus;
+}
+
+void MeleeAttack::DetermineAttbUsed(EntityClass &Source)
+{
+	if (Weapon->IsLightWeapon())
+	{
+		if (Source.GetAbilityModifier(DEX) >= Source.GetAbilityModifier(STR))
+		{
+			UsesAttributeForAttackRoll = DEX;
+			UsesAttributeForDamageRoll = DEX;
+		}
+	}
+}
+
+void MeleeAttack::DetermineAndSetWeapon(EntityClass &Source)
+{
+	Weapon = Source.GetEquipmentInSlot(MAINHAND);
+	if (Weapon == nullptr)
+	{
+		Weapon = &Source.GetUnarmedStrike();
+		std::cout << "setting to unarmed attack" << Weapon->GetName() << std::endl;
+	}
 }

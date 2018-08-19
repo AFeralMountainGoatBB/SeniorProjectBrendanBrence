@@ -8,6 +8,7 @@
 #include "PickupItemsMenu.h"
 #include "Log.h"
 #include "TargetSystem.h"
+#include "EntityInfoDisplay.h"
 
 class AIPlayer;
 
@@ -31,8 +32,6 @@ class EncounterInstance
 	EntityClass* ActiveUnit;
 	void RollInitative(); 
 	void NextInInitiative();
-	//todo
-	//vector<creatures>
 
 	//The window we'll be rendering to
 	SDL_Window* gWindow = NULL;
@@ -89,6 +88,8 @@ class EncounterInstance
 	int GetMapHeight() { return TileMapHeight; }
 	int GetMapWidth() { return TileMapWidth; }
 
+	ObjectClass GetObjectFromMasterList(std::string name) { return *MasterObjectList[name]; }
+
 private: 
 	static const int TileMapWidth = LEVEL_WIDTH / TILE_WIDTH;
 	static const int TileMapHeight = LEVEL_HEIGHT / TILE_HEIGHT;
@@ -102,6 +103,7 @@ private:
 	std::map<std::string, FeatClass*> MasterFeatList;
 	
 	Log ActionLog;
+	EntityInfoDisplay InfoPanel;
 
 	//resources stuff
 	std::string FontPath = "Data\\Fonts";

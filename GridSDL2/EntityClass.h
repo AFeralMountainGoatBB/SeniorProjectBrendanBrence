@@ -64,11 +64,8 @@ public:
 	EntityClass* EntityRangedAttackTile(std::vector<std::vector<Tile>> &TileVector, EncounterInstance &Instance);
 
 	int GetBaseAttackBonus() { return BaseAttackBonus; }
-	ObjectClass GetUnarmedStrike();
-	bool MeleeAttackRoll(EntityClass &Target);
-	int MeleeAttackDamage(EntityClass &Target);
-	bool RangedAttackRoll(EntityClass &Target);
-	int RangedAttackDamage(EntityClass &Target);
+	ObjectClass& GetUnarmedStrike() { return UnarmedStrike; }
+	void GenerateUnarmedStrike(EncounterInstance& Instance);
 	void TakeDamage(int DamageRecived, DamageType DamageType);
 	int GetTotalDamageReduction();
 	//end combat functions
@@ -98,7 +95,8 @@ public:
 	virtual void render(SDL_Rect& camera, SDL_Renderer *& Renderer);
 
 	//Getters
-	const int GetHitPoints();
+	const int GetHitPoints() { return HitPoints; }
+	const int GetMaxHitPoints() { return HitPointMaximum; }
 	const bool IsBroke();
 
 	//Setters
@@ -112,7 +110,7 @@ public:
 
 	/*Calculating derived values*/
 	int TotalAttackBonus();
-	int MaxHitPoints();
+	int CalcMaxHitPoints();
 	void SetName(std::string name);
 	std::string GetName();
 
@@ -156,9 +154,6 @@ public:
 	std::vector<FeatClass> GetActiveFeats();
 	std::vector<FeatClass*> GetToggleableFeats();
 
-	bool IsProne() { return isProne; }
-	void SwitchProne() { isProne = !isProne; }
-
 	int GetAbilityModifier(AbilityScoreType ability);
 	int GetAbilityScore(AbilityScoreType ability) { return AbilityScore[ability]; }
 	int GetMaxDex();
@@ -185,6 +180,9 @@ public:
 	Direction GetMoveDirection() { return MoveDirection; }
 	void SetMoveDirection(Direction Passed) { MoveDirection = Passed; }
 	void EndTurnResets() { ResetMovementLeft(); ResetActionLeft(); ResetReactionLeft(); }
+
+	int GetMovementLeft() { return MovementLeft; }
+
 protected:
 
 private:
@@ -206,7 +204,6 @@ private:
 	int TeamSide = 0;
 	ObjectClass UnarmedStrike;
 
-	bool isProne = false;
 	bool isAlive = true;
 	/*Inherent statistics start*/
 	//the string rep of the name of the entity, mostly for flavor and for user interaction
@@ -244,7 +241,7 @@ private:
 	ItemContainer BackPack;
 	std::vector <FeatClass> Feats;
 	
-	int HitPoints=HitPointMaximum;
+	
 	EntitySize ThisSize;
 
 	void ResetMovementLeft() { MovementLeft = 3.0; }
@@ -257,6 +254,7 @@ private:
 
 	/*Derived Statistics Start*/
 	int HitPointMaximum=20;
+	int HitPoints=HitPointMaximum;
 	int BaseAttackBonus=0;
 	int ArmorClass=10;
 

@@ -75,6 +75,7 @@ enum WeaponType
 	LIGHT,
 	AMMO,
 	RANGED,
+	MELEE,
 	UNKNOWNWEAPONTYPE=999
 };
 
@@ -249,6 +250,7 @@ static std::map<WeaponType, std::string> WeaponTypeTextMap =
 	{LIGHT, "Light"},
 	{AMMO, "Ammo"},
 	{RANGED, "Ranged"},
+	{MELEE, "Melee" },
 	{UNKNOWNWEAPONTYPE, "Unknown"}
 };
 

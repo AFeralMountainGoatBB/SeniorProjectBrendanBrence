@@ -1,25 +1,25 @@
 //light melee weapons
-Dagger, 			1d4, 19/x2, 10ft, 1lb, Pierce, Thrown, Light, Close
-Punching Dagger,	1d4, 20/x3,  0ft, 1lb, Pierce, Light, Close
-Spiked Gauntlet,	1d4, 20/x2,  0ft, 1lb, Pierce, Light, Unarmed
-Light Mace, 		1d6, 20/x2,	 0ft, 4lb, Blunt, Light, Mace
-Sickle,				1d6, 20/x2,	 0ft, 2lb, Slashing, Light, Close
+Unarmed Strike, 	1d3, 20/x2,	 0ft, 0lb, Blunt, Light, Close, Melee
+Dagger, 			1d4, 19/x2, 10ft, 1lb, Pierce, Thrown, Light, Close, Melee
+Punching Dagger,	1d4, 20/x3,  0ft, 1lb, Pierce, Light, Close, Melee
+Spiked Gauntlet,	1d4, 20/x2,  0ft, 1lb, Pierce, Light, Unarmed, Melee
+Light Mace, 		1d6, 20/x2,	 0ft, 4lb, Blunt, Light, Mace, Melee
+Sickle,				1d6, 20/x2,	 0ft, 2lb, Slashing, Light, Close, Melee
 
 //one hand melee (versatile)
-Club, 				1d6, 20/x2,	10 ft, 3 lb,	Blunt, Mace
-Heavy Mace,			1d8, 20/x2,	 0 ft, 8 lb,	Blunt, Mace
-Morningstar,		1d8, 20/x2,	 0 ft, 6 lb,	Blunt, Mace
-Shortspear,			1d6, 20/x2,	20 ft, 3 lb,	Pierce, Polearm
+Club, 				1d6, 20/x2,	10 ft, 3 lb,	Blunt, Mace, Melee
+Heavy Mace,			1d8, 20/x2,	 0 ft, 8 lb,	Blunt, Mace, Melee
+Morningstar,		1d8, 20/x2,	 0 ft, 6 lb,	Blunt, Mace, Melee
+Shortspear,			1d6, 20/x2,	20 ft, 3 lb,	Pierce, Polearm, Melee
 
 //two handed simple weapons
-Longspear,	1d8,	20/x3,	0ft,	9 lb,	Pierce, Polearm, TwoHanded
+Longspear,	1d8,	20/x3,	0ft,	9 lb,	Pierce, Polearm, TwoHanded, Melee
 //Quarterstaff	1d6/1d6	×2	—	4 lb.	Blunt, TwoHanded
 
-Spear,	1d8,	20/x3,	20 ft,	6 lb,	Pierce, Polearm, TwoHanded
+Spear,	1d8,	20/x3,	20 ft,	6 lb,	Pierce, Polearm, TwoHanded, Melee
 
 //Ranged Simple weapons
 Heavy Crossbow,		1d10, 19/x2, 120 ft,	8 lb,	Pierce, Ranged, Crossbow
-Crossbow bolts, 	 1d4, 20/x2,    0ft,    1 lb,	Improvised, Ammo, Close
 Light Crossbow, 	 1d8, 19/x2,  80 ft,	4 lb,	Pierce, Ranged, Crossbow
 
 Dart,				 1d4, 20/x2,  20 ft,   .5 lb,	Pierce, Light, Thrown

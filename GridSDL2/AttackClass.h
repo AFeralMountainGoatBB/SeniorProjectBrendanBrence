@@ -27,10 +27,15 @@ public:
 	void AttackNormal(EntityClass &Source, EntityClass &Target, EncounterInstance &Instance);
 	void AttackDualWield(EntityClass &Source, EntityClass &Target, EncounterInstance &Instance);
 
-	int CalcTotalAttackBonus(EntityClass & Source, EntityClass &Target, EncounterInstance &Instance);
-	int CalcTotalDamageBonus(EntityClass &Source, EntityClass &Target, EncounterInstance &Instance);
+	void DetermineAndSetWeapon(EntityClass &Source);
 
-	int CritThreatRoll(EntityClass &Source);
+	int CalcTotalDamageBonus(EntityClass &Source);
+
+	int CalcTotalAttackBonus(EntityClass & Source);
+
+	void DetermineAttbUsed(EntityClass & Source);
+
+	int TotalFeatAttackBonus(EntityClass &Source);
 	
 AbilityScoreType UsesAttributeForAttackRoll=STR;
 AbilityScoreType UsesAttributeForDamageRoll=STR;
@@ -42,7 +47,7 @@ private:
 	std::vector<CircumstanceType> Circumstances;
 	ObjectClass* Weapon;
 	bool CheckProficiency(EntityClass &Source);
-	int TotalWeaponTypeAttackBonus(EntityClass &Source, ObjectClass* Weapon);
+	
 };
 
 class RangedAttack :public AttackClass
@@ -53,9 +58,17 @@ public:
 	void AttackDualWield(EntityClass & Source, EntityClass &Target, EncounterInstance &Instance);
 
 	int CalcTotalAttackBonus(EntityClass & Source, EntityClass &Target, EncounterInstance &Instance);
-	int CalcTotalDamageBonus(EntityClass &Source, EntityClass &Target, EncounterInstance &Instance);
+	int CalcTotalDamageBonus(EntityClass &Source, EncounterInstance &Instance);
+
+	int CalcTotalAttackBonus(EntityClass & Source);
 
 	int CalcDistance(EntityClass &Source, EntityClass &Target, EncounterInstance& Instance);
+	int CalcDistancePenalty(EntityClass & Source, EntityClass &Target, EncounterInstance &Instance);
+
+	bool DetermineAndSetWeapon(EntityClass &Source);
+	void DetermineAttbUsed(EntityClass &Source);
+
+	int TotalFeatAttackBonus(EntityClass&Source);
 
 private:
 	AbilityScoreType UsesAttributeForAttackRoll = DEX;
@@ -68,7 +81,7 @@ private:
 	ObjectClass* Weapon;
 	int Distance;
 	bool CheckProficiency(EntityClass &Source);
-	int TotalWeaponTypeAttackBonus(EntityClass &Source, ObjectClass* Weapon);
+
 };
 
 class SpecialAttack :public AttackClass

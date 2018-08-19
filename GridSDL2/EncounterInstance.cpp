@@ -566,6 +566,8 @@ void EncounterInstance::HandleEvents(SDL_Event &e)
 			//reset values
 			ActiveUnit->EndTurnResets();
 			NextInInitiative();
+			InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
+			InfoPanel.SetAllTextures(gRenderer);
 			break;
 		}	
 		}
@@ -604,6 +606,9 @@ bool EncounterInstance::RunEncounter()
 	ActionLog.Setup(TextureFolderPath, Textures, BottomViewPort, gFont);
 	ActionLog.SetLogConstraints(BottomViewPort);
 
+	InfoPanel.Setup(TextureFolderPath, Textures, topLeftViewport, gFont, gRenderer);
+	InfoPanel.SetPanelConstraints(topLeftViewport);
+
 	bool quit = false;
 	
 	AIPlayer EnemyPlayers;
@@ -611,7 +616,9 @@ bool EncounterInstance::RunEncounter()
 			AllEntitySetTexture();
 			RollInitative();
 			ActiveUnit = InitiativeList.front();
-			std::cout << "Active unit is named:" << ActiveUnit->GetName() << std::endl;
+			InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
+			InfoPanel.SetAllTextures(gRenderer);
+			//std::cout << "Active unit is named:" << ActiveUnit->GetName() << std::endl;
 		//	ActiveUnit->SetTexture(GetTextures(), GetTextureFolderPath());
 			std::cout << "Camera created, sdl event created, textures created and assigned, entering running loop" << std::endl;
 			while (!quit)
@@ -713,7 +720,7 @@ bool EncounterInstance::RunEncounter()
 				//this is information of the selected unit renderport
 				SDL_RenderSetViewport(gRenderer, &topLeftViewport);
 				SDL_RenderCopy(gRenderer, MenuPort, NULL, NULL);
-
+				InfoPanel.RenderPanel(gRenderer);
 
 				
 				//MenuPort.render(topLeftViewport.x, topLeftViewport.y, gRenderer);
@@ -1080,7 +1087,8 @@ bool EncounterInstance::LoadWeaponList(std::string list)
 				TempString = TempString.substr(0, TempString.find_first_of("ft"));
 				tempint1 = stoi(TempString);
 				MasterObjectList[name]->SetRangeIncrement(tempint1);
-			//	std::cout << "range increment: " << TempString << std::endl;
+			//	std::cout << "range increment of " <<name << ": " << tempint1 << std::endl;
+			//	std::cout << "range increment of " << name << ": " << MasterObjectList[name]->GetRangeIncrement()<< std::endl;
 
 				//get base weight
 				line = line.substr(line.find_first_of(",") + 1);
@@ -1119,7 +1127,7 @@ bool EncounterInstance::LoadWeaponList(std::string list)
 					}
 					//line = line.substr(line.find(",") + 1);
 				}
-				WeaponType TempW = FindWeaponType(list);
+				WeaponType TempW = FindWeaponType(list); //this line looks at what the list is called, and returns if it has simple, martial, or any other type in the name
 				MasterObjectList[name]->AddWeaponType(TempW);
 				//determine if weapon is versitile
 				auto it = find(MasterObjectList[name]->GetWeaponType().begin(), MasterObjectList[name]->GetWeaponType().end(), LIGHT);
@@ -1392,12 +1400,6 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 				TempFeat->SetDescription(description);
 			}
 
-			if (line.find("Prerequisites:") != std::string::npos)
-			{
-				PreReq = line.substr(line.find(":") + 1);
-				//std::cout << "PreReqs:" << PreReq << std::endl;
-				//todo when creating levelup system
-			}
 
 			if (line.find("Benefit:") != std::string::npos)
 			{
@@ -1702,6 +1704,9 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 
 					if (TempString.find("Proficiency") != std::string::npos)
 					{
+						std::cout << "PROFICIENCY FEAT HERE!!!!" << std::endl;
+						std::cout << "PROFICIENCY FEAT HERE!!!!" << std::endl;
+						std::cout << "PROFICIENCY FEAT HERE!!!!" << std::endl;
 						if (TempString.find("WeaponProficiency") != std::string::npos)
 						{
 							WeaponType WType = FindWeaponType(TempString);
@@ -1917,7 +1922,7 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 						Benefit = Benefit.substr(Benefit.find(".") + 1);
 					}
 					}
-				}//end if find(benefit):
+			}//end if find(benefit):
 
 			if (line.find("Special:")!=std::string::npos)
 			{
