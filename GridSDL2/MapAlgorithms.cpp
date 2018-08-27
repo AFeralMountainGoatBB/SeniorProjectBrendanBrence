@@ -58,7 +58,7 @@ std::pair<bool, bool> SightAlgorithm:: CheckTile(int x, int y, std::vector<std::
 {
 	bool block;
 	bool obstructed;
-	if (TileMap[x][y].getType()>TILE_STONE && TileMap[x][y].getType()!=TILE_WATER)
+	if (TileMap[x][y].getType()>g_TILE_STONE && TileMap[x][y].getType()!=g_TILE_WATER)
 	{
 		block = true;
 	}

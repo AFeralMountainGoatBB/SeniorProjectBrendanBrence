@@ -9,8 +9,8 @@ Tile::Tile()
 	mBox.y = 0;
 
 	//still the same tile and width
-	mBox.w = TILE_WIDTH;
-	mBox.h = TILE_HEIGHT;
+	mBox.w = g_TILE_WIDTH;
+	mBox.h = g_TILE_HEIGHT;
 	//0 should always be a passable tile
 	mType = 0;
 }
@@ -22,8 +22,8 @@ Tile::Tile(int x, int y, int tileType)
 	mBox.y = y;
 
 	//Set the collision box
-	mBox.w = TILE_WIDTH;
-	mBox.h = TILE_HEIGHT;
+	mBox.w = g_TILE_WIDTH;
+	mBox.h = g_TILE_HEIGHT;
 
 	//Get the tile type
 	mType = tileType;
@@ -49,7 +49,7 @@ void Tile::render(SDL_Rect& camera, LTexture &TileTexture, SDL_Rect gTileClips[]
 
 bool Tile::getPassable()
 {
-	if (mType >= TILE_CENTER && mType <= TILE_TOPLEFT || mOccupied==true)
+	if (mType >= g_TILE_CENTER && mType <= g_TILE_TOPLEFT || mOccupied==true)
 	{
 		return false;
 	}
@@ -61,7 +61,7 @@ bool Tile::getPassable()
 
 bool Tile::getPassableTileType()
 {
-	if (mType >= TILE_CENTER && mType <= TILE_TOPLEFT)
+	if (mType >= g_TILE_CENTER && mType <= g_TILE_TOPLEFT)
 	{
 		return false;
 	}

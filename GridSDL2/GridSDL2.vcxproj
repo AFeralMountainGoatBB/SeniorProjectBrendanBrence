@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="39_tiling.cpp" />
+    <ClCompile Include="MainTest.cpp" />
     <ClCompile Include="AIPlayer.cpp" />
     <ClCompile Include="Armor.cpp" />
     <ClCompile Include="Button.cpp" />

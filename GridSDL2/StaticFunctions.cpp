@@ -22,7 +22,7 @@ bool init(SDL_Renderer *&gRenderer, SDL_Window *&gWindow)
 		}
 
 		//Create window
-		gWindow = SDL_CreateWindow("WotC Lawsuit bait", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		gWindow = SDL_CreateWindow("WotC Lawsuit bait", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_SCREEN_WIDTH, g_SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if (gWindow == NULL)
 		{
 			printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
@@ -60,7 +60,7 @@ bool init(SDL_Renderer *&gRenderer, SDL_Window *&gWindow)
 void close(Tile* tiles[], LTexture &gDotTexture, LTexture &gTileTexture, SDL_Renderer*& gRenderer, SDL_Window*& gWindow)
 {
 	//Deallocate tiles
-	for (int i = 0; i < TOTAL_TILES; ++i)
+	for (int i = 0; i < g_TOTAL_TILES; ++i)
 	{
 		if (tiles[i] == NULL)
 		{
@@ -132,10 +132,10 @@ bool checkCollision(SDL_Rect a, SDL_Rect b)
 bool touchesWall(SDL_Rect box, Tile* tiles[])
 {
 	//Go through the tiles
-	for (int i = 0; i < TOTAL_TILES; ++i)
+	for (int i = 0; i < g_TOTAL_TILES; ++i)
 	{
 		//If the tile is a wall type tile
-		if ((tiles[i]->getType() >= TILE_CENTER) && (tiles[i]->getType() <= TILE_TOPLEFT))
+		if ((tiles[i]->getType() >= g_TILE_CENTER) && (tiles[i]->getType() <= g_TILE_TOPLEFT))
 		{
 			//If the collision box touches the wall tile
 			if (checkCollision(box, tiles[i]->getBox()))

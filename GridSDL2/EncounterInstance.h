@@ -22,7 +22,7 @@ class EncounterInstance
 	SDL_Texture * MenuPort;
 	SDL_Texture * BottomPort;
 	TTF_Font *gFont = NULL;
-	SDL_Rect gTileClips[TOTAL_TILE_SPRITES];
+	SDL_Rect gTileClips[g_TOTAL_TILE_SPRITES];
 	//Event handler
 	SDL_Event e;
 
@@ -46,7 +46,7 @@ class EncounterInstance
 	
 	//The window renderer
 	SDL_Renderer* gRenderer = NULL;
-	SDL_Rect camera = { 0, 0, (SCREEN_WIDTH/4)*3, (SCREEN_HEIGHT / 4) * 3 };
+	SDL_Rect camera = { 0, 0, (g_SCREEN_WIDTH/4)*3, (g_SCREEN_HEIGHT / 4) * 3 };
 
 	EncounterInstance();
 
@@ -99,8 +99,8 @@ class EncounterInstance
 	ObjectClass& GetObjectFromMasterList(std::string name) { return *MasterObjectList[name]; }
 
 private: 
-	static const int TileMapWidth = LEVEL_WIDTH / TILE_WIDTH;
-	static const int TileMapHeight = LEVEL_HEIGHT / TILE_HEIGHT;
+	static const int TileMapWidth = g_LEVEL_WIDTH / g_TILE_WIDTH;
+	static const int TileMapHeight = g_LEVEL_HEIGHT / g_TILE_HEIGHT;
 	std::vector < std::vector < Tile> > TileMap;
 	std::vector<EntityClass*> EntityList;
 	std::list<EntityClass*> InitiativeList;

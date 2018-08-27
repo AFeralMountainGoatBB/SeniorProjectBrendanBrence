@@ -177,6 +177,6 @@ public:
 		bool IsShield = false;
 
 		//not loaded into master list
-		std::vector<Modifier> Modifiers = {};
+		
 		std::vector<ArmorType> ArmorTypes = {};
 };

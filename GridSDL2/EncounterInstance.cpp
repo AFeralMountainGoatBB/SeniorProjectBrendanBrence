@@ -27,7 +27,7 @@ bool EncounterInstance::init(SDL_Renderer *&gRenderer, SDL_Window *&gWindow)
 		}
 
 		//Create window
-		gWindow = SDL_CreateWindow("WotC Lawsuit bait", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		gWindow = SDL_CreateWindow("WotC Lawsuit bait", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_SCREEN_WIDTH, g_SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if (gWindow == NULL)
 		{
 			printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
@@ -210,7 +210,7 @@ bool EncounterInstance::loadMedia(LTexture &gDotTexture, LTexture &gTileTexture,
 void EncounterInstance::close(LTexture &gDotTexture, LTexture &gTileTexture, SDL_Renderer*& gRenderer, SDL_Window*& gWindow)
 {
 	//Deallocate tiles
-	for (int i = 0; i < TOTAL_TILES; ++i)
+	for (int i = 0; i < g_TOTAL_TILES; ++i)
 	{
 		//delete tiles
 		}
@@ -317,7 +317,7 @@ bool EncounterInstance::setTiles(SDL_Rect gTileClips[])
 			}
 
 			//If the number is a valid tile number
-			if ((tileType >= 0) && (tileType < TOTAL_TILE_SPRITES))
+			if ((tileType >= 0) && (tileType < g_TOTAL_TILE_SPRITES))
 			{
 			//	std::cout << "Tile type loaded" << std::endl;
 				TileMap[XPos][YPos] = new Tile(x, y, tileType);
@@ -334,16 +334,16 @@ bool EncounterInstance::setTiles(SDL_Rect gTileClips[])
 			}
 
 			//Move to next tile spot
-			x += TILE_WIDTH;
+			x += g_TILE_WIDTH;
 
 			//If we've gone too far
-			if (x >= LEVEL_WIDTH)
+			if (x >= g_LEVEL_WIDTH)
 			{
 				//Move back
 				x = 0;
 
 				//Move to the next row
-				y += TILE_HEIGHT;
+				y += g_TILE_HEIGHT;
 			}
 			}
 			//std::cout << "Row Complete " << std::endl;
@@ -377,65 +377,65 @@ void EncounterInstance::DebugTileMap()
 
 void EncounterInstance::ClipTileSheet(SDL_Rect gTileClips[])
 {
-	gTileClips[TILE_GRASS].x = 0;
-	gTileClips[TILE_GRASS].y = 0;
-	gTileClips[TILE_GRASS].w = TILE_WIDTH;
-	gTileClips[TILE_GRASS].h = TILE_HEIGHT;
+	gTileClips[g_TILE_GRASS].x = 0;
+	gTileClips[g_TILE_GRASS].y = 0;
+	gTileClips[g_TILE_GRASS].w = g_TILE_WIDTH;
+	gTileClips[g_TILE_GRASS].h = g_TILE_HEIGHT;
 
-	gTileClips[TILE_DIRT].x = 0;
-	gTileClips[TILE_DIRT].y = 80;
-	gTileClips[TILE_DIRT].w = TILE_WIDTH;
-	gTileClips[TILE_DIRT].h = TILE_HEIGHT;
+	gTileClips[g_TILE_DIRT].x = 0;
+	gTileClips[g_TILE_DIRT].y = 80;
+	gTileClips[g_TILE_DIRT].w = g_TILE_WIDTH;
+	gTileClips[g_TILE_DIRT].h = g_TILE_HEIGHT;
 
-	gTileClips[TILE_STONE].x = 0;
-	gTileClips[TILE_STONE].y = 160;
-	gTileClips[TILE_STONE].w = TILE_WIDTH;
-	gTileClips[TILE_STONE].h = TILE_HEIGHT;
+	gTileClips[g_TILE_STONE].x = 0;
+	gTileClips[g_TILE_STONE].y = 160;
+	gTileClips[g_TILE_STONE].w = g_TILE_WIDTH;
+	gTileClips[g_TILE_STONE].h = g_TILE_HEIGHT;
 
-	gTileClips[TILE_TOPLEFT].x = 80;
-	gTileClips[TILE_TOPLEFT].y = 0;
-	gTileClips[TILE_TOPLEFT].w = TILE_WIDTH;
-	gTileClips[TILE_TOPLEFT].h = TILE_HEIGHT;
+	gTileClips[g_TILE_TOPLEFT].x = 80;
+	gTileClips[g_TILE_TOPLEFT].y = 0;
+	gTileClips[g_TILE_TOPLEFT].w = g_TILE_WIDTH;
+	gTileClips[g_TILE_TOPLEFT].h = g_TILE_HEIGHT;
 
-	gTileClips[TILE_LEFT].x = 80;
-	gTileClips[TILE_LEFT].y = 80;
-	gTileClips[TILE_LEFT].w = TILE_WIDTH;
-	gTileClips[TILE_LEFT].h = TILE_HEIGHT;
+	gTileClips[g_TILE_LEFT].x = 80;
+	gTileClips[g_TILE_LEFT].y = 80;
+	gTileClips[g_TILE_LEFT].w = g_TILE_WIDTH;
+	gTileClips[g_TILE_LEFT].h = g_TILE_HEIGHT;
 
-	gTileClips[TILE_BOTTOMLEFT].x = 80;
-	gTileClips[TILE_BOTTOMLEFT].y = 160;
-	gTileClips[TILE_BOTTOMLEFT].w = TILE_WIDTH;
-	gTileClips[TILE_BOTTOMLEFT].h = TILE_HEIGHT;
+	gTileClips[g_TILE_BOTTOMLEFT].x = 80;
+	gTileClips[g_TILE_BOTTOMLEFT].y = 160;
+	gTileClips[g_TILE_BOTTOMLEFT].w = g_TILE_WIDTH;
+	gTileClips[g_TILE_BOTTOMLEFT].h = g_TILE_HEIGHT;
 
-	gTileClips[TILE_TOP].x = 160;
-	gTileClips[TILE_TOP].y = 0;
-	gTileClips[TILE_TOP].w = TILE_WIDTH;
-	gTileClips[TILE_TOP].h = TILE_HEIGHT;
+	gTileClips[g_TILE_TOP].x = 160;
+	gTileClips[g_TILE_TOP].y = 0;
+	gTileClips[g_TILE_TOP].w = g_TILE_WIDTH;
+	gTileClips[g_TILE_TOP].h = g_TILE_HEIGHT;
 
-	gTileClips[TILE_CENTER].x = 160;
-	gTileClips[TILE_CENTER].y = 80;
-	gTileClips[TILE_CENTER].w = TILE_WIDTH;
-	gTileClips[TILE_CENTER].h = TILE_HEIGHT;
+	gTileClips[g_TILE_CENTER].x = 160;
+	gTileClips[g_TILE_CENTER].y = 80;
+	gTileClips[g_TILE_CENTER].w = g_TILE_WIDTH;
+	gTileClips[g_TILE_CENTER].h = g_TILE_HEIGHT;
 
-	gTileClips[TILE_BOTTOM].x = 160;
-	gTileClips[TILE_BOTTOM].y = 160;
-	gTileClips[TILE_BOTTOM].w = TILE_WIDTH;
-	gTileClips[TILE_BOTTOM].h = TILE_HEIGHT;
+	gTileClips[g_TILE_BOTTOM].x = 160;
+	gTileClips[g_TILE_BOTTOM].y = 160;
+	gTileClips[g_TILE_BOTTOM].w = g_TILE_WIDTH;
+	gTileClips[g_TILE_BOTTOM].h = g_TILE_HEIGHT;
 
-	gTileClips[TILE_TOPRIGHT].x = 240;
-	gTileClips[TILE_TOPRIGHT].y = 0;
-	gTileClips[TILE_TOPRIGHT].w = TILE_WIDTH;
-	gTileClips[TILE_TOPRIGHT].h = TILE_HEIGHT;
+	gTileClips[g_TILE_TOPRIGHT].x = 240;
+	gTileClips[g_TILE_TOPRIGHT].y = 0;
+	gTileClips[g_TILE_TOPRIGHT].w = g_TILE_WIDTH;
+	gTileClips[g_TILE_TOPRIGHT].h = g_TILE_HEIGHT;
 
-	gTileClips[TILE_RIGHT].x = 240;
-	gTileClips[TILE_RIGHT].y = 80;
-	gTileClips[TILE_RIGHT].w = TILE_WIDTH;
-	gTileClips[TILE_RIGHT].h = TILE_HEIGHT;
+	gTileClips[g_TILE_RIGHT].x = 240;
+	gTileClips[g_TILE_RIGHT].y = 80;
+	gTileClips[g_TILE_RIGHT].w = g_TILE_WIDTH;
+	gTileClips[g_TILE_RIGHT].h = g_TILE_HEIGHT;
 
-	gTileClips[TILE_WATER].x = 240;
-	gTileClips[TILE_WATER].y = 160;
-	gTileClips[TILE_WATER].w = TILE_WIDTH;
-	gTileClips[TILE_WATER].h = TILE_HEIGHT;
+	gTileClips[g_TILE_WATER].x = 240;
+	gTileClips[g_TILE_WATER].y = 160;
+	gTileClips[g_TILE_WATER].w = g_TILE_WIDTH;
+	gTileClips[g_TILE_WATER].h = g_TILE_HEIGHT;
 }
 
 bool EncounterInstance::touchesWall(SDL_Rect box)
@@ -446,7 +446,7 @@ bool EncounterInstance::touchesWall(SDL_Rect box)
 	{
 		for (unsigned x = 0; x < TileMap.size(); x++)
 		{
-			if ((TileMap[x][y].getType() >= TILE_CENTER) && (TileMap[x][y].getType() <= TILE_TOPLEFT))
+			if ((TileMap[x][y].getType() >= g_TILE_CENTER) && (TileMap[x][y].getType() <= g_TILE_TOPLEFT))
 			{
 				if (checkCollision(box, TileMap[x][y].getBox()))
 				{
@@ -603,20 +603,20 @@ bool EncounterInstance::RunEncounter()
 	SDL_Rect topLeftViewport;
 	topLeftViewport.x = 0;
 	topLeftViewport.y = 0;
-	topLeftViewport.w = SCREEN_WIDTH / 4;
-	topLeftViewport.h = (SCREEN_HEIGHT/4)*3;
+	topLeftViewport.w = g_SCREEN_WIDTH / 4;
+	topLeftViewport.h = (g_SCREEN_HEIGHT/4)*3;
 
 	SDL_Rect topRightViewPort;
-	topRightViewPort.x = (SCREEN_WIDTH / 4);
+	topRightViewPort.x = (g_SCREEN_WIDTH / 4);
 	topRightViewPort.y = 0;
-	topRightViewPort.w = (SCREEN_WIDTH / 4) * 3;
-	topRightViewPort.h = (SCREEN_WIDTH / 4) * 3;
+	topRightViewPort.w = (g_SCREEN_WIDTH / 4) * 3;
+	topRightViewPort.h = (g_SCREEN_WIDTH / 4) * 3;
 
 	SDL_Rect BottomViewPort;
 	BottomViewPort.x = 0;
-	BottomViewPort.y = (SCREEN_HEIGHT / 4) * 3;
-	BottomViewPort.h = (SCREEN_HEIGHT / 4);
-	BottomViewPort.w = SCREEN_WIDTH;
+	BottomViewPort.y = (g_SCREEN_HEIGHT / 4) * 3;
+	BottomViewPort.h = (g_SCREEN_HEIGHT / 4);
+	BottomViewPort.w = g_SCREEN_WIDTH;
 
 	ActionLog.AddLog(gRenderer, "Hi please work");
 	ActionLog.AddLog(gRenderer, "random lines");

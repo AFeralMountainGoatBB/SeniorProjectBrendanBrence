@@ -55,7 +55,7 @@ private:
 	bool IsShield = false;
 
 	//not loaded into master list
-	std::vector<Modifier> Modifiers = {};
+	
 	std::vector<ArmorType> ArmorTypes = {};
 	std::vector<WeaponType> WeaponTypes = { IMPROVISED };
 	std::vector<DamageType> DamageTypes = {BLUNT};

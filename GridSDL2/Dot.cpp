@@ -67,7 +67,7 @@ void Dot::move(EncounterInstance &Encounter)
 	mBox.x += mVelX;
 
 	//If the dot went too far to the left or right or touched a wall
-	if ((mBox.x < 0) || (mBox.x + DOT_WIDTH > LEVEL_WIDTH) || Encounter.touchesWall(mBox))
+	if ((mBox.x < 0) || (mBox.x + DOT_WIDTH > g_LEVEL_WIDTH) || Encounter.touchesWall(mBox))
 	{
 		//std::cout << " Collision  left right" << std::endl;
 		//move back
@@ -78,7 +78,7 @@ void Dot::move(EncounterInstance &Encounter)
 	mBox.y += mVelY;
 	std::cout << "y val " << mBox.y << std::endl;
 	//If the dot went too far up or down or touched a wall
-	if ((mBox.y < 0) || (mBox.y + DOT_HEIGHT > LEVEL_HEIGHT) || Encounter.touchesWall(mBox))
+	if ((mBox.y < 0) || (mBox.y + DOT_HEIGHT > g_LEVEL_HEIGHT) || Encounter.touchesWall(mBox))
 	{
 		//std::cout << " Collision top bottom" << std::endl;
 		//move back
@@ -89,8 +89,8 @@ void Dot::move(EncounterInstance &Encounter)
 void Dot::setCamera(SDL_Rect& camera)
 {
 	//Center the camera over the dot
-	camera.x = (mBox.x + DOT_WIDTH / 2) - SCREEN_WIDTH / 2;
-	camera.y = (mBox.y + DOT_HEIGHT / 2) - SCREEN_HEIGHT / 2;
+	camera.x = (mBox.x + DOT_WIDTH / 2) - g_SCREEN_WIDTH / 2;
+	camera.y = (mBox.y + DOT_HEIGHT / 2) - g_SCREEN_HEIGHT / 2;
 
 	//Keep the camera in bounds
 	if (camera.x < 0)
@@ -101,13 +101,13 @@ void Dot::setCamera(SDL_Rect& camera)
 	{
 		camera.y = 0;
 	}
-	if (camera.x > LEVEL_WIDTH - camera.w)
+	if (camera.x > g_LEVEL_WIDTH - camera.w)
 	{
-		camera.x = LEVEL_WIDTH - camera.w;
+		camera.x = g_LEVEL_WIDTH - camera.w;
 	}
-	if (camera.y > LEVEL_HEIGHT - camera.h)
+	if (camera.y > g_LEVEL_HEIGHT - camera.h)
 	{
-		camera.y = LEVEL_HEIGHT - camera.h;
+		camera.y = g_LEVEL_HEIGHT - camera.h;
 	}
 }
 

@@ -65,8 +65,8 @@ public:
 
 private:
 	static std::vector<GraphLocation> directions;
-	int width = LEVEL_WIDTH / TILE_WIDTH;
-	int height = LEVEL_HEIGHT / TILE_HEIGHT;
+	int width = g_LEVEL_WIDTH / g_TILE_WIDTH;
+	int height = g_LEVEL_HEIGHT / g_TILE_HEIGHT;
 	std::set<GraphLocation> walls;
 	std::set<GraphLocation> Entities;
 };

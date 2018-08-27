@@ -3,15 +3,6 @@
 #include <string>
 #include <iostream>
 
-enum EntitySize {
-	TINY, // rats and tiny creatures
-	SMALL, //Children, some elves, fey, pups
-	MEDIUM, // Adult Humans, wolves, small bears, deer
-	LARGE, // horses, smaller giants, seige engines
-	VERYLARGE, //big ol giants of legend, used to be 'HUGE'
-	BUILDING //customsize for rocks, trees, 
-};
-
 enum DiceType {
 	D100 = 100,
 	D20 = 20,
@@ -22,15 +13,6 @@ enum DiceType {
 	D4 = 4,
 	D3 = 3,
 	D2 = 2
-};
-
-enum CreatureType {
-	ANIMAL,
-	HUMANOID,
-	GIANT,
-	FEY,
-	UNDEAD,
-	//more to be added, maybe turned into class
 };
 
 enum AbilityScoreType {
@@ -156,14 +138,6 @@ enum ControlMode
 	AIMODE,
 	SELECTTARGETMODE,
 	NOCONTROLMODE
-};
-
-enum Modifier
-{
-	MASTERWORK,
-	ADAMANTIUM,
-	MITHRIL,
-	ENHANCEMENT
 };
 
 #ifndef BODY_LOCATION_TEXT_MAP

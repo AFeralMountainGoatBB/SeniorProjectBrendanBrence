@@ -10,11 +10,10 @@
 #include "FeatMenu.h"
 #include "PathfindingAlgorithm.h"
 
-EntityClass::EntityClass(int xInitial, int yInitial, int HPMax=0, int HPCurrent=0, EntitySize ThisSize=MEDIUM)
+EntityClass::EntityClass(int xInitial, int yInitial, int HPMax=0, int HPCurrent=0)
 {	
 	this->HitPointMaximum = HPMax;
 	this->HitPoints = HPCurrent;
-	this->ThisSize = ThisSize;
 	mBox.x = 0;
 	mBox.y = 0;
 	mBox.w = ENTITY_WIDTH;
@@ -1023,8 +1022,8 @@ bool EntityClass::move(std::vector<std::vector<Tile>> &TileVector)
 void EntityClass::setCamera(SDL_Rect& camera)
 {
 	//Center the camera over the entity
-	camera.x = (mBox.x + ENTITY_WIDTH / 2) - SCREEN_WIDTH *0.333;
-	camera.y = (mBox.y + ENTITY_HEIGHT / 2) - SCREEN_HEIGHT*0.375;
+	camera.x = (mBox.x + ENTITY_WIDTH / 2) - g_SCREEN_WIDTH *0.333;
+	camera.y = (mBox.y + ENTITY_HEIGHT / 2) - g_SCREEN_HEIGHT*0.375;
 
 	//Keep the camera in bounds
 	if (camera.x < 0)
@@ -1035,13 +1034,13 @@ void EntityClass::setCamera(SDL_Rect& camera)
 	{
 		camera.y = 0;
 	}
-	if (camera.x > LEVEL_WIDTH - camera.w)
+	if (camera.x > g_LEVEL_WIDTH - camera.w)
 	{
-		camera.x = LEVEL_WIDTH - camera.w;
+		camera.x = g_LEVEL_WIDTH - camera.w;
 	}
-	if (camera.y > LEVEL_HEIGHT - camera.h)
+	if (camera.y > g_LEVEL_HEIGHT - camera.h)
 	{
-		camera.y = LEVEL_HEIGHT - camera.h;
+		camera.y = g_LEVEL_HEIGHT - camera.h;
 	}
 }
 

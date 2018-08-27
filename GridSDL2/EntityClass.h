@@ -39,7 +39,7 @@ skill modifiers
 class EntityClass {
 public:
 	//constructors
-	EntityClass(int xInitial, int yInitial, int HPMax, int HPCurrent, EntitySize ThisSize);
+	EntityClass(int xInitial, int yInitial, int HPMax, int HPCurrent);
 	EntityClass();
 	//~EntityClass();
 
@@ -247,8 +247,6 @@ private:
 	ItemContainer BackPack;
 	std::vector <FeatClass> Feats;
 	
-	
-	EntitySize ThisSize;
 
 	void ResetMovementLeft() { MovementLeft = 3.0; }
 	void ResetActionLeft() { ActionLeft = true; }
