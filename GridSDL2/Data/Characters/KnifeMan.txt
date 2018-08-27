@@ -2,7 +2,7 @@ Name:Knife guy
 
 Ability Scores:
 
-Strength: 16
+Strength: 40
 Dexterity: 15
 Constitution: 13
 Intelligence: 12

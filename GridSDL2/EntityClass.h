@@ -41,6 +41,7 @@ public:
 	//constructors
 	EntityClass(int xInitial, int yInitial, int HPMax, int HPCurrent, EntitySize ThisSize);
 	EntityClass();
+	//~EntityClass();
 
 	//The dimensions of the Entity
 	int ENTITY_WIDTH = 80;
@@ -71,11 +72,14 @@ public:
 	//end combat functions
 
 	//combat Armor class functions
-	const int GetArmorClass();
+	int GetArmorClass();
+	int UpdateArmorClass();
 	//const int GetTouchArmorClass();
 
 	//end combat armor class functions
 
+	bool GetAttackLeft() { return ActionLeft; }
+	void SetAttackLeft(bool passed) { ActionLeft = passed; }
 
 	//sets location
 	virtual  void SetLocation(int x, int y, std::vector < std::vector < Tile> > &TileMap);
@@ -97,20 +101,17 @@ public:
 	//Getters
 	const int GetHitPoints() { return HitPoints; }
 	const int GetMaxHitPoints() { return HitPointMaximum; }
+	void SetMaxHitPoints(int passed) { HitPointMaximum = passed; HitPoints = passed; }
+	void SetBaseAttackBonus(int passed) { BaseAttackBonus = passed; }
+
 	const bool IsBroke();
 
 	//Setters
-	void UpdateArmorClass();
 	void AddHitPoints(int addition);
-	void SubHitPoints(int subtraction);
-	void SetHitPoints(int SetHP);
-	void RemoveHitPoints(int removal);
-	void SetSize(EntitySize PassedSize);
-	const EntitySize GetSize();
+	void SubHitPoints(int subtraction) { this->HitPoints -= subtraction; }
+	void SetHitPoints(int SetHP) {	HitPoints = SetHP; }
 
 	/*Calculating derived values*/
-	int TotalAttackBonus();
-	int CalcMaxHitPoints();
 	void SetName(std::string name);
 	std::string GetName();
 
@@ -182,6 +183,11 @@ public:
 	void EndTurnResets() { ResetMovementLeft(); ResetActionLeft(); ResetReactionLeft(); }
 
 	int GetMovementLeft() { return MovementLeft; }
+
+	void EntityDeath(EncounterInstance & Instance);
+	void DropAllWornItems(Tile & tileloc, std::vector<std::vector<Tile>>&TileVector);
+
+	void ClearEquipmentInSlot(BodyLocation Location);
 
 protected:
 
@@ -264,6 +270,7 @@ private:
 	/*Derived Statistics End*/
 
 	LTexture* mTexture;
+	LTexture* SideTexture;
 
 
 	public:

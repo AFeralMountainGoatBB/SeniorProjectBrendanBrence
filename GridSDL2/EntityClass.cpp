@@ -30,6 +30,18 @@ EntityClass::EntityClass()
 	std::cout << "Entity size, H, w : " << mBox.w << " " << mBox.h << std::endl;
 }
 
+/*
+EntityClass::~EntityClass()
+{
+	for (auto it = Equipment.begin(); it != Equipment.end(); it++)
+	{
+		delete (*it).second;
+		(*it).second = nullptr;
+	}
+	delete mTexture;
+	delete SideTexture;
+}
+*/
 void EntityClass::SetTexture(std::map<std::string, LTexture*> &TextureMap, std::string Path)
 {
 	if (TextureMap.count(Path + "\\" + mPathTexture)) 
@@ -43,10 +55,14 @@ void EntityClass::SetTexture(std::map<std::string, LTexture*> &TextureMap, std::
 		mTexture = TextureMap[Path + "\\" + "QuestionMark.png"];
 	}
 
-	/*if (TeamSide != 1)
+	if (TeamSide != 1)
 	{
-		mTexture->setColor(255, 0, 0);
-	}*/
+		SideTexture = TextureMap[Path + "\\" + "red.png"];
+	}
+	else
+	{
+		SideTexture = TextureMap[Path + "\\" + "blue.png"];
+	}
 	
 }
 
@@ -70,15 +86,6 @@ const bool EntityClass::IsBroke()
 /*----------------END GETTERS -------------------*/
 /*----------------START MUTATORS-----------------*/
 
-void EntityClass::RemoveHitPoints(int removal)
-{
-	this->HitPoints -= removal;
-}
-
-void EntityClass::SetHitPoints(int SetHP)
-{
-	HitPoints = SetHP;
-}
 
 void EntityClass::AddHitPoints(int Addition)
 {
@@ -102,16 +109,26 @@ bool EntityClass::EntityMeleeAttack(std::vector<std::vector<Tile>> &TileVector, 
 	//std::cout << "Im attacking now" << std::endl;
 	//call EntityMeleeAttackTile, if not null call selected attack roll
 	EntityClass* Target = EntityMeleeAttackTile(TileVector);
-	if (Target != NULL)
+	if (Target != nullptr)
 	{
-		MeleeAttack Attack;
-		if (!AttackBothHands)
+		if (ActionLeft == true)
 		{
-			Attack.AttackNormal(*this, *Target, Instance);
+
+			MeleeAttack Attack;
+			if (!AttackBothHands)
+			{
+				Attack.AttackNormal(*this, *Target, Instance);
+				this->ActionLeft = false;
+			}
+			else if (AttackBothHands)
+			{
+				Attack.AttackDualWield(*this, *Target, Instance);
+				this->ActionLeft = false;
+			}
 		}
-		else if(AttackBothHands)
+		else
 		{
-			Attack.AttackDualWield(*this, *Target, Instance);
+			std::cout << "No attack left " << std::endl;
 		}
 	}
 
@@ -124,15 +141,26 @@ bool EntityClass::EntityRangedAttack(std::vector<std::vector<Tile>> &TileVector,
 	EntityClass* Target = EntityRangedAttackTile(TileVector, Instance);
 	if (Target != NULL)
 	{
-		std::cout << Target->EntityName << std::endl;
-		RangedAttack Attack;
-		if (!AttackBothHands)
+		if (ActionLeft == true)
 		{
-			Attack.AttackNormal(*this, *Target, Instance);
+			std::cout << Target->EntityName << std::endl;
+			RangedAttack Attack;
+			if (!AttackBothHands)
+			{
+				Attack.AttackNormal(*this, *Target, Instance);
+				this->ActionLeft = false;
+			}
+			else if (AttackBothHands)
+			{
+				Attack.AttackDualWield(*this, *Target, Instance);
+				this->ActionLeft = false;
+			}
+			return true;
 		}
-		else if (AttackBothHands)
+		else
 		{
-			Attack.AttackDualWield(*this, *Target, Instance);
+			std::cout << "No attacks left" << std::endl;
+			return false;
 		}
 	}
 	else
@@ -182,7 +210,7 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 		FaceDirection = NORTH;
 		if (mLocation.second != 0)
 		{
-			if (TileVector[mLocation.first][mLocation.second - 1].GetOccupant())
+			if (TileVector[mLocation.first][mLocation.second - 1].GetOccupant()!=nullptr)
 			{
 				std::cout << "Attacking: " << TileVector[mLocation.first][mLocation.second - 1].GetOccupant()->GetName() << std::endl;
 				MoveDirection = STATIONARY;
@@ -192,7 +220,7 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 			{
 				std::cout << "Attacked an empty tile" << std::endl;
 				MoveDirection = STATIONARY;
-				return NULL;
+				return nullptr;
 			}
 
 		}
@@ -200,7 +228,7 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 		{
 			std::cout << "Cannot Attack There" << std::endl;
 			MoveDirection = STATIONARY;
-			return NULL;
+			return nullptr;
 		}
 		break;
 
@@ -218,7 +246,7 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 			{
 				std::cout << "Attacked an empty tile " << std::endl;
 				MoveDirection = STATIONARY;
-				return NULL;
+				return nullptr;
 			}
 
 		}
@@ -226,7 +254,7 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 		{
 			std::cout << "Cannot attack there" << std::endl;
 			MoveDirection = STATIONARY;
-			return NULL;
+			return nullptr;
 		}
 		break;
 
@@ -244,7 +272,7 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 			{
 				std::cout << "Attacked an empty tile" << std::endl;
 				MoveDirection = STATIONARY;
-				return NULL;
+				return nullptr;
 			}
 
 			}
@@ -252,7 +280,7 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 		{
 			std::cout << "Cannot attack there" << std::endl;
 			MoveDirection = STATIONARY;
-			return NULL;
+			return nullptr;
 		}
 		
 		break;
@@ -272,14 +300,14 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 			{
 				std::cout << "Attacked an empty tile" << std::endl;
 				MoveDirection = STATIONARY;
-				return NULL;
+				return nullptr;
 			}
 		}
 		else
 		{
 			std::cout << "Cannot attack there" << std::endl;
 			MoveDirection = STATIONARY;
-			return NULL;
+			return nullptr;
 		}
 		break;
 
@@ -300,14 +328,14 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 			{
 				std::cout << "Attacked an empty tile" << std::endl;
 				MoveDirection = STATIONARY;
-				return NULL;
+				return nullptr;
 			}
 		}
 		else
 		{
 			std::cout << "Cannot attack there" << std::endl;
 			MoveDirection = STATIONARY;
-			return NULL;
+			return nullptr;
 		}
 		break;
 
@@ -328,14 +356,14 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 			{
 				std::cout << "Attacked an empty tile" << std::endl;
 				MoveDirection = STATIONARY;
-				return NULL;
+				return nullptr;
 			}
 		}
 		else
 		{
 			std::cout << "Cannot attack there" << std::endl;
 			MoveDirection = STATIONARY;
-			return NULL;
+			return nullptr;
 		}
 		break;
 
@@ -356,14 +384,14 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 			{
 				std::cout << "Attacked an empty tile" << std::endl;
 				MoveDirection = STATIONARY;
-				return NULL;
+				return nullptr;
 			}
 		}
 		else
 		{
 			std::cout << "Cannot attack there" << std::endl;
 			MoveDirection = STATIONARY;
-			return NULL;
+			return nullptr;
 		}
 		break;
 
@@ -384,14 +412,14 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 			{
 				std::cout << "Attacked an empty tile" << std::endl;
 				MoveDirection = STATIONARY;
-				return NULL;
+				return nullptr;
 			}
 		}
 		else
 		{
 			std::cout << "Cannot attack there" << std::endl;
 			MoveDirection = STATIONARY;
-			return NULL;
+			return nullptr;
 		}
 		break;
 
@@ -399,7 +427,7 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 	} //end switch statement
 	
 	MoveDirection = STATIONARY;
-	return NULL;
+	return nullptr;
 }
 
 EntityClass* EntityClass::EntityRangedAttackTile(std::vector<std::vector<Tile>> &TileVector, EncounterInstance &Instance)
@@ -407,15 +435,6 @@ EntityClass* EntityClass::EntityRangedAttackTile(std::vector<std::vector<Tile>> 
 	return TileVector[Instance.GetTargetSystem().GetLocation().first][Instance.GetTargetSystem().GetLocation().second].GetOccupant();
 }
 
-
-void EntityClass::TakeDamage(int Damage, DamageType DamageType)
-{
-	//find any resistances, immunities calculate as full resistance
-	//subtract resisted damage from total damage
-	//subtract Damage reduction from total damage
-	//finally subtract from health pool
-	HitPoints -= Damage;
-}
 
 int EntityClass::GetTotalDamageReduction()
 {
@@ -434,10 +453,38 @@ int EntityClass::GetTotalDamageReduction()
 	return TotalDamageReduction;
 }
 
-const int EntityClass::GetArmorClass()
+int EntityClass::GetArmorClass()
 {
 //	std::cout << EntityName << " has armor class of " << ArmorClass << std::endl;
+	ArmorClass = UpdateArmorClass();
 	return ArmorClass;
+}
+
+int EntityClass::UpdateArmorClass()
+{
+	int tempAC = 10;
+	tempAC += GetAbilityModifier(DEX);
+	
+	for (auto it = Equipment.begin(); it != Equipment.end(); it++)
+	{
+		if ((*it).second != nullptr)
+		{
+			tempAC+=(*it).second->GetArmorBonus();
+		}
+	}
+	
+	for (auto it = Feats.begin(); it != Feats.end(); it++)
+	{
+		if ((*it).GetDodgeBonusAdd() > 0)
+		{
+			tempAC += (*it).GetDodgeBonusAdd();
+		}
+		if ((*it).GetDodgeBonusSubtract() > 0)
+		{
+			tempAC -= (*it).GetDodgeBonusSubtract();
+		}
+	}
+	return tempAC;
 }
 
 ObjectClass* EntityClass::GetEquipmentInSlot(BodyLocation Location)
@@ -448,6 +495,16 @@ ObjectClass* EntityClass::GetEquipmentInSlot(BodyLocation Location)
 	}
 	return nullptr;
 }
+
+void EntityClass::ClearEquipmentInSlot(BodyLocation Location)
+{
+	if (Equipment.find(Location) != Equipment.end())
+	{
+		delete Equipment[Location];
+		Equipment[Location] = nullptr;
+	}
+}
+
 void EntityClass::GenerateUnarmedStrike(EncounterInstance &Instance)
 {
 	this->UnarmedStrike = Instance.GetObjectFromMasterList("Unarmed Strike");
@@ -532,6 +589,32 @@ bool EntityClass::DoesSlotExist(BodyLocation Location)
 		temp = true;
 	}
 	return temp;
+}
+
+void EntityClass::EntityDeath(EncounterInstance & Instance)
+{
+	auto location = this->GetLocation();
+	//std::cout << "Dropping items" << std::endl;
+	DropAllWornItems(Instance.GetTileMap()[location.first][location.second], Instance.GetTileMap());
+	//std::cout << "Dropping items from backpack" << std::endl;
+	BackPack.DropAllAtTile(location.first, location.second, Instance.GetTileMap()[location.first][location.second], Instance.GetTileMap());
+	//std::cout << "Removing from init" << std::endl;
+	Instance.RemoveDeadFromLists();
+	//std::cout << "Clearing occupant" << std::endl;
+	Instance.GetTileMap()[location.first][location.second].ClearOccupant();
+	delete this;
+}
+
+void EntityClass::DropAllWornItems(Tile& passedTile, std::vector<std::vector<Tile>> &TileMap)
+{
+	for (auto it = Equipment.begin(); it != Equipment.end(); it++)
+	{
+		if ((*it).second != nullptr)
+		{
+			(*it).second->SetLocation(this->GetLocation().first, this->GetLocation().second, TileMap);
+			(*it).second == nullptr;
+		}
+	}
 }
 
 bool EntityClass::EquipAsWeapon(ObjectClass* Weapon)
@@ -745,6 +828,7 @@ bool EntityClass::move(std::vector<std::vector<Tile>> &TileVector)
 	if (this->MovementLeft <= 0)
 	{
 		//std::cout << "Not enough movement points remaining" << std::endl;
+		MoveDirection = STATIONARY;
 		return false;
 	}
 
@@ -1048,6 +1132,7 @@ void EntityClass::render(SDL_Rect& camera, SDL_Renderer *& Renderer)
 	{
 		//Show the texture
 		mTexture->renderEntity(mBox.x - camera.x, mBox.y - camera.y, Renderer, &mBox, tempangle);
+		SideTexture->renderEntity(mBox.x - camera.x, mBox.y - camera.y, Renderer, &mBox, tempangle);
 		//std::cout << " Entity size " << mBox.h << " " << mBox.w << std::endl;
 	}
 }
@@ -1075,7 +1160,7 @@ void EntityClass::SetControlMode(ControlMode NewControl)
 int EntityClass::GetAbilityModifier(AbilityScoreType ability)
 {
 	int temp = (int)(floor((AbilityScore[ability] - 10) / 2));
-	std::cout << "Checking dex, normal: " << temp << std::endl;
+	//std::cout << "Checking dex, normal: " << temp << std::endl;
 	if (ability == DEX && temp > GetMaxDex())
 	{
 		return GetMaxDex();
@@ -1335,7 +1420,7 @@ bool EntityClass::LoadEntity(std::string name, std::pair<int, int> Location, boo
 	LoadAbilityScores(reader);
 	LoadEquipment(reader, Instance.GetObjectList());
 	LoadFeats(reader, Instance);
-	//LoadProperties(reader);
+	LoadProperties(reader);
 	TeamSide = side;
 	this->SetLocation(Location.first, Location.second, Instance.GetTileMap());
 	//generate their unarmed attack
@@ -1743,4 +1828,66 @@ bool EntityClass::isMeleeUnit()
 	{
 		return true;
 	}
+}
+
+bool EntityClass::LoadProperties(std::ifstream &reader)
+{
+		reader.clear();
+		reader.seekg(0, std::ios::beg);
+		if (reader.is_open())
+		{
+			//std::cout << "reader is open to path" << std::endl;
+		}
+		std::string line;
+		while (getline(reader, line))
+		{
+			std::cout << line << std::endl;
+			//remove comments
+			if (line.find("//") != std::string::npos)
+			{
+				int endchar = line.find("//");
+				line = line.substr(0, endchar);
+				//	std::cout << "ResultAfterComment " << line << std::endl;
+			}//end remove comments block
+
+			 //lowercase the string
+			for (std::string::size_type i = 0; i < line.length(); ++i) {
+				line[i] = tolower(line[i]);
+			}
+
+			int temp = 0;
+			if (line.find("maxhitpoints:") != std::string::npos)
+			{
+				line = line.substr(line.find(":") + 1);
+				try
+				{
+					temp = stoi(line);
+					SetMaxHitPoints(temp);
+					std::cout << "Line: " << line << std::endl;
+					std::cout << "Hitpoints: " << temp << std::endl;
+				}
+				catch (std::exception const & error)
+				{
+					std::cout << "Error in PropertiesLoad" << error.what() << std::endl;
+				}
+
+			}
+			if (line.find("baseattackbonus:") != std::string::npos)
+			{
+				line = line.substr(line.find(":") + 1);
+				try
+				{
+					temp = stoi(line);
+					SetBaseAttackBonus(temp);
+					std::cout << "Line: " << line << std::endl;
+					std::cout << "BaseAttackBonus: " << temp << std::endl;
+				}
+				catch (std::exception const & error)
+				{
+					std::cout << "Error in PropertiesLoad" << error.what() << std::endl;
+				}
+			}
+		}
+		return true;
+
 }

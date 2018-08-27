@@ -81,6 +81,14 @@ void MeleeAttack::AttackNormal(EntityClass & Source, EntityClass &Target, Encoun
 		DamageResult += Target.GetName() + " Resists " + std::to_string(Target.GetTotalDamageReduction());
 		//do damage
 
+		totalDamageRoll -= (Target.GetTotalDamageReduction());
+		Target.SubHitPoints(totalDamageRoll);
+		if (Target.GetHitPoints() <= 0)
+		{
+			std::cout << "Target: " << Target.GetName() << " Has died" << std::endl;
+			Target.EntityDeath(Instance);
+		}
+
 		Instance.AddLog(AttackResult);
 		Instance.AddLog(DamageResult);
 	}

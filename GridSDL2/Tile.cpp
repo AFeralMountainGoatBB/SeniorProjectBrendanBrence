@@ -96,10 +96,9 @@ int Tile::GetWidth()
 	return mBox.w;
 }
 
-
 void Tile::ClearOccupant()
 {
-	Occupant = NULL;
+	Occupant = nullptr;
 	mOccupied = false;
 }
 

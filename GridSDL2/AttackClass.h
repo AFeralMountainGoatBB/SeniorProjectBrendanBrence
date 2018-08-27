@@ -70,6 +70,8 @@ public:
 
 	int TotalFeatAttackBonus(EntityClass&Source);
 
+	void UseAmmo(EntityClass &Source);
+
 private:
 	AbilityScoreType UsesAttributeForAttackRoll = DEX;
 	AbilityScoreType UsesAttributeForDamageRoll = DEX;

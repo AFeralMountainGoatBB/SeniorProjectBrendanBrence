@@ -81,9 +81,6 @@
     <ClCompile Include="Objects.cpp">
       <Filter>Source Files\Data cpp</Filter>
     </ClCompile>
-    <ClCompile Include="EncounterMenuItems.cpp">
-      <Filter>Source Files\Menu cpps</Filter>
-    </ClCompile>
     <ClCompile Include="MainMenu.cpp">
       <Filter>Source Files\Menu cpps</Filter>
     </ClCompile>
@@ -134,6 +131,12 @@
     </ClCompile>
     <ClCompile Include="EntityInfoDisplay.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CharactersAndLevels.cpp">
+      <Filter>Source Files\Data cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="EncounterEndScreen.cpp">
+      <Filter>Source Files\Menu cpps</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -241,9 +244,6 @@
     <ClInclude Include="Feats.h">
       <Filter>Header Files\DataHeaders</Filter>
     </ClInclude>
-    <ClInclude Include="EncounterMenuItems.h">
-      <Filter>Header Files\Menu Headers</Filter>
-    </ClInclude>
     <ClInclude Include="MainMenu.h">
       <Filter>Header Files\Menu Headers</Filter>
     </ClInclude>
@@ -291,6 +291,9 @@
     </ClInclude>
     <ClInclude Include="EntityInfoDisplay.h">
       <Filter>Header Files\InterfaceHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="EncounterEndScreen.h">
+      <Filter>Header Files\Menu Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

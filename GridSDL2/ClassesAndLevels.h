@@ -19,7 +19,7 @@ public:
 	LevelClass* GetLevelFive() { return ProfessionLevelFive; }
 	LevelClass* GetLevelSix() { return ProfessionLevelSix; }
 
-	bool LoadLevels(std::string path);
+	//bool LoadLevels(std::string path);
 
 private:
 	LevelClass* ProfessionLevelOne;
@@ -51,8 +51,6 @@ public:
 	int GetTotalBab() { return TotalBaseAttackBonus; }
 
 private:
-	//currently unused, in future only important in very specific scenarios
-	//ProfessionClass * PartOfProfession;
 
 	int StrengthSaveBonus=0;
 	int WisdomSaveBonus=0;
@@ -62,3 +60,4 @@ private:
 	int TotalBaseAttackBonus=0;
 
 };
+

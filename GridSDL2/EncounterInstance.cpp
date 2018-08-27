@@ -1,6 +1,7 @@
 #include "EncounterInstance.h"
 #include "Armor.h"
 #include "AIPlayer.h"
+#include "InventoryMenu.h"
 
 EncounterInstance::EncounterInstance()
 {
@@ -553,6 +554,28 @@ void EncounterInstance::NextInInitiative()
 	std::cout << "Next Init failed" << std::endl;
 }
 
+void EncounterInstance::RemoveDeadFromLists()
+{
+	auto it = InitiativeList.begin();
+
+	while (it != InitiativeList.end()) {
+		if ((*it)->GetHitPoints()<=0) {
+			it = InitiativeList.erase(it);
+		}
+		else ++it;
+	}
+
+	auto ite = EntityList.begin();
+
+	while (ite != EntityList.end()) {
+		if ((*ite)->GetHitPoints() <= 0) {
+			ite = EntityList.erase(ite);
+		}
+		else ++ite;
+	}
+	
+}
+
 void EncounterInstance::HandleEvents(SDL_Event &e)
 {
 	//If a key was pressed
@@ -623,6 +646,10 @@ bool EncounterInstance::RunEncounter()
 			std::cout << "Camera created, sdl event created, textures created and assigned, entering running loop" << std::endl;
 			while (!quit)
 			{
+				if (ActiveUnit->GetSide() != 1)
+				{
+					ActiveUnit->SetControlMode(AIMODE);
+				}
 			//	std::cout << "starting event loop" << std::endl;
 				//Handle events on queue
 				while (SDL_PollEvent(&e) != 0)
@@ -656,22 +683,39 @@ bool EncounterInstance::RunEncounter()
 				switch (ActiveUnit->GetControlMode())
 				{
 				case(MOVEMODE):
-					ActiveUnit->move(GetTileMap());
+					if (ActiveUnit->move(GetTileMap()) == true)
+					{
+						InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
+						InfoPanel.SetAllTextures(gRenderer);
+					}
+					
 					break;
 				case(MELEEATTACKMODE):
 					ActiveUnit->EntityMeleeAttack(GetTileMap(), *this);
+					quit = CheckForEndOfEncounter();
+					InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
+					InfoPanel.SetAllTextures(gRenderer);
 					break;
 				case(PICKUPMODE):
 					ActiveUnit->EntityPickup(GetTileMap());
 					ActiveUnit->SetControlMode(MOVEMODE);
+					quit = CheckForEndOfEncounter();
+					InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
+					InfoPanel.SetAllTextures(gRenderer);
 					break;
 				case(INVENTORYMODE):
 					ActiveUnit->EntityInventory(GetTileMap());
 					ActiveUnit->SetControlMode(MOVEMODE);
+					quit = CheckForEndOfEncounter();
+					InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
+					InfoPanel.SetAllTextures(gRenderer);
 					break;
 				case(FEATOPTIONMODE):
 					ActiveUnit->EntityFeatMenu();
 					ActiveUnit->SetControlMode(MOVEMODE);
+					quit = CheckForEndOfEncounter();
+					InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
+					InfoPanel.SetAllTextures(gRenderer);
 					break;
 				case(RANGEDATTACKMODE):
 					if (TargetSys.GetControlMode() == SELECTTARGETMODE)
@@ -679,11 +723,19 @@ bool EncounterInstance::RunEncounter()
 						ActiveUnit->SetControlMode(MOVEMODE);
 						ActiveUnit->EntityRangedAttack(GetTileMap(), *this);
 						TargetSys.SetControlMode(MOVEMODE);
+						InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
+						InfoPanel.SetAllTextures(gRenderer);
 					}
+					quit = CheckForEndOfEncounter();
 					break;
 				case (AIMODE):
 					EnemyPlayers.AITurn(TileMap, *ActiveUnit, *this);
-					ActiveUnit->SetControlMode(MOVEMODE);
+					//ActiveUnit->SetControlMode(MOVEMODE);
+					quit = CheckForEndOfEncounter();
+					ActiveUnit->EndTurnResets();
+					NextInInitiative();
+					InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
+					InfoPanel.SetAllTextures(gRenderer);
 					break;
 				}
 
@@ -733,7 +785,11 @@ bool EncounterInstance::RunEncounter()
 				//Update screen
 				SDL_RenderPresent(gRenderer);
 			}
-		
+
+			EncounterEndScreen EndScreen;
+			EndScreen.Show(CheckPlayerWin(), CheckAIWin());
+			EndScreen.EndScreenRun();
+
 		//Free resources and close SDL
 		close(gDotTexture, gTileTexture, gRenderer, gWindow);
 	
@@ -787,6 +843,52 @@ std::string EncounterInstance::GetCharacterFolderPath()
 std::string EncounterInstance::GetItemFolderPath()
 {
 	return ItemFolderPath;
+}
+
+bool EncounterInstance::CheckForEndOfEncounter()
+{
+	bool playerWin = CheckPlayerWin();
+	bool AIWin = CheckAIWin();
+
+	if (playerWin == true)
+	{
+		//set message
+		return true;
+	}
+
+	if (AIWin == true)
+	{
+		//set message
+		return true;
+	}
+	
+	return false;
+}
+
+bool EncounterInstance::CheckPlayerWin()
+{
+	bool win = true;
+	for (auto it = EntityList.begin(); it!=EntityList.end(); it++)
+	{
+		if ((*it)->GetSide() != 1)
+		{
+			win = false;
+		}
+	} //end loop
+	return win;
+}
+
+bool EncounterInstance::CheckAIWin()
+{
+	bool win = true;
+	for (auto it = EntityList.begin(); it != EntityList.end(); it++)
+	{
+		if ((*it)->GetSide() == 1)
+		{
+			win = false;
+		}
+	}
+	return win;
 }
 
 //loading functions
@@ -1113,7 +1215,7 @@ bool EncounterInstance::LoadWeaponList(std::string list)
 					//std::cout << "Adding DamageTypes: " << line << std::endl;
 					line = line.substr(line.find(",")+1);					
 				}
-
+				
 				while (FindWeaponType(line) != UNKNOWNWEAPONTYPE)
 				{
 					WeaponType TempW = FindWeaponType(line);

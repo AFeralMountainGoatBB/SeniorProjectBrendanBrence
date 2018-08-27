@@ -77,6 +77,9 @@ public:
 
 	void IncreaseFeat();
 	void DecreaseFeat();
+
+	int GetDodgeBonusAdd() { return DodgeBonusAdd; }
+	int GetDodgeBonusSubtract() { return DodgeBonusSubtract; }
 private:
 	std::string FeatName = "";
 	std::string description = "";

@@ -10,6 +10,11 @@ Charisma:100
 
 End Ability Scores:
 
+Properties:
+MaxHitPoints: 30
+BaseAttackBonus: 6
+End Properties:
+
 Equipped:
 MainHand:Spear
 Body:Leather Armor

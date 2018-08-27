@@ -1,4 +1,5 @@
 #include "ItemContainer.h"
+#include "Tile.h"
 
 class ObjectClass;
 void ItemContainer::AddItem(ObjectClass* item)
@@ -20,7 +21,18 @@ void ItemContainer::RemoveItemAtIndex(int index)
 	{
 		ItemsPresent.erase(ItemsPresent.begin() + index);
 	}
+}
 
+void ItemContainer::DropAllAtTile(int xpos, int ypos, Tile & tilePassed, std::vector<std::vector<Tile>>&TileVector)
+{
+	for (auto it = ItemsPresent.begin(); it != ItemsPresent.end(); it++)
+	{
+		if ((*it) != nullptr)
+		{
+			(*it)->SetLocation(xpos, ypos, TileVector);
+		}
+	}
+	ItemsPresent.clear();
 }
 
 ObjectClass* ItemContainer::GetItemAtIndex(int index)

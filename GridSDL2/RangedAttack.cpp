@@ -6,6 +6,7 @@
 
 RangedAttack::RangedAttack()
 {
+
 }
 
 void RangedAttack::AttackNormal(EntityClass & Source, EntityClass &Target, EncounterInstance &Instance) 
@@ -132,7 +133,13 @@ void RangedAttack::AttackNormal(EntityClass & Source, EntityClass &Target, Encou
 		}
 		DamageResult += Target.GetName() + " Resists " + std::to_string(Target.GetTotalDamageReduction());
 		//do damage
-
+		totalDamageRoll -= (Target.GetTotalDamageReduction());
+		Target.SubHitPoints(totalDamageRoll);
+		if (Target.GetHitPoints()<=0)
+		{
+			std::cout << "Target: " << Target.GetName() << std::endl;
+			Target.EntityDeath(Instance);
+		}
 		Instance.AddLog(AttackResult);
 		Instance.AddLog(DamageResult);
 	}
@@ -142,42 +149,13 @@ void RangedAttack::AttackNormal(EntityClass & Source, EntityClass &Target, Encou
 		Instance.AddLog(AttackResult);
 	}
 
+	UseAmmo(Source);
+
 	return;
 }
 
 void RangedAttack::AttackDualWield(EntityClass & Source, EntityClass &Target, EncounterInstance &Instance) {
 
-}
-
-int RangedAttack::CalcTotalAttackBonus(EntityClass & Source, EntityClass &Target, EncounterInstance &Instance)
-{
-	
-	//get mainhand weapon, check for bonuses / penalties add up
-	Weapon = Source.GetEquipmentInSlot(MAINHAND);
-	if (Weapon == nullptr)
-	{
-		*Weapon = Source.GetUnarmedStrike();
-	}
-	std::vector<WeaponType> TempWeaponTypes = Weapon->GetWeaponType();
-	int CritMult = Weapon->GetCritInformation().second;
-	int TotalAttackRollBonus = 0;
-
-	std::vector<FeatClass> TempFeats = Source.GetActiveFeats();
-	//check for proficency
-	bool isProficient = CheckProficiency(Source);
-	int TotalWeaponAttackBonus = TotalFeatAttackBonus(Source);
-	
-	if (isProficient != true)
-	{
-		TotalAttackRollBonus -= 4;
-	}
-
-	TotalAttackRollBonus += TotalWeaponAttackBonus;
-	//add base attack bonus and strength bonus!
-	int BaBAndAttb = Source.GetBaseAttackBonus() + Source.GetAbilityModifier(UsesAttributeForAttackRoll);
-	TotalAttackRollBonus += BaBAndAttb;
-
-	return TotalAttackRollBonus;
 }
 
 int RangedAttack::CalcTotalAttackBonus(EntityClass & Source)
@@ -416,4 +394,20 @@ void RangedAttack::DetermineAttbUsed(EntityClass &Source)
 		}
 		return;
 	}
+}
+
+void RangedAttack::UseAmmo(EntityClass &Source)
+{
+	if (Weapon->IsThrowingWeapon())
+	{
+		if ((Source.GetEquipmentInSlot(MAINHAND) != nullptr) && (Source.GetEquipmentInSlot(MAINHAND)->GetName()==Weapon->GetName()))
+		{
+			Source.ClearEquipmentInSlot(MAINHAND);
+		}
+		else if ((Source.GetEquipmentInSlot(OFFHAND) != nullptr) && (Source.GetEquipmentInSlot(OFFHAND)->GetName() == Weapon->GetName()))
+		{
+			Source.ClearEquipmentInSlot(OFFHAND);
+		}
+	}
+
 }

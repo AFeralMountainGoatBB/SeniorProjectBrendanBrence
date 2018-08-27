@@ -15,7 +15,7 @@ public:
 	ObjectClass* GetItemAtIndex(int index);
 
 	bool isItemPresent(std::string name);
-
+	void DropAllAtTile(int xpos, int ypos, Tile &passedTile, std::vector<std::vector<Tile>>&TileVector);
 private:
 	std::vector<ObjectClass *> ItemsPresent;
 	int TotalWeight = 0;

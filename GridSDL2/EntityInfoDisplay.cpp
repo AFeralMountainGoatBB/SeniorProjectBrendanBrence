@@ -203,8 +203,8 @@ std::string EntityInfoDisplay::DetermineHitPointsLabel(EntityClass ActiveUnit, E
 	std::string MaxHP = "";
 	std::string CurrentHP = "";
 
-	MaxHP = std::to_string(ActiveUnit.GetHitPoints());
-	CurrentHP = std::to_string(ActiveUnit.GetMaxHitPoints());
+	CurrentHP = std::to_string(ActiveUnit.GetHitPoints());
+	MaxHP = std::to_string(ActiveUnit.GetMaxHitPoints());
 	HitPointsLabel = "HitPoints: " + CurrentHP + "/" + MaxHP;
 	return HitPointsLabel;
 }
@@ -223,7 +223,7 @@ std::string EntityInfoDisplay::DetermineAttackLeftLabel(EntityClass ActiveUnit, 
 {
 	std::string AttackLeftLabelStore = "";
 	std::string AttackLeft = "";
-	bool AttackLeftBool = true;
+	bool AttackLeftBool = ActiveUnit.GetAttackLeft();
 
 	if (AttackLeftBool == true)
 	{

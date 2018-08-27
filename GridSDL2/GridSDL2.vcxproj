@@ -23,13 +23,14 @@
     <ClCompile Include="AIPlayer.cpp" />
     <ClCompile Include="Armor.cpp" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="CharactersAndLevels.cpp" />
     <ClCompile Include="EntityInfoDisplay.cpp" />
     <ClCompile Include="FeatMenu.cpp" />
     <ClCompile Include="InventoryMenu.cpp" />
     <ClCompile Include="ItemContainer.cpp" />
     <ClCompile Include="Dot.cpp" />
     <ClCompile Include="EncounterInstance.cpp" />
-    <ClCompile Include="EncounterMenuItems.cpp" />
+    <ClCompile Include="EncounterEndScreen.cpp" />
     <ClCompile Include="EntityClass.cpp" />
     <ClCompile Include="GameInstance.cpp" />
     <ClCompile Include="kiss_draw.c" />
@@ -87,7 +88,7 @@
     <ClInclude Include="ItemContainer.h" />
     <ClInclude Include="Dot.h" />
     <ClInclude Include="EncounterInstance.h" />
-    <ClInclude Include="EncounterMenuItems.h" />
+    <ClInclude Include="EncounterEndScreen.h" />
     <ClInclude Include="EntityClass.h" />
     <ClInclude Include="GameInstance.h" />
     <ClInclude Include="Grid.h" />

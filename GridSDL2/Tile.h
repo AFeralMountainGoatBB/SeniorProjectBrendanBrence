@@ -65,7 +65,7 @@ private:
 	bool mOccupied;
 	
 	//pointer to the entity that is standing in this space (tiles can only have, at most, one entity in their space)
-	EntityClass* Occupant = NULL;
+	EntityClass* Occupant = nullptr;
 
 	int PosX;
 	int PosY;

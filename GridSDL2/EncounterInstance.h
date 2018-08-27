@@ -9,6 +9,7 @@
 #include "Log.h"
 #include "TargetSystem.h"
 #include "EntityInfoDisplay.h"
+#include "EncounterEndScreen.h"
 
 class AIPlayer;
 
@@ -32,6 +33,13 @@ class EncounterInstance
 	EntityClass* ActiveUnit;
 	void RollInitative(); 
 	void NextInInitiative();
+	void RemoveDeadFromLists();
+
+	void EndOfTurnChecks();
+	void EndOfEncounterRound();
+	bool CheckForEndOfEncounter();
+	bool CheckPlayerWin();
+	bool CheckAIWin();
 
 	//The window we'll be rendering to
 	SDL_Window* gWindow = NULL;
@@ -44,7 +52,7 @@ class EncounterInstance
 
 	void HandleEvents(SDL_Event &e);
 	
-	bool init(SDL_Renderer *&gRenderer, SDL_Window *&gWindow); // initializes SDL and window we are rendering too
+	bool init(SDL_Renderer *&gRenderer, SDL_Window *&gWindow); // initializes SDL and window we are rendering to
 	bool LoadAllMedia(SDL_Renderer *&Renderer, SDL_Rect &gTileClips);
 	bool loadMedia(LTexture &gDotTexture, LTexture &gTileTexture, LTexture &mEntityTexture, SDL_Renderer *&Renderer, SDL_Rect &gTileClips);
 	bool setTiles(SDL_Rect gTileClips[]);
@@ -66,7 +74,7 @@ class EncounterInstance
 
 	bool UpdateMap(); // update / draw cycle for map
 
-	Tile GetTileAt(int x, int y);
+	Tile & GetTileAt(int x, int y);
 	std::vector< std::vector<Tile>>& GetTileMap();
 
 	void AllocateTileMap(int width, int height);
@@ -88,7 +96,7 @@ class EncounterInstance
 	int GetMapHeight() { return TileMapHeight; }
 	int GetMapWidth() { return TileMapWidth; }
 
-	ObjectClass GetObjectFromMasterList(std::string name) { return *MasterObjectList[name]; }
+	ObjectClass& GetObjectFromMasterList(std::string name) { return *MasterObjectList[name]; }
 
 private: 
 	static const int TileMapWidth = LEVEL_WIDTH / TILE_WIDTH;

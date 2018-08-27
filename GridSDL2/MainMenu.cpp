@@ -68,7 +68,8 @@ void MainMenu::MainMenUUpdate(SDL_Renderer *& renderer)
 
 void MainMenu::quit_button_event(kiss_button *button, SDL_Event *e, int *draw)
 {
-	if (kiss_button_event(button, e, draw)) {
+	if (kiss_button_event(button, e, draw)) 
+	{
 	retval = QUIT;
 	}
 		
