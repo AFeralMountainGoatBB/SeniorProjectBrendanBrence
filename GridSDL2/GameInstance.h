@@ -1,7 +1,6 @@
 #pragma once
 #include "GeneralHeaders.h"
 #include "Tile.h"
-#include "Dot.h"
 #include "Texture.h"
 #include "StaticFunctions.h"
 
@@ -17,15 +16,12 @@ public:
 	//StartGame handles every other function
 	int StartGame();
 	int GuiTesting();
-	int StartGame2();
 
 	//Initializes SDL
 	void InitializeSDL();
 
 	//Handles the main menu and calls ScenarioMenu
 	int MenuOperation();
-
-	bool ScenarioLoad(std::string path);
 
 	int EncounterRun(std::string path);
 
@@ -43,7 +39,7 @@ public:
 	std::string GetScenarioPath();
 	void SetScenarioPath(std::string path);
 private:
-	std::string ScenarioPaths="Data\\Scenarios";
-	std::string selectedScenario = "";
+	std::string m_ScenarioPaths="Data\\Scenarios";
+	std::string m_selectedScenario = "";
 
 };

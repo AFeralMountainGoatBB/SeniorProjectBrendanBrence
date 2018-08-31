@@ -6,9 +6,7 @@ and may not be redistributed without written permission.*/
 
 #include "GeneralHeaders.h"
 #include "GameInstance.h"
-
 #include "Tile.h"
-#include "Dot.h"
 #include "Texture.h"
 #include "StaticFunctions.h"
 
@@ -23,7 +21,7 @@ int main(int argc, char* args[])
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 	GameInstance Master;
 	
-	//int retval = Master.EncounterRun(Master.GetScenarioPath()+"\\"+"Battle of the bridge.txt");
-	int retval = Master.MenuOperation();
-	return retval;
+	//int m_retval = Master.EncounterRun(Master.GetScenarioPath()+"\\"+"Battle of the bridge.txt");
+	int m_retval = Master.MenuOperation();
+	return m_retval;
 }

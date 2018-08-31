@@ -214,7 +214,7 @@ static std::map<WeaponType, std::string> WeaponTypeTextMap =
 	{THROWN, "Thrown"}, //throwing weapons
 	{NATURAL,"Natural"}, //claws and such
 	{UNARMED,"Unarmed"}, //fists, gauntets, cestus, brass knuckles
-	//unarmed is 10, the 11th entry here
+	//unarmed is 10, the 11th m_entry here
 
 	{SIMPLE, "Simple"},
 	{MARTIAL, "Martial"},
@@ -246,7 +246,7 @@ static WeaponType FindWeaponType(std::string line)
 	{
 		if (line.find((*i).second) != std::string::npos)
 		{
-			//	std::cout << "Weapon type found:" << (*i).second << std::endl;
+			//	std::cout << "m_Weapon type found:" << (*i).second << std::endl;
 			return (*i).first;
 		}
 	}

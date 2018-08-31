@@ -16,11 +16,11 @@ public:
 	//determines what enemy entity to target and returns a pointer to them when found
 	EntityClass* SearchForTargetedEntity(std::vector<std::vector<Tile>>&TileMap);
 
-	void SetControlledEntity(EntityClass &NewEntity) { ControlledEntity = &NewEntity; }
-	EntityClass* GetControlledEntity() { return ControlledEntity; }
+	void SetControlledEntity(EntityClass &NewEntity) { m_ControlledEntity = &NewEntity; }
+	EntityClass* GetControlledEntity() { return m_ControlledEntity; }
 
-	void SetTargetEntity(EntityClass &NewEntity) { TargetedEntity = &NewEntity; }
-	EntityClass* GetTargetEntity() { return TargetedEntity; }
+	void SetTargetEntity(EntityClass &NewEntity) { m_TargetedEntity = &NewEntity; }
+	EntityClass* GetTargetEntity() { return m_TargetedEntity; }
 
 	//checks to see if the path is blocked
 	bool CheckPathBlocked(std::vector<std::vector<Tile>>&TileMap);
@@ -38,14 +38,16 @@ public:
 
 	std::vector<GraphLocation> DevelopPathing(std::vector<std::vector<Tile>> &TileMap);
 
-private:
-	std::map<EntityClass*, EntityClass*> TargetMap;
-	std::map<EntityClass*, std::vector<GraphLocation>> EntityPaths;
 
-	EntityClass* ControlledEntity;
-	EntityClass* TargetedEntity;
+
+private:
+	std::map<EntityClass*, EntityClass*> m_TargetMap;
+	std::map<EntityClass*, std::vector<GraphLocation>> m_EntityPaths;
+
+	EntityClass* m_ControlledEntity;
+	EntityClass* m_TargetedEntity;
 
 	Direction FindDirection();
 	Direction FindDirection(int xTarget, int yTarget);
-	
+
 };

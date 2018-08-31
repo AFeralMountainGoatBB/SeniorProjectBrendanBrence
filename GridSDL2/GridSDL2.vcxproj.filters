@@ -42,9 +42,6 @@
     <ClCompile Include="Tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -64,9 +61,6 @@
       <Filter>Source Files\Kiss_SDL stuff</Filter>
     </ClCompile>
     <ClCompile Include="EncounterInstance.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerCharacter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EntityClass.cpp">
@@ -128,9 +122,6 @@
     </ClCompile>
     <ClCompile Include="EntityInfoDisplay.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CharactersAndLevels.cpp">
-      <Filter>Source Files\Data cpp</Filter>
     </ClCompile>
     <ClCompile Include="EncounterEndScreen.cpp">
       <Filter>Source Files\Menu cpps</Filter>
@@ -196,13 +187,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Dot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Grid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tile.h">
@@ -232,13 +217,7 @@
     <ClInclude Include="PlayerCharacter.h">
       <Filter>Header Files\EntityTypesHFiles</Filter>
     </ClInclude>
-    <ClInclude Include="Races.h">
-      <Filter>Header Files\DataHeaders</Filter>
-    </ClInclude>
     <ClInclude Include="Objects.h">
-      <Filter>Header Files\DataHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="ClassesAndLevels.h">
       <Filter>Header Files\DataHeaders</Filter>
     </ClInclude>
     <ClInclude Include="Feats.h">

@@ -74,7 +74,7 @@ typedef struct kiss_dir {
 	ptrdiff_t fhandle;
 	struct _finddata_t fdata;
 	kiss_dirent ent;
-	char name[KISS_MAX_LENGTH];
+	char m_name[KISS_MAX_LENGTH];
 } kiss_dir;
 #else
 typedef struct stat kiss_stat;
@@ -102,7 +102,7 @@ typedef struct kiss_font {
 	TTF_Font *font;
 	int magic;
 	int fontheight;
-	int spacing;
+	int m_spacing;
 	int lineheight;
 	int advance;
 	int ascent;
@@ -249,7 +249,7 @@ typedef struct kiss_textbox {
 typedef struct kiss_combobox {
 	int visible;
 	char text[KISS_MAX_LENGTH];
-	kiss_entry entry;
+	kiss_entry m_entry;
 	kiss_window window;
 	kiss_vscrollbar vscrollbar;
 	kiss_textbox textbox;
@@ -280,7 +280,7 @@ extern "C" {
 char *kiss_getcwd(char *buf, int size);
 int kiss_chdir(char *path);
 int kiss_getstat(char *pathname, kiss_stat *buf);
-kiss_dir *kiss_opendir(char *name);
+kiss_dir *kiss_opendir(char *m_name);
 kiss_dirent *kiss_readdir(kiss_dir *dirp);
 int kiss_closedir(kiss_dir *dirp);
 int kiss_isdir(kiss_stat s);
@@ -306,65 +306,65 @@ int kiss_array_free(kiss_array *a);
 unsigned int kiss_getticks(void);
 int kiss_maxlength(kiss_font font, int width, char *str1, char *str2);
 int kiss_textwidth(kiss_font font, char *str1, char *str2);
-int kiss_renderimage(SDL_Renderer *renderer, kiss_image image,
+int kiss_renderimage(SDL_Renderer *m_renderer, kiss_image image,
 	int x, int y, SDL_Rect *clip);
-int kiss_rendertext(SDL_Renderer *renderer, char *text, int x, int y,
+int kiss_rendertext(SDL_Renderer *m_renderer, char *text, int x, int y,
 	kiss_font font, SDL_Color color);
-int kiss_fillrect(SDL_Renderer *renderer, SDL_Rect *rect, SDL_Color color);
-int kiss_decorate(SDL_Renderer *renderer, SDL_Rect *rect, SDL_Color color,
+int kiss_fillrect(SDL_Renderer *m_renderer, SDL_Rect *rect, SDL_Color color);
+int kiss_decorate(SDL_Renderer *m_renderer, SDL_Rect *rect, SDL_Color color,
 	int edge);
 int kiss_image_new(kiss_image *image, char *fname, kiss_array *a,
-	SDL_Renderer* renderer);
+	SDL_Renderer* m_renderer);
 int kiss_font_new(kiss_font *font, char *fname, kiss_array *a, int size);
 SDL_Renderer* kiss_init(char* title, kiss_array *a, int w, int h);
 int kiss_clean(kiss_array *a);
 int kiss_window_new(kiss_window *window, kiss_window *wdw, int decorate, int x, int y, int w, int h);
-int kiss_window_event(kiss_window *window, SDL_Event *event, int *draw);
-int kiss_window_draw(kiss_window *window, SDL_Renderer *renderer);
+int kiss_window_event(kiss_window *window, SDL_Event *event, int *m_draw);
+int kiss_window_draw(kiss_window *window, SDL_Renderer *m_renderer);
 int kiss_label_new(kiss_label *label, kiss_window *wdw, char *text,
 	int x, int y);
-int kiss_label_draw(kiss_label *label, SDL_Renderer *renderer);
+int kiss_label_draw(kiss_label *label, SDL_Renderer *m_renderer);
 int kiss_button_new(kiss_button *button, kiss_window *wdw, char *text,
 	int x, int y);
-int kiss_button_event(kiss_button *button, SDL_Event *event, int *draw);
-int kiss_button_draw(kiss_button *button, SDL_Renderer *renderer);
+int kiss_button_event(kiss_button *button, SDL_Event *event, int *m_draw);
+int kiss_button_draw(kiss_button *button, SDL_Renderer *m_renderer);
 int kiss_selectbutton_new(kiss_selectbutton *selectbutton, kiss_window *wdw,
 	int x, int y);
 int kiss_selectbutton_event(kiss_selectbutton *selectbutton,
-	SDL_Event *event, int *draw);
+	SDL_Event *event, int *m_draw);
 int kiss_selectbutton_draw(kiss_selectbutton *selectbutton,
-	SDL_Renderer *renderer);
+	SDL_Renderer *m_renderer);
 int kiss_vscrollbar_new(kiss_vscrollbar *vscrollbar, kiss_window *wdw,
 	int x, int y, int h);
 int kiss_vscrollbar_event(kiss_vscrollbar *vscrollbar, SDL_Event *event,
-	int *draw);
+	int *m_draw);
 int kiss_vscrollbar_draw(kiss_vscrollbar *vscrollbar,
-	SDL_Renderer *renderer);
+	SDL_Renderer *m_renderer);
 int kiss_hscrollbar_new(kiss_hscrollbar *hscrollbar, kiss_window *wdw,
 	int x, int y, int w);
 int kiss_hscrollbar_event(kiss_hscrollbar *hscrollbar, SDL_Event *event,
-	int *draw);
+	int *m_draw);
 int kiss_hscrollbar_draw(kiss_hscrollbar *hscrollbar,
-	SDL_Renderer *renderer);
+	SDL_Renderer *m_renderer);
 int kiss_progressbar_new(kiss_progressbar *progressbar, kiss_window *wdw,
 	int x, int y, int w);
 int kiss_progressbar_event(kiss_progressbar *progressbar, SDL_Event *event,
-	int *draw);
+	int *m_draw);
 int kiss_progressbar_draw(kiss_progressbar *progressbar,
-	SDL_Renderer *renderer);
-int kiss_entry_new(kiss_entry *entry, kiss_window *wdw, int decorate,
+	SDL_Renderer *m_renderer);
+int kiss_entry_new(kiss_entry *m_entry, kiss_window *wdw, int decorate,
 	char *text, int x, int y, int w);
-int kiss_entry_event(kiss_entry *entry, SDL_Event *event, int *draw);
-int kiss_entry_draw(kiss_entry *entry, SDL_Renderer *renderer);
+int kiss_entry_event(kiss_entry *m_entry, SDL_Event *event, int *m_draw);
+int kiss_entry_draw(kiss_entry *m_entry, SDL_Renderer *m_renderer);
 int kiss_textbox_new(kiss_textbox *textbox, kiss_window *wdw, int decorate,
 	kiss_array *a, int x, int y, int w, int h);
-int kiss_textbox_event(kiss_textbox *textbox, SDL_Event *event, int *draw);
-int kiss_textbox_draw(kiss_textbox *textbox, SDL_Renderer *renderer);
+int kiss_textbox_event(kiss_textbox *textbox, SDL_Event *event, int *m_draw);
+int kiss_textbox_draw(kiss_textbox *textbox, SDL_Renderer *m_renderer);
 int kiss_combobox_new(kiss_combobox *combobox, kiss_window *wdw,
 	char *text, kiss_array *a, int x, int y, int w, int h);
 int kiss_combobox_event(kiss_combobox *combobox, SDL_Event *event,
-	int *draw);
-int kiss_combobox_draw(kiss_combobox *combobox, SDL_Renderer *renderer);
+	int *m_draw);
+int kiss_combobox_draw(kiss_combobox *combobox, SDL_Renderer *m_renderer);
 
 #ifdef __cplusplus
 }

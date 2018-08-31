@@ -11,8 +11,8 @@ public:
 	ArmorObject(const ArmorObject &Other);
 	ArmorObject(ObjectClass &Other);
 
-	void SetBodySlot(BodyLocation location) { BodySlot = location; }
-	BodyLocation GetBodySlot() { return this->BodySlot; }
+	void SetBodySlot(BodyLocation location) { m_BodySlot = location; }
+	BodyLocation GetBodySlot() { return this->m_BodySlot; }
 
 	const int GetArmorBonus();
 	void SetArmorBonus(int bonus);
@@ -27,7 +27,7 @@ public:
 	void SetArmorCheckPen(int penalty);
 
 	int GetSpeedReduction();
-	void SetSpeedReduction(int SpeedReduction);
+	void SetSpeedReduction(int m_speedReduction);
 
 	int GetEquipActions();
 	void SetEquipActions(int actions);
@@ -40,57 +40,57 @@ public:
 
 	void DisplayArmorInfo();
 	
-	std::string GetName() { return ObjectName; }
-	void SetName(std::string name) { ObjectName = name; }
+	std::string GetName() { return m_ObjectName; }
+	void SetName(std::string m_name) { m_ObjectName = m_name; }
 
-	std::pair<int, int> GetLocation(){return mLocation;}
+	std::pair<int, int> GetLocation(){return m_Location;}
 
 private:
-	int ArmorBonus=0;
-	int DamageReduction=0;
-	int MaxDexBonus=0;
-	int ArmorCheckPenalty=0;
-	int SpeedReduction=0;
-	int EquipActions=0;
-	bool IsShield = false;
+	int m_armorBonus=0;
+	int m_damageReduction=0;
+	int m_maxDexBonus=0;
+	int m_armorCheckPenalty=0;
+	int m_speedReduction=0;
+	int m_equipActions=0;
+	bool m_isShield = false;
 
 	//not loaded into master list
 	
-	std::vector<ArmorType> ArmorTypes = {};
-	std::vector<WeaponType> WeaponTypes = { IMPROVISED };
-	std::vector<DamageType> DamageTypes = {BLUNT};
+	std::vector<ArmorType> m_armorTypes = {};
+	std::vector<WeaponType> m_weaponTypes = { IMPROVISED };
+	std::vector<DamageType> m_damageTypes = {BLUNT};
 
-	std::pair<int, DiceType> DamageDice = { 1, D4 };
+	std::pair<int, DiceType> m_damageDice = { 1, D4 };
 	//inherited values
-	SDL_Rect mBox = { 0,0,70,70 };
-	std::string mPathTexture = "Armor1.png";
-	LTexture* mTexture;
-	std::pair<int, int> mLocation = { 0,0 };
+	SDL_Rect m_Box = { 0,0,70,70 };
+	std::string m_PathTexture = "Armor1.png";
+	LTexture* m_Texture;
+	std::pair<int, int> m_Location = { 0,0 };
 
 	//The dimensions of the Entity
-	int OBJECT_WIDTH = 70;
-	int OBJECT_HEIGHT = 70;
+	int m_OBJECT_WIDTH = 70;
+	int m_OBJECT_HEIGHT = 70;
 
 	//Model information
-	std::string ObjectName = "";
-	std::string ObjectDescription = "";
+	std::string m_ObjectName = "";
+	std::string m_ObjectDescription = "";
 
-	float Weight = 0.0; //how much does the item weigh? Unimportant save for carrying capacity and determining 2h for improvised weapons
+	float m_Weight = 0.0; //how much does the item weigh? Unimportant save for carrying capacity and determining 2h for improvised weapons
 
-	bool TwoHanded; //does it have to take up both hand slots?
-	bool Versatile; //can it be weilded in 2 hands? (example, longsword)
+	bool m_TwoHanded; //does it have to take up both hand slots?
+	bool m_Versatile; //can it be weilded in 2 hands? (example, longsword)
 
-	int RangeIncrement = 0;
-	BodyLocation BodySlot = BODY; //indicates where this item can be used (manhand and offhand are interchangable)
+	int m_RangeIncrement = 0;
+	BodyLocation m_BodySlot = BODY; //indicates where this item can be used (manhand and offhand are interchangable)
 
-	int CritMultiplier = 2;
-	int CritThreat = 20;
+	int m_CritMultiplier = 2;
+	int m_CritThreat = 20;
 
 public:
 	//rendering functions
-	LTexture * GetTexture() { return mTexture; }
-	void SetPathTexture(std::string path) { mPathTexture = path; }
-	std::string GetPathTexture() { return mPathTexture; }
+	LTexture * GetTexture() { return m_Texture; }
+	void SetPathTexture(std::string path) { m_PathTexture = path; }
+	std::string GetPathTexture() { return m_PathTexture; }
 	void SetTexture(std::map<std::string, LTexture*> TextureMap, std::string Path);
 
 	void SetLocation(int x, int y, std::vector < std::vector < Tile> > &TileMap);
@@ -100,7 +100,5 @@ public:
 	std::pair<int, int> CalcRendLocation(std::vector<std::vector<Tile>> &Map);
 
 	void render(SDL_Rect& camera, SDL_Renderer *& Renderer);
-
-
 
 };

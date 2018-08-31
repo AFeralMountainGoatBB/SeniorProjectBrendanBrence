@@ -23,12 +23,10 @@
     <ClCompile Include="AIPlayer.cpp" />
     <ClCompile Include="Armor.cpp" />
     <ClCompile Include="Button.cpp" />
-    <ClCompile Include="CharactersAndLevels.cpp" />
     <ClCompile Include="EntityInfoDisplay.cpp" />
     <ClCompile Include="FeatMenu.cpp" />
     <ClCompile Include="InventoryMenu.cpp" />
     <ClCompile Include="ItemContainer.cpp" />
-    <ClCompile Include="Dot.cpp" />
     <ClCompile Include="EncounterInstance.cpp" />
     <ClCompile Include="EncounterEndScreen.cpp" />
     <ClCompile Include="EntityClass.cpp" />
@@ -44,7 +42,6 @@
     <ClCompile Include="Objects.cpp" />
     <ClCompile Include="PathfindingAlgorithm.cpp" />
     <ClCompile Include="PickupItemsMenu.cpp" />
-    <ClCompile Include="PlayerCharacter.cpp" />
     <ClCompile Include="Feats.cpp" />
     <ClCompile Include="RangedAttack.cpp" />
     <ClCompile Include="ScenarioMenu.cpp" />
@@ -81,17 +78,14 @@
     <ClInclude Include="Armor.h" />
     <ClInclude Include="AttackClass.h" />
     <ClInclude Include="Button.h" />
-    <ClInclude Include="ClassesAndLevels.h" />
     <ClInclude Include="EntityInfoDisplay.h" />
     <ClInclude Include="FeatMenu.h" />
     <ClInclude Include="InventoryMenu.h" />
     <ClInclude Include="ItemContainer.h" />
-    <ClInclude Include="Dot.h" />
     <ClInclude Include="EncounterInstance.h" />
     <ClInclude Include="EncounterEndScreen.h" />
     <ClInclude Include="EntityClass.h" />
     <ClInclude Include="GameInstance.h" />
-    <ClInclude Include="Grid.h" />
     <ClInclude Include="GeneralHeaders.h" />
     <ClInclude Include="kiss_sdl.h" />
     <ClInclude Include="Log.h" />
@@ -103,7 +97,6 @@
     <ClInclude Include="PickupItemsMenu.h" />
     <ClInclude Include="PlayerCharacter.h" />
     <ClInclude Include="Feats.h" />
-    <ClInclude Include="Races.h" />
     <ClInclude Include="ScenarioMenu.h" />
     <ClInclude Include="SharedEnums.h" />
     <ClInclude Include="StaticFunctions.h" />

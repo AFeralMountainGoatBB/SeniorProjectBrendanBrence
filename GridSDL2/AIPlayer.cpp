@@ -3,32 +3,32 @@
 #include "EncounterInstance.h"
 #include "MapAlgorithms.h"
 
-void AIPlayer::AITurn(std::vector<std::vector<Tile>>& TileMap, EntityClass &ControlEntity, EncounterInstance & Instance)
+void AIPlayer::AITurn(std::vector<std::vector<Tile>>& a_TileMap, EntityClass &a_ControlEntity, EncounterInstance & a_Instance)
 {
 	//the passed entity is the active unit, set as controlled entity and see if we need to recalculate targets
-	SetControlledEntity(ControlEntity);
+	SetControlledEntity(a_ControlEntity);
 	
 	//is the unit primarily a melee unit, true if melee, false if ranged
-	bool MeleeUnit = ControlledEntity->isMeleeUnit();
+	bool MeleeUnit = m_ControlledEntity->isMeleeUnit();
 
-	//we keep track of this to see if we need to draw a new path or find a new target
-	bool ResetTargetOrPath = this->CheckResetTargetOrPath(TileMap);
+	//we keep track of this to see if we need to m_draw a new path or find a new target
+	bool ResetTargetOrPath = this->CheckResetTargetOrPath(a_TileMap);
 
 	if (ResetTargetOrPath == true)
 	{
 	//for whatever reason we need to develop a target for this entity, and develop a path for it
-	TargetedEntity = SearchForTargetedEntity(TileMap);
-	if (TargetedEntity == nullptr)
+	m_TargetedEntity = SearchForTargetedEntity(a_TileMap);
+	if (m_TargetedEntity == nullptr)
 	{
 		std::cout << "AI has no valid targets, ending turn" << std::endl;
 		return;
 	}
-	TargetMap[ControlledEntity] = TargetedEntity;
-	EntityPaths[ControlledEntity] = DevelopPathing(TileMap);
+	m_TargetMap[m_ControlledEntity] = m_TargetedEntity;
+	m_EntityPaths[m_ControlledEntity] = DevelopPathing(a_TileMap);
 	}
 	else
 	{
-		TargetMap[ControlledEntity] = TargetedEntity;
+		m_TargetMap[m_ControlledEntity] = m_TargetedEntity;
 	}
 	
 	
@@ -42,20 +42,20 @@ void AIPlayer::AITurn(std::vector<std::vector<Tile>>& TileMap, EntityClass &Cont
 		while (endTurn==false)
 		{
 			//this if statement checks if target is in melee range
-			if ((abs(ControlledEntity->GetLocation().first - TargetedEntity->GetLocation().first) <= 1)
+			if ((abs(m_ControlledEntity->GetLocation().first - m_TargetedEntity->GetLocation().first) <= 1)
 				&& 
-				(abs(ControlledEntity->GetLocation().second - TargetedEntity->GetLocation().second) <= 1) )
+				(abs(m_ControlledEntity->GetLocation().second - m_TargetedEntity->GetLocation().second) <= 1) )
 			{
 				std::cout << "I want to attack" << std::endl;
-				ControlledEntity->SetMoveDirection(this->FindDirection());
-				ControlledEntity->EntityMeleeAttack(TileMap, Instance);
+				m_ControlledEntity->SetMoveDirection(this->FindDirection());
+				m_ControlledEntity->EntityMeleeAttack(a_TileMap, a_Instance);
 				endTurn = true;
 			}
-			else if (EntityPaths[ControlledEntity].size() > 2 && EndMove == false)
+			else if (m_EntityPaths[m_ControlledEntity].size() > 2 && EndMove == false)
 			{
 				std::cout << "Moving" << std::endl;
 				//get the next spot to move to, then find what direction to face and face that way
-				auto Path = EntityPaths[ControlledEntity];
+				auto Path = m_EntityPaths[m_ControlledEntity];
 				//auto it = Path.begin();
 				//this loop finds where we are on the path
 				int xMoveTo = 0;
@@ -63,22 +63,22 @@ void AIPlayer::AITurn(std::vector<std::vector<Tile>>& TileMap, EntityClass &Cont
 				for (auto it = Path.begin(); it != Path.end(); it++)
 				{
 					std::cout << "Looking at" << (*it).x << ", " << (*it).y << std::endl;
-					if ((*it).x == ControlledEntity->GetLocation().first && (*it).y == ControlledEntity->GetLocation().second)
+					if ((*it).x == m_ControlledEntity->GetLocation().first && (*it).y == m_ControlledEntity->GetLocation().second)
 					{
 						//advance to next graphlocation and store
 						it++;
 						xMoveTo = (*it).x;
 						yMoveTo = (*it).y;
 						std::cout << "x: " << xMoveTo << ", y:" << yMoveTo << std::endl;
-						std::cout << "currently at: " << ControlledEntity->GetLocation().first << ", " << ControlledEntity->GetLocation().second << std::endl;
+						std::cout << "currently at: " << m_ControlledEntity->GetLocation().first << ", " << m_ControlledEntity->GetLocation().second << std::endl;
 						break;
 					}
 				}
 				 //call facedirection
 				std::cout << "trying to move to " << xMoveTo<< "," << yMoveTo << std::endl;
-				ControlledEntity->SetMoveDirection(this->FindDirection(xMoveTo, yMoveTo));
+				m_ControlledEntity->SetMoveDirection(this->FindDirection(xMoveTo, yMoveTo));
 				bool SuccessMove = true;
-				SuccessMove = (ControlledEntity->move(TileMap));
+				SuccessMove = (m_ControlledEntity->move(a_TileMap));
 				std::cout << "successmove" << SuccessMove << std::endl;
 				if (SuccessMove==true)
 				{
@@ -87,8 +87,8 @@ void AIPlayer::AITurn(std::vector<std::vector<Tile>>& TileMap, EntityClass &Cont
 				if (SuccessMove==false)
 				{
 					std::cout << "SUCCESS MOVE IS FALSE" << std::endl;
-					std::cout << ControlledEntity->GetName() << " must be out of moves, ending turn" << std::endl;
-					ControlledEntity->SetMoveDirection(STATIONARY);
+					std::cout << m_ControlledEntity->GetName() << " must be out of moves, ending turn" << std::endl;
+					m_ControlledEntity->SetMoveDirection(STATIONARY);
 					EndMove = true;
 				}
 			} //end if path size greater than 2
@@ -103,22 +103,22 @@ void AIPlayer::AITurn(std::vector<std::vector<Tile>>& TileMap, EntityClass &Cont
 		while (endTurn == false)
 		{
 			std::pair<int, int>Source;
-			Source = std::make_pair(ControlledEntity->GetLocation().first, ControlledEntity->GetLocation().second);
+			Source = std::make_pair(m_ControlledEntity->GetLocation().first, m_ControlledEntity->GetLocation().second);
 			std::pair<int, int>Target;
-			Target = std::make_pair(TargetedEntity->GetLocation().first, TargetedEntity->GetLocation().second);
+			Target = std::make_pair(m_TargetedEntity->GetLocation().first, m_TargetedEntity->GetLocation().second);
 
 			//check if target is visible (not completely blocked)
 			SightAlgorithm Sight;
-			Sight.DetermineSightAndCover(TileMap, Source, Target);
+			Sight.DetermineSightAndCover(a_TileMap, Source, Target);
 			if (Sight.GetBlockedOrObstructed().first == false)
 			{
-				ControlledEntity->EntityRangedAttack(TileMap, Instance, TargetedEntity);
+				m_ControlledEntity->EntityRangedAttack(a_TileMap, a_Instance, m_TargetedEntity);
 				endTurn = true;
 			}
-			else if (EntityPaths[ControlledEntity].size() > 2 && EndMove==false)
+			else if (m_EntityPaths[m_ControlledEntity].size() > 2 && EndMove==false)
 			{
 				//get the next spot to move to, then find what direction to face and face that way
-				auto Path = EntityPaths[ControlledEntity];
+				auto Path = m_EntityPaths[m_ControlledEntity];
 				//this loop finds where we are on the path
 				int xMoveTo = 0;
 				int yMoveTo = 0;
@@ -126,22 +126,22 @@ void AIPlayer::AITurn(std::vector<std::vector<Tile>>& TileMap, EntityClass &Cont
 				for (auto it = Path.begin(); it != Path.end(); it++)
 				{
 					std::cout << "Looking at" << (*it).x << ", " << (*it).y << std::endl;
-					if ((*it).x == ControlledEntity->GetLocation().first && (*it).y == ControlledEntity->GetLocation().second)
+					if ((*it).x == m_ControlledEntity->GetLocation().first && (*it).y == m_ControlledEntity->GetLocation().second)
 					{
 						it++;
 						xMoveTo = (*it).x;
 						yMoveTo = (*it).y;
 						std::cout << "x: " << xMoveTo << ", y:" << yMoveTo << std::endl;
-						std::cout << "currently at: " << ControlledEntity->GetLocation().first << ", " << ControlledEntity->GetLocation().second << std::endl;
+						std::cout << "currently at: " << m_ControlledEntity->GetLocation().first << ", " << m_ControlledEntity->GetLocation().second << std::endl;
 						break;
 					}
 				}
 				//advance to next graphlocation and call facedirection
-				ControlledEntity->SetMoveDirection(this->FindDirection(xMoveTo, yMoveTo));
-				bool SuccessMove = ControlledEntity->move(TileMap);
+				m_ControlledEntity->SetMoveDirection(this->FindDirection(xMoveTo, yMoveTo));
+				bool SuccessMove = m_ControlledEntity->move(a_TileMap);
 				if (!SuccessMove)
 				{
-					std::cout << ControlledEntity->GetName() << " must be out of moves, ending turn" << std::endl;
+					std::cout << m_ControlledEntity->GetName() << " must be out of moves, ending turn" << std::endl;
 					EndMove = true;
 				}
 			} //end if path size greater than 2
@@ -151,25 +151,24 @@ void AIPlayer::AITurn(std::vector<std::vector<Tile>>& TileMap, EntityClass &Cont
 			}
 		}
 	}
-	std::cout << ControlledEntity->GetName() << " ends turn" << std::endl;
+	std::cout << m_ControlledEntity->GetName() << " ends turn" << std::endl;
 }
 
-
-bool AIPlayer::CheckResetTargetOrPath(std::vector<std::vector<Tile>>&TileMap)
+bool AIPlayer::CheckResetTargetOrPath(std::vector<std::vector<Tile>>&a_TileMap)
 {
-	if (TargetMap.find(ControlledEntity) == TargetMap.end())
+	if (m_TargetMap.find(m_ControlledEntity) == m_TargetMap.end())
 	{
 		return true;
 	}//or if the target has died we need a new target and path
-	else if (!TargetMap[ControlledEntity]->GetIsAlive())
+	else if (!m_TargetMap[m_ControlledEntity]->GetIsAlive())
 	{
 		return true;
 	} //if the target has moved at all or the path has become blocked we will change target and path
-	else if (CheckPathBlocked(TileMap))
+	else if (CheckPathBlocked(a_TileMap))
 	{
 		return true;
 	}
-	else if (CheckTargetMoved(TileMap))
+	else if (CheckTargetMoved(a_TileMap))
 	{
 		return true;
 	}
@@ -177,13 +176,13 @@ bool AIPlayer::CheckResetTargetOrPath(std::vector<std::vector<Tile>>&TileMap)
 	return false;
 }
 
-bool AIPlayer::CheckPathBlocked(std::vector<std::vector<Tile>>&TileMap)
+bool AIPlayer::CheckPathBlocked(std::vector<std::vector<Tile>>&a_TileMap)
 {
-	auto TempPath =  EntityPaths[ControlledEntity];
+	auto TempPath =  m_EntityPaths[m_ControlledEntity];
 
 	for (auto it = TempPath.begin(); it != TempPath.end(); it++)
 	{
-		if (!TileMap[(*it).x][(*it).y].getPassable())
+		if (!a_TileMap[(*it).x][(*it).y].getPassable())
 		{
 			return true;
 		}
@@ -191,10 +190,10 @@ bool AIPlayer::CheckPathBlocked(std::vector<std::vector<Tile>>&TileMap)
 	return false;
 }
 
-bool AIPlayer::CheckTargetMoved(std::vector<std::vector<Tile>>&TileMap)
+bool AIPlayer::CheckTargetMoved(std::vector<std::vector<Tile>>&a_TileMap)
 {
-	auto TargetPath = EntityPaths[TargetedEntity];
-	if (TileMap[TargetPath.back().x][TargetPath.back().y].GetOccupant() != TargetedEntity)
+	auto TargetPath = m_EntityPaths[m_TargetedEntity];
+	if (a_TileMap[TargetPath.back().x][TargetPath.back().y].GetOccupant() != m_TargetedEntity)
 	{
 		return true;
 	}
@@ -204,31 +203,31 @@ bool AIPlayer::CheckTargetMoved(std::vector<std::vector<Tile>>&TileMap)
 	}
 }
 
-EntityClass* AIPlayer::SearchForTargetedEntity(std::vector<std::vector<Tile>>& TileMap)
+EntityClass* AIPlayer::SearchForTargetedEntity(std::vector<std::vector<Tile>>& a_TileMap)
 {
 	//go through every tile searching for closest enemy entity to move towards or attack
 	EntityClass* NewTarget = nullptr;
 	int TargetDistance = -1;
-	for (int x = 0; x < TileMap.size()-1; x++)
+	for (int x = 0; x < a_TileMap.size()-1; x++)
 	{
-		for (int y = 0; y < TileMap[x].size()-1; y++)
+		for (int y = 0; y < a_TileMap[x].size()-1; y++)
 		{
 			//check to see if there is an entity here
-			if (TileMap[x][y].EntityPresent())
+			if (a_TileMap[x][y].EntityPresent())
 			{
-				if (TileMap[x][y].GetOccupant()->GetSide() != ControlledEntity->GetSide())
+				if (a_TileMap[x][y].GetOccupant()->GetSide() != m_ControlledEntity->GetSide())
 				{
 					//std::cout << "found a potential target" << std::endl;
 					//construct a path and if it is less than the previous path we want to target this entity instead
 					PathFinder TempP;
-					auto SourceLocation = ControlledEntity->GetLocation();
+					auto SourceLocation = m_ControlledEntity->GetLocation();
 					//std::cout << "Trying to use DIJK to find path to target" << std::endl;
-					auto TempPath = TempP.UseDijkstra(TileMap, SourceLocation.first, SourceLocation.second, x, y);
+					auto TempPath = TempP.UseDijkstra(a_TileMap, SourceLocation.first, SourceLocation.second, x, y);
 					if (TempP.GetTotalDistance(x, y) < TargetDistance || TargetDistance == -1)
 					{
-						NewTarget = TileMap[x][y].GetOccupant();
+						NewTarget = a_TileMap[x][y].GetOccupant();
 						TargetDistance = TempP.GetTotalDistance(x, y);
-						std::cout << "New target is" << TileMap[x][y].GetOccupant()->GetName() << std::endl;
+						std::cout << "New target is" << a_TileMap[x][y].GetOccupant()->GetName() << std::endl;
 					}
 				}
 			}//end if entity present
@@ -240,11 +239,11 @@ EntityClass* AIPlayer::SearchForTargetedEntity(std::vector<std::vector<Tile>>& T
 
 Direction AIPlayer::FindDirection()
 {
-	int xSource = (ControlledEntity->GetLocation().first);
-	int ySource = (ControlledEntity->GetLocation().second);
+	int xSource = (m_ControlledEntity->GetLocation().first);
+	int ySource = (m_ControlledEntity->GetLocation().second);
 
-	int xTarget = (TargetedEntity->GetLocation().first);
-	int yTarget = (TargetedEntity->GetLocation().second);
+	int xTarget = (m_TargetedEntity->GetLocation().first);
+	int yTarget = (m_TargetedEntity->GetLocation().second);
 
 	int xDiff = xSource - xTarget;
 	int yDiff = ySource - yTarget;
@@ -318,13 +317,13 @@ Direction AIPlayer::FindDirection()
 	return STATIONARY;
 }
 
-Direction AIPlayer::FindDirection(int xTarget, int yTarget)
+Direction AIPlayer::FindDirection(int a_xTarget, int a_yTarget)
 {
-	int xSource = (ControlledEntity->GetLocation().first);
-	int ySource = (ControlledEntity->GetLocation().second);
+	int xSource = (m_ControlledEntity->GetLocation().first);
+	int ySource = (m_ControlledEntity->GetLocation().second);
 
-	int xDiff = xSource - xTarget;
-	int yDiff = ySource - yTarget;
+	int xDiff = xSource - a_xTarget;
+	int yDiff = ySource - a_yTarget;
 
 	//going west
 	if (xDiff > 0)
@@ -386,18 +385,18 @@ Direction AIPlayer::FindDirection(int xTarget, int yTarget)
 	return STATIONARY;
 }
 
-std::vector<GraphLocation> AIPlayer::DevelopPathing(std::vector<std::vector<Tile>> &TileMap)
+std::vector<GraphLocation> AIPlayer::DevelopPathing(std::vector<std::vector<Tile>> &a_TileMap)
 {
 	//use dijkstra's algo and develop the path from the controlled entity to the targeted entity, assume we have these
 	PathFinder NewPath;
-	int xSource = ControlledEntity->GetLocation().first;
-	int ySource = ControlledEntity->GetLocation().second;
+	int xSource = m_ControlledEntity->GetLocation().first;
+	int ySource = m_ControlledEntity->GetLocation().second;
 
-	int xTarget = TargetedEntity->GetLocation().first;
-	int yTarget = TargetedEntity->GetLocation().second;
+	int xTarget = m_TargetedEntity->GetLocation().first;
+	int yTarget = m_TargetedEntity->GetLocation().second;
 	//std::cout << "CallingDijkstraAlg:" << std::endl;
-	EntityPaths[ControlledEntity] = NewPath.UseDijkstra(TileMap, xSource, ySource, xTarget, yTarget);
+	m_EntityPaths[m_ControlledEntity] = NewPath.UseDijkstra(a_TileMap, xSource, ySource, xTarget, yTarget);
 	//std::cout << "Path developed" << std::endl;
 	
-	return EntityPaths[ControlledEntity];
+	return m_EntityPaths[m_ControlledEntity];
 }

@@ -2,44 +2,44 @@
 #include "Tile.h"
 
 class ObjectClass;
-void ItemContainer::AddItem(ObjectClass* item)
+void ItemContainer::AddItem(ObjectClass* a_item)
 {
-	this->ItemsPresent.push_back(item);
+	this->m_ItemsPresent.push_back(a_item);
 }
 
 void ItemContainer::DisplayItems()
 {
-	for (auto iter = ItemsPresent.begin(); iter != ItemsPresent.end(); iter++)
+	for (auto iter = m_ItemsPresent.begin(); iter != m_ItemsPresent.end(); iter++)
 	{
 		std::cout << (*iter)->GetName() << std::endl;
 	}
 }
 
-void ItemContainer::RemoveItemAtIndex(int index)
+void ItemContainer::RemoveItemAtIndex(int a_index)
 {
-	if (index < ItemsPresent.size())
+	if (a_index < m_ItemsPresent.size())
 	{
-		ItemsPresent.erase(ItemsPresent.begin() + index);
+		m_ItemsPresent.erase(m_ItemsPresent.begin() + a_index);
 	}
 }
 
-void ItemContainer::DropAllAtTile(int xpos, int ypos, Tile & tilePassed, std::vector<std::vector<Tile>>&TileVector)
+void ItemContainer::DropAllAtTile(int a_xPos, int a_yPos, Tile & a_tilePassed, std::vector<std::vector<Tile>>&a_TileVector)
 {
-	for (auto it = ItemsPresent.begin(); it != ItemsPresent.end(); it++)
+	for (auto it = m_ItemsPresent.begin(); it != m_ItemsPresent.end(); it++)
 	{
 		if ((*it) != nullptr)
 		{
-			(*it)->SetLocation(xpos, ypos, TileVector);
+			(*it)->SetLocation(a_xPos, a_yPos, a_TileVector);
 		}
 	}
-	ItemsPresent.clear();
+	m_ItemsPresent.clear();
 }
 
-ObjectClass* ItemContainer::GetItemAtIndex(int index)
+ObjectClass* ItemContainer::GetItemAtIndex(int a_index)
 {
-	if (index < ItemsPresent.size())
+	if (a_index < m_ItemsPresent.size())
 	{
-		return ItemsPresent[index];
+		return m_ItemsPresent[a_index];
 	}
 	else return NULL;
 }
@@ -52,11 +52,11 @@ bool ItemContainer::LoadAll()
 	return success;
 }
 
-bool ItemContainer::isItemPresent(std::string name)
+bool ItemContainer::isItemPresent(std::string a_name)
 {
-	for (auto it = ItemsPresent.begin(); it != ItemsPresent.end(); it++)
+	for (auto it = m_ItemsPresent.begin(); it != m_ItemsPresent.end(); it++)
 	{
-		if ((*it)->GetName() == name)
+		if ((*it)->GetName() == a_name)
 		{
 			return true;
 		}

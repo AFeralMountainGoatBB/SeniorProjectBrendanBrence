@@ -10,15 +10,15 @@ class PlayerCharacter: public EntityClass
 {
 public:
 	std::string GetImagePath();
-	void SetImagePath(std::string ImagePath);
+	void SetImagePath(std::string m_ImagePath);
 	
 protected:
 
 private:
-	std::string ImagePath;
-	std::string CharacterName="Anonymous";
+	std::string m_ImagePath;
+	std::string m_CharacterName="Anonymous";
 
-	std::map<AbilityScoreType, int> AbilityScores =
+	std::map<AbilityScoreType, int> m_AbilityScores =
 	{
 		{ STR, NULL },
 		{ DEX, NULL },
@@ -28,7 +28,6 @@ private:
 		{ CHA, NULL }
 	};
 
-	std::vector<CreatureType> Type;
 	//RaceType Race;
 	//std::vector<ClassLevels> Levels;
 };

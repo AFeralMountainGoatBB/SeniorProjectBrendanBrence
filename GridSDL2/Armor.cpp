@@ -14,157 +14,157 @@ ArmorObject::ArmorObject()
 	SetBaseWeight(0);
 }
 
-ArmorObject::ArmorObject( ArmorObject const &other)
+ArmorObject::ArmorObject( ArmorObject const &a_other)
 {
-	if (other.mBox.x == NULL)
+	if (a_other.m_Box.x == NULL)
 	{
-		mBox.x = 0;
+		m_Box.x = 0;
 	}
 	else
 	{
-		mBox.x = other.mBox.x;
+		m_Box.x = a_other.m_Box.x;
 	}
 
-	if (other.mBox.y == NULL)
+	if (a_other.m_Box.y == NULL)
 	{
-		mBox.y = 0;
+		m_Box.y = 0;
 	}
 	else
 	{
-		mBox.y = other.mBox.y;
+		m_Box.y = a_other.m_Box.y;
 	}
 
-	if (other.mBox.w == NULL)
+	if (a_other.m_Box.w == NULL)
 	{
-		mBox.w = OBJECT_WIDTH;
+		m_Box.w = m_OBJECT_WIDTH;
 	}
 	else
 	{
-		mBox.w = other.mBox.w;
+		m_Box.w = a_other.m_Box.w;
 	}
 
-	if (other.mBox.h == NULL)
+	if (a_other.m_Box.h == NULL)
 	{
-		mBox.h = OBJECT_HEIGHT;
+		m_Box.h = m_OBJECT_HEIGHT;
 	}
 	else
 	{
-		mBox.h = other.mBox.h;
+		m_Box.h = a_other.m_Box.h;
 	}
 
 	//copy constructor, copy all units
-	//	int tempint = other.ArmorBonus;
-	SetName(const_cast<ArmorObject&>(other).GetName());
-	SetArmorBonus(other.ArmorBonus);
-	SetDamageReduction(other.DamageReduction);
-	SetMaxDex(other.MaxDexBonus);
-	SetArmorCheckPen(other.ArmorCheckPenalty);
-	SetSpeedReduction(other.SpeedReduction);
-	SetIsShield(other.IsShield);
-	SetBaseWeight(const_cast<ArmorObject&>(other).GetBaseWeight());
-	SetPathTexture(other.mPathTexture);
-	this->mTexture = other.mTexture;
-	for (auto i = other.ArmorTypes.begin(); i != other.ArmorTypes.end(); i++)
+	//	int tempint = a_other.m_armorBonus;
+	SetName(const_cast<ArmorObject&>(a_other).GetName());
+	SetArmorBonus(a_other.m_armorBonus);
+	SetDamageReduction(a_other.m_damageReduction);
+	SetMaxDex(a_other.m_maxDexBonus);
+	SetArmorCheckPen(a_other.m_armorCheckPenalty);
+	SetSpeedReduction(a_other.m_speedReduction);
+	SetIsShield(a_other.m_isShield);
+	SetBaseWeight(const_cast<ArmorObject&>(a_other).GetBaseWeight());
+	SetPathTexture(a_other.m_PathTexture);
+	this->m_Texture = a_other.m_Texture;
+	for (auto i = a_other.m_armorTypes.begin(); i != a_other.m_armorTypes.end(); i++)
 	{
 		AddArmorType((*i));
 	}
 	
 }
 
-ArmorObject::ArmorObject(ObjectClass &other)
+ArmorObject::ArmorObject(ObjectClass &a_other)
 {
 	
 	//copy constructor, copy all units
-	//	int tempint = other.ArmorBonus;
-	SetName(other.GetName());
-	//std::cout << "Armor bonus of 'other' " << other.GetArmorBonus() << "of "<< other.GetName() << std::endl;
-	this->SetArmorBonus(other.GetArmorBonus());
-	SetDamageReduction(other.GetDamageReduction());
-	SetMaxDex(other.GetMaxDexBonus());
-	SetArmorCheckPen(other.GetArmorCheckPenalty());
-	SetSpeedReduction(other.GetSpeedReduction());
-	SetIsShield(other.GetIsShield());
-	SetBaseWeight(other.GetBaseWeight());
+	//	int tempint = a_other.m_armorBonus;
+	SetName(a_other.GetName());
+	//std::cout << "Armor a_bonus of 'a_other' " << a_other.GetArmorBonus() << "of "<< a_other.GetName() << std::endl;
+	this->SetArmorBonus(a_other.GetArmorBonus());
+	SetDamageReduction(a_other.GetDamageReduction());
+	SetMaxDex(a_other.GetMaxDexBonus());
+	SetArmorCheckPen(a_other.GetArmorCheckPenalty());
+	SetSpeedReduction(a_other.GetSpeedReduction());
+	SetIsShield(a_other.GetIsShield());
+	SetBaseWeight(a_other.GetBaseWeight());
 	//std::cout << "Made it to loop armor copy construct" << std::endl;
-	ArmorTypes = other.GetArmorTypes();
-	SetPathTexture(other.GetPathTexture());
-	this->mTexture = other.GetTexture();
+	m_armorTypes = a_other.GetArmorTypes();
+	SetPathTexture(a_other.GetPathTexture());
+	this->m_Texture = a_other.GetTexture();
 	//DisplayArmorInfo();
 }
 
 
 const int ArmorObject::GetArmorBonus()
 {
-	return ArmorBonus;
+	return m_armorBonus;
 }
-void ArmorObject::SetArmorBonus(int bonus)
+void ArmorObject::SetArmorBonus(int a_bonus)
 {
-	ArmorBonus = bonus;
+	m_armorBonus = a_bonus;
 }
 
 int ArmorObject::GetDamageReduction()
 {
-	return DamageReduction;
+	return m_damageReduction;
 }
-void ArmorObject::SetDamageReduction(int reduction)
+void ArmorObject::SetDamageReduction(int a_reduction)
 {
-	DamageReduction = reduction;
+	m_damageReduction = a_reduction;
 }
 
 int ArmorObject::GetMaxDexBonus()
 {
-	return MaxDexBonus;
+	return m_maxDexBonus;
 }
-void ArmorObject::SetMaxDex(int max) 
+void ArmorObject::SetMaxDex(int a_max) 
 {
-	MaxDexBonus = max;
+	m_maxDexBonus = a_max;
 }
 
 int ArmorObject::GetArmorCheckPenalty()
 {
-	return ArmorCheckPenalty;
+	return m_armorCheckPenalty;
 }
-void ArmorObject::SetArmorCheckPen(int penalty)
+void ArmorObject::SetArmorCheckPen(int a_penalty)
 {
-	ArmorCheckPenalty = penalty;
+	m_armorCheckPenalty = a_penalty;
 }
 
 int ArmorObject::GetSpeedReduction()
 {
-	return SpeedReduction;
+	return m_speedReduction;
 }
-void ArmorObject::SetSpeedReduction(int SpeedReduction)
+void ArmorObject::SetSpeedReduction(int a_speedReduction)
 {
-	this->SpeedReduction = SpeedReduction;
+	this->m_speedReduction = a_speedReduction;
 }
 
 int ArmorObject::GetEquipActions()
 {
-	return EquipActions;
+	return m_equipActions;
 }
-void ArmorObject::SetEquipActions(int actions)
+void ArmorObject::SetEquipActions(int a_actions)
 {
-	EquipActions = actions;
+	m_equipActions = a_actions;
 }
 
 bool ArmorObject::GetIsShield()
 {
-	return IsShield;
+	return m_isShield;
 }
 
-void ArmorObject::SetIsShield(bool isShield)
+void ArmorObject::SetIsShield(bool a_isShield)
 {
-	IsShield = isShield;
+	m_isShield = a_isShield;
 }
 
 std::vector<ArmorType> ArmorObject::GetArmorTypes()
 {
-	return this->ArmorTypes;
+	return this->m_armorTypes;
 }
 
-void ArmorObject::AddArmorType(ArmorType addType)
+void ArmorObject::AddArmorType(ArmorType a_addType)
 {
-	ArmorTypes.push_back(addType);
+	m_armorTypes.push_back(a_addType);
 }
 
 void ArmorObject::DisplayArmorInfo() 
@@ -173,17 +173,17 @@ void ArmorObject::DisplayArmorInfo()
 
 	std::cout << "Object Name: " << GetName() << std::endl;
 
-	std::cout << "Armor bonus " << GetArmorBonus() << std::endl;
-	std::cout << "DamageReduction " << GetDamageReduction() << std::endl;
+	std::cout << "Armor a_bonus " << GetArmorBonus() << std::endl;
+	std::cout << "m_damageReduction " << GetDamageReduction() << std::endl;
 	std::cout << "Max Dex " << GetMaxDexBonus() << std::endl;
 	std::cout << "ACP " << GetArmorCheckPenalty() << std::endl;
 	
 	for (int i = 0; i != GetArmorTypes().size(); i++)
 	{
-		std::cout << ArmorTypeTextMap[ArmorTypes[i]] << std::endl;
+		std::cout << ArmorTypeTextMap[m_armorTypes[i]] << std::endl;
 	}
 	
-	std::cout << "Weight: " << GetBaseWeight() << "lb." << std::endl;
+	std::cout << "m_Weight: " << GetBaseWeight() << "lb." << std::endl;
 	if(GetIsShield())
 	{
 		std::cout << "This is a shield" << std::endl;
@@ -193,58 +193,58 @@ void ArmorObject::DisplayArmorInfo()
 	//end Armor info
 }
 
-void ArmorObject::SetTexture(std::map<std::string, LTexture*> TextureMap, std::string Path)
+void ArmorObject::SetTexture(std::map<std::string, LTexture*> a_TextureMap, std::string a_Path)
 {
-	if (TextureMap.count(Path + "\\" + mPathTexture))
+	if (a_TextureMap.count(a_Path + "\\" + m_PathTexture))
 	{
-		mTexture = TextureMap[Path + "\\" + mPathTexture];
-		std::cout << mPathTexture << " Loaded into " << ObjectName << std::endl;
-		//mTexture->setWidth(OBJECT_WIDTH);
-		//mTexture->setHeight(OBJECT_HEIGHT);
+		m_Texture = a_TextureMap[a_Path + "\\" + m_PathTexture];
+		std::cout << m_PathTexture << " Loaded into " << m_ObjectName << std::endl;
+		//m_Texture->setWidth(m_OBJECT_WIDTH);
+		//m_Texture->setHeight(m_OBJECT_HEIGHT);
 	}
 	else
 	{
-		std::cout << "No matching texture found " << mPathTexture << std::endl;
-		mTexture = TextureMap[Path + "\\" + "QuestionMark.png"];
+		std::cout << "No matching texture found " << m_PathTexture << std::endl;
+		m_Texture = a_TextureMap[a_Path + "\\" + "QuestionMark.png"];
 	}
 }
 
-void ArmorObject::SetLocation(int x, int y, std::vector<std::vector<Tile> > &TileMap)
+void ArmorObject::SetLocation(int a_x, int a_y, std::vector<std::vector<Tile> > &a_TileMap)
 {
-	mLocation.first = x;
-	mLocation.second = y;
-	mBox.x = mLocation.first;
-	mBox.y = mLocation.second;
-	std::cout << mLocation.first << "," << mLocation.second << std::endl;
-	SetRendLocation(TileMap);
-	TileMap[x][y].AddItem(this);
+	m_Location.first = a_x;
+	m_Location.second = a_y;
+	m_Box.x = m_Location.first;
+	m_Box.y = m_Location.second;
+	std::cout << m_Location.first << "," << m_Location.second << std::endl;
+	SetRendLocation(a_TileMap);
+	a_TileMap[a_x][a_y].AddItem(this);
 }
 
-void ArmorObject::SetRendLocation(std::vector<std::vector<Tile>> &TileVector)
+void ArmorObject::SetRendLocation(std::vector<std::vector<Tile>> &a_TileVector)
 {
-	std::pair<int, int> tempLoc = CalcRendLocation(TileVector);
-	mBox.x = tempLoc.first;
-	mBox.y = tempLoc.second;
-	std::cout << "New rend location for " << ObjectName << " = " << mBox.x << " " << mBox.y << std::endl;
+	std::pair<int, int> tempLoc = CalcRendLocation(a_TileVector);
+	m_Box.x = tempLoc.first;
+	m_Box.y = tempLoc.second;
+	std::cout << "New rend location for " << m_ObjectName << " = " << m_Box.x << " " << m_Box.y << std::endl;
 }
 
-std::pair<int, int> ArmorObject::CalcRendLocation(std::vector<std::vector<Tile>> &TileVector)
+std::pair<int, int> ArmorObject::CalcRendLocation(std::vector<std::vector<Tile>> &a_TileVector)
 {
 	//std::cout << "Calc rend location" << std::endl;
 	std::pair <int, int> RetVal;
-	int xTempLoc = mLocation.first;
-	int yTempLoc = mLocation.second;
+	int xTempLoc = m_Location.first;
+	int yTempLoc = m_Location.second;
 
 	std::cout << xTempLoc << "  " << yTempLoc << std::endl;
 
 	int xOffset = 0;
 	int yOffset = 0;
 	//std::cout << "Accessing vector" << std::endl;
-	RetVal.first = TileVector[xTempLoc][yTempLoc].GetXRenderPos();
-	RetVal.second = TileVector[xTempLoc][yTempLoc].GetYRenderPos();
+	RetVal.first = a_TileVector[xTempLoc][yTempLoc].GetXRenderPos();
+	RetVal.second = a_TileVector[xTempLoc][yTempLoc].GetYRenderPos();
 
-	xOffset = 0.5 * (TileVector[xTempLoc][yTempLoc].GetWidth() - OBJECT_WIDTH);
-	yOffset = 0.5 * (TileVector[xTempLoc][yTempLoc].GetWidth() - OBJECT_HEIGHT);
+	xOffset = 0.5 * (a_TileVector[xTempLoc][yTempLoc].GetWidth() - m_OBJECT_WIDTH);
+	yOffset = 0.5 * (a_TileVector[xTempLoc][yTempLoc].GetWidth() - m_OBJECT_HEIGHT);
 
 	RetVal.first = RetVal.first + xOffset;
 	RetVal.second = RetVal.second + yOffset;
@@ -253,13 +253,13 @@ std::pair<int, int> ArmorObject::CalcRendLocation(std::vector<std::vector<Tile>>
 }
 
 
-void ArmorObject::render(SDL_Rect& camera, SDL_Renderer *& Renderer)
+void ArmorObject::render(SDL_Rect& a_camera, SDL_Renderer *& a_Renderer)
 {
 	//If the texture is on screen
-	if (checkCollision(camera, mBox))
+	if (checkCollision(a_camera, m_Box))
 	{
 		//Show the texture
-		mTexture->renderEntity(mBox.x - camera.x, mBox.y - camera.y, Renderer, &mBox);
-		//std::cout << " Entity size " << mBox.h << " " << mBox.w << std::endl;
+		m_Texture->renderEntity(m_Box.x - a_camera.x, m_Box.y - a_camera.y, a_Renderer, &m_Box);
+		//std::cout << " Entity size " << m_Box.h << " " << m_Box.w << std::endl;
 	}
 }

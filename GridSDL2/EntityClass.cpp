@@ -1,5 +1,4 @@
 #include "EntityClass.h"
-#include "Dot.h"
 #include "StaticFunctions.h"
 #include "Texture.h"
 #include "Tile.h"
@@ -10,70 +9,70 @@
 #include "FeatMenu.h"
 #include "PathfindingAlgorithm.h"
 
-EntityClass::EntityClass(int xInitial, int yInitial, int HPMax=0, int HPCurrent=0)
+EntityClass::EntityClass(int a_xInitial, int a_yInitial, int a_HPMax=0, int a_HPCurrent=0)
 {	
-	this->HitPointMaximum = HPMax;
-	this->HitPoints = HPCurrent;
-	mBox.x = 0;
-	mBox.y = 0;
-	mBox.w = ENTITY_WIDTH;
-	mBox.h = ENTITY_HEIGHT;
-//	SetLocation(xInitial, yInitial);
+	this->m_HitPointMaximum = a_HPMax;
+	this->m_HitPoints = a_HPCurrent;
+	m_Box.x = 0;
+	m_Box.y = 0;
+	m_Box.w = m_ENTITY_WIDTH;
+	m_Box.h = m_ENTITY_HEIGHT;
+//	SetLocation(a_xInitial, a_yInitial);
 }
 
 EntityClass::EntityClass()
 {
-	mBox.x = 0;
-	mBox.w = ENTITY_WIDTH;
-	mBox.h = ENTITY_HEIGHT;
-	std::cout << "Entity size, H, w : " << mBox.w << " " << mBox.h << std::endl;
+	m_Box.x = 0;
+	m_Box.w = m_ENTITY_WIDTH;
+	m_Box.h = m_ENTITY_HEIGHT;
+	std::cout << "Entity size, H, w : " << m_Box.w << " " << m_Box.h << std::endl;
 }
 
 /*
 EntityClass::~EntityClass()
 {
-	for (auto it = Equipment.begin(); it != Equipment.end(); it++)
+	for (auto it = m_Equipment.begin(); it != m_Equipment.end(); it++)
 	{
 		delete (*it).second;
 		(*it).second = nullptr;
 	}
-	delete mTexture;
-	delete SideTexture;
+	delete m_Texture;
+	delete m_SideTexture;
 }
 */
-void EntityClass::SetTexture(std::map<std::string, LTexture*> &TextureMap, std::string Path)
+void EntityClass::SetTexture(std::map<std::string, LTexture*> &a_TextureMap, std::string a_Path)
 {
-	if (TextureMap.count(Path + "\\" + mPathTexture)) 
+	if (a_TextureMap.count(a_Path + "\\" + m_PathTexture)) 
 	{
-		mTexture = TextureMap[Path + "\\" + mPathTexture];
-		//std::cout << mPathTexture << " Loaded into " << EntityName <<  std::endl;
+		m_Texture = a_TextureMap[a_Path + "\\" + m_PathTexture];
+		//std::cout << m_PathTexture << " Loaded into " << m_EntityName <<  std::endl;
 	}
 	else
 	{
-		std::cout << "No matching texture found " << Path << "\\" << mPathTexture << std::endl;
-		mTexture = TextureMap[Path + "\\" + "QuestionMark.png"];
+		std::cout << "No matching texture found " << a_Path << "\\" << m_PathTexture << std::endl;
+		m_Texture = a_TextureMap[a_Path + "\\" + "QuestionMark.png"];
 	}
 
-	if (TeamSide != 1)
+	if (m_TeamSide != 1)
 	{
-		SideTexture = TextureMap[Path + "\\" + "red.png"];
+		m_SideTexture = a_TextureMap[a_Path + "\\" + "red.png"];
 	}
 	else
 	{
-		SideTexture = TextureMap[Path + "\\" + "blue.png"];
+		m_SideTexture = a_TextureMap[a_Path + "\\" + "blue.png"];
 	}
 	
 }
 
 LTexture* EntityClass::GetTexture()
 {
-	return mTexture;
+	return m_Texture;
 }
 /*--------------START GETTERS -------------------*/
 
 const bool EntityClass::IsBroke()
 {
-	if (HitPoints <= HitPointMaximum / 2)
+	if (m_HitPoints <= m_HitPointMaximum / 2)
 	{
 		return true;
 	}
@@ -86,43 +85,43 @@ const bool EntityClass::IsBroke()
 /*----------------START MUTATORS-----------------*/
 
 
-void EntityClass::AddHitPoints(int Addition)
+void EntityClass::AddHitPoints(int a_addition)
 {
-	this->HitPoints += Addition;
-	if (this->HitPoints > HitPointMaximum)
+	this->m_HitPoints += a_addition;
+	if (this->m_HitPoints > m_HitPointMaximum)
 	{
-		this->HitPoints = HitPointMaximum;
+		this->m_HitPoints = m_HitPointMaximum;
 	}
 }
 
 std::string EntityClass:: GetName()
 {
-	return EntityName;
+	return m_EntityName;
 }
 
 
 /*----------------END MUTATORS-----------------*/
 
-bool EntityClass::EntityMeleeAttack(std::vector<std::vector<Tile>> &TileVector, EncounterInstance& Instance)
+bool EntityClass::EntityMeleeAttack(std::vector<std::vector<Tile>> &a_TileVector, EncounterInstance& a_Instance)
 {
 	//std::cout << "Im attacking now" << std::endl;
 	//call EntityMeleeAttackTile, if not null call selected attack roll
-	EntityClass* Target = EntityMeleeAttackTile(TileVector);
+	EntityClass* Target = EntityMeleeAttackTile(a_TileVector);
 	if (Target != nullptr)
 	{
-		if (ActionLeft == true)
+		if (m_ActionLeft == true)
 		{
 
 			MeleeAttack Attack;
-			if (!AttackBothHands)
+			if (!m_AttackBothHands)
 			{
-				Attack.AttackNormal(*this, *Target, Instance);
-				this->ActionLeft = false;
+				Attack.AttackNormal(*this, *Target, a_Instance);
+				this->m_ActionLeft = false;
 			}
-			else if (AttackBothHands)
+			else if (m_AttackBothHands)
 			{
-				Attack.AttackDualWield(*this, *Target, Instance);
-				this->ActionLeft = false;
+				Attack.AttackDualWield(*this, *Target, a_Instance);
+				this->m_ActionLeft = false;
 			}
 		}
 		else
@@ -134,25 +133,25 @@ bool EntityClass::EntityMeleeAttack(std::vector<std::vector<Tile>> &TileVector, 
 	return false;
 }
 
-bool EntityClass::EntityRangedAttack(std::vector<std::vector<Tile>> &TileVector, EncounterInstance& Instance)
+bool EntityClass::EntityRangedAttack(std::vector<std::vector<Tile>> &a_TileVector, EncounterInstance& a_Instance)
 {
 	//call EntityRangedAttackTile, if not null call selected attack roll, if null then return false
-	EntityClass* Target = EntityRangedAttackTile(TileVector, Instance);
+	EntityClass* Target = EntityRangedAttackTile(a_TileVector, a_Instance);
 	if (Target != NULL)
 	{
-		if (ActionLeft == true)
+		if (m_ActionLeft == true)
 		{
-			std::cout << Target->EntityName << std::endl;
+			std::cout << Target->m_EntityName << std::endl;
 			RangedAttack Attack;
-			if (!AttackBothHands)
+			if (!m_AttackBothHands)
 			{
-				Attack.AttackNormal(*this, *Target, Instance);
-				this->ActionLeft = false;
+				Attack.AttackNormal(*this, *Target, a_Instance);
+				this->m_ActionLeft = false;
 			}
-			else if (AttackBothHands)
+			else if (m_AttackBothHands)
 			{
-				Attack.AttackDualWield(*this, *Target, Instance);
-				this->ActionLeft = false;
+				Attack.AttackDualWield(*this, *Target, a_Instance);
+				this->m_ActionLeft = false;
 			}
 			return true;
 		}
@@ -169,20 +168,20 @@ bool EntityClass::EntityRangedAttack(std::vector<std::vector<Tile>> &TileVector,
 
 	return false;
 }
-bool EntityClass::EntityRangedAttack(std::vector<std::vector<Tile>> &TileVector, EncounterInstance& Instance, EntityClass* Target)
+bool EntityClass::EntityRangedAttack(std::vector<std::vector<Tile>> &a_TileVector, EncounterInstance& a_Instance, EntityClass* a_Target)
 {
 	//we have a target, let us attack
-	if (Target != NULL)
+	if (a_Target != NULL)
 	{
-		std::cout << Target->EntityName << std::endl;
+		std::cout << a_Target->m_EntityName << std::endl;
 		RangedAttack Attack;
-		if (!AttackBothHands)
+		if (!m_AttackBothHands)
 		{
-			Attack.AttackNormal(*this, *Target, Instance);
+			Attack.AttackNormal(*this, *a_Target, a_Instance);
 		}
-		else if (AttackBothHands)
+		else if (m_AttackBothHands)
 		{
-			Attack.AttackDualWield(*this, *Target, Instance);
+			Attack.AttackDualWield(*this, *a_Target, a_Instance);
 		}
 	}
 	else
@@ -193,32 +192,32 @@ bool EntityClass::EntityRangedAttack(std::vector<std::vector<Tile>> &TileVector,
 	return false;
 }
 
-EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &TileVector)
+EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &a_TileVector)
 {
-	if (MoveDirection == STATIONARY)
+	if (m_MoveDirection == STATIONARY)
 	{
 		return NULL;
 	}
 
-	switch (MoveDirection)
+	switch (m_MoveDirection)
 	{
 		//check if we can attack the next spot
 		//attack the tile if it exists (and anyone in it)
 		//change moveDir to stationary, set to move mode
 	case NORTH:
-		FaceDirection = NORTH;
-		if (mLocation.second != 0)
+		m_FaceDirection = NORTH;
+		if (m_Location.second != 0)
 		{
-			if (TileVector[mLocation.first][mLocation.second - 1].GetOccupant()!=nullptr)
+			if (a_TileVector[m_Location.first][m_Location.second - 1].GetOccupant()!=nullptr)
 			{
-				std::cout << "Attacking: " << TileVector[mLocation.first][mLocation.second - 1].GetOccupant()->GetName() << std::endl;
-				MoveDirection = STATIONARY;
-				return TileVector[mLocation.first][mLocation.second - 1].GetOccupant();
+				std::cout << "Attacking: " << a_TileVector[m_Location.first][m_Location.second - 1].GetOccupant()->GetName() << std::endl;
+				m_MoveDirection = STATIONARY;
+				return a_TileVector[m_Location.first][m_Location.second - 1].GetOccupant();
 			}
 			else
 			{
 				std::cout << "Attacked an empty tile" << std::endl;
-				MoveDirection = STATIONARY;
+				m_MoveDirection = STATIONARY;
 				return nullptr;
 			}
 
@@ -226,25 +225,25 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 		else
 		{
 			std::cout << "Cannot Attack There" << std::endl;
-			MoveDirection = STATIONARY;
+			m_MoveDirection = STATIONARY;
 			return nullptr;
 		}
 		break;
 
 	case EAST:
-		FaceDirection = EAST;
-		if (mLocation.first < TileVector.size() - 1)
+		m_FaceDirection = EAST;
+		if (m_Location.first < a_TileVector.size() - 1)
 		{
-			if (TileVector[mLocation.first+1][mLocation.second].GetOccupant())
+			if (a_TileVector[m_Location.first+1][m_Location.second].GetOccupant())
 			{
-				std::cout << "Attacking: " << TileVector[mLocation.first+1][mLocation.second].GetOccupant()->GetName() << std::endl;
-				MoveDirection = STATIONARY;
-				return TileVector[mLocation.first + 1][mLocation.second].GetOccupant();
+				std::cout << "Attacking: " << a_TileVector[m_Location.first+1][m_Location.second].GetOccupant()->GetName() << std::endl;
+				m_MoveDirection = STATIONARY;
+				return a_TileVector[m_Location.first + 1][m_Location.second].GetOccupant();
 			}
 			else
 			{
 				std::cout << "Attacked an empty tile " << std::endl;
-				MoveDirection = STATIONARY;
+				m_MoveDirection = STATIONARY;
 				return nullptr;
 			}
 
@@ -252,25 +251,25 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 		else
 		{
 			std::cout << "Cannot attack there" << std::endl;
-			MoveDirection = STATIONARY;
+			m_MoveDirection = STATIONARY;
 			return nullptr;
 		}
 		break;
 
 	case SOUTH:
-		FaceDirection = SOUTH;
-		if (mLocation.second < TileVector[0].size() - 1)
+		m_FaceDirection = SOUTH;
+		if (m_Location.second < a_TileVector[0].size() - 1)
 		{
-			if (TileVector[mLocation.first][mLocation.second + 1].GetOccupant())
+			if (a_TileVector[m_Location.first][m_Location.second + 1].GetOccupant())
 			{
-				std::cout << "Attacking: " << TileVector[mLocation.first][mLocation.second + 1].GetOccupant()->GetName() << std::endl;
-				MoveDirection = STATIONARY;
-				return TileVector[mLocation.first][mLocation.second + 1].GetOccupant();
+				std::cout << "Attacking: " << a_TileVector[m_Location.first][m_Location.second + 1].GetOccupant()->GetName() << std::endl;
+				m_MoveDirection = STATIONARY;
+				return a_TileVector[m_Location.first][m_Location.second + 1].GetOccupant();
 			}
 			else
 			{
 				std::cout << "Attacked an empty tile" << std::endl;
-				MoveDirection = STATIONARY;
+				m_MoveDirection = STATIONARY;
 				return nullptr;
 			}
 
@@ -278,146 +277,146 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 		else
 		{
 			std::cout << "Cannot attack there" << std::endl;
-			MoveDirection = STATIONARY;
+			m_MoveDirection = STATIONARY;
 			return nullptr;
 		}
 		
 		break;
 
 	case WEST:
-		FaceDirection = WEST;
+		m_FaceDirection = WEST;
 
-		if (mLocation.first != 0)
+		if (m_Location.first != 0)
 		{
-			if (TileVector[mLocation.first-1][mLocation.second].GetOccupant())
+			if (a_TileVector[m_Location.first-1][m_Location.second].GetOccupant())
 			{
-				std::cout << "Attacking: " << TileVector[mLocation.first - 1][mLocation.second].GetOccupant()->GetName() << std::endl;
-				MoveDirection = STATIONARY;
-				return TileVector[mLocation.first - 1][mLocation.second].GetOccupant();
+				std::cout << "Attacking: " << a_TileVector[m_Location.first - 1][m_Location.second].GetOccupant()->GetName() << std::endl;
+				m_MoveDirection = STATIONARY;
+				return a_TileVector[m_Location.first - 1][m_Location.second].GetOccupant();
 			}
 			else
 			{
 				std::cout << "Attacked an empty tile" << std::endl;
-				MoveDirection = STATIONARY;
+				m_MoveDirection = STATIONARY;
 				return nullptr;
 			}
 		}
 		else
 		{
 			std::cout << "Cannot attack there" << std::endl;
-			MoveDirection = STATIONARY;
+			m_MoveDirection = STATIONARY;
 			return nullptr;
 		}
 		break;
 
 	case NORTHWEST:
-		FaceDirection = NORTHWEST;
+		m_FaceDirection = NORTHWEST;
 
-		if (mLocation.first != 0
+		if (m_Location.first != 0
 			&&
-			mLocation.second!=0)
+			m_Location.second!=0)
 		{
-			if (TileVector[mLocation.first - 1][mLocation.second-1].GetOccupant())
+			if (a_TileVector[m_Location.first - 1][m_Location.second-1].GetOccupant())
 			{
-				std::cout << "Attacking: " << TileVector[mLocation.first - 1][mLocation.second-1].GetOccupant()->GetName() << std::endl;
-				MoveDirection = STATIONARY;
-				return TileVector[mLocation.first - 1][mLocation.second-1].GetOccupant();
+				std::cout << "Attacking: " << a_TileVector[m_Location.first - 1][m_Location.second-1].GetOccupant()->GetName() << std::endl;
+				m_MoveDirection = STATIONARY;
+				return a_TileVector[m_Location.first - 1][m_Location.second-1].GetOccupant();
 			}
 			else
 			{
 				std::cout << "Attacked an empty tile" << std::endl;
-				MoveDirection = STATIONARY;
+				m_MoveDirection = STATIONARY;
 				return nullptr;
 			}
 		}
 		else
 		{
 			std::cout << "Cannot attack there" << std::endl;
-			MoveDirection = STATIONARY;
+			m_MoveDirection = STATIONARY;
 			return nullptr;
 		}
 		break;
 
 	case SOUTHWEST:
-		FaceDirection = SOUTHWEST;
+		m_FaceDirection = SOUTHWEST;
 
-		if (mLocation.first !=0 
+		if (m_Location.first !=0 
 			&&
-			mLocation.second <(TileVector[mLocation.first].size()-1))
+			m_Location.second <(a_TileVector[m_Location.first].size()-1))
 		{
-			if (TileVector[mLocation.first - 1][mLocation.second + 1].GetOccupant())
+			if (a_TileVector[m_Location.first - 1][m_Location.second + 1].GetOccupant())
 			{
-				std::cout << "Attacking: " << TileVector[mLocation.first - 1][mLocation.second + 1].GetOccupant()->GetName() << std::endl;
-				MoveDirection = STATIONARY;
-				return TileVector[mLocation.first - 1][mLocation.second + 1].GetOccupant();
+				std::cout << "Attacking: " << a_TileVector[m_Location.first - 1][m_Location.second + 1].GetOccupant()->GetName() << std::endl;
+				m_MoveDirection = STATIONARY;
+				return a_TileVector[m_Location.first - 1][m_Location.second + 1].GetOccupant();
 			}
 			else
 			{
 				std::cout << "Attacked an empty tile" << std::endl;
-				MoveDirection = STATIONARY;
+				m_MoveDirection = STATIONARY;
 				return nullptr;
 			}
 		}
 		else
 		{
 			std::cout << "Cannot attack there" << std::endl;
-			MoveDirection = STATIONARY;
+			m_MoveDirection = STATIONARY;
 			return nullptr;
 		}
 		break;
 
 	case SOUTHEAST:
-		FaceDirection = SOUTHEAST;
+		m_FaceDirection = SOUTHEAST;
 
-		if (mLocation.first <(TileVector.size()-1)
+		if (m_Location.first <(a_TileVector.size()-1)
 			&&
-			mLocation.second <(TileVector[mLocation.first].size() - 1))
+			m_Location.second <(a_TileVector[m_Location.first].size() - 1))
 		{
-			if (TileVector[mLocation.first + 1][mLocation.second + 1].GetOccupant())
+			if (a_TileVector[m_Location.first + 1][m_Location.second + 1].GetOccupant())
 			{
-				std::cout << "Attacking: " << TileVector[mLocation.first + 1][mLocation.second + 1].GetOccupant()->GetName() << std::endl;
-				MoveDirection = STATIONARY;
-				return TileVector[mLocation.first + 1][mLocation.second + 1].GetOccupant();
+				std::cout << "Attacking: " << a_TileVector[m_Location.first + 1][m_Location.second + 1].GetOccupant()->GetName() << std::endl;
+				m_MoveDirection = STATIONARY;
+				return a_TileVector[m_Location.first + 1][m_Location.second + 1].GetOccupant();
 			}
 			else
 			{
 				std::cout << "Attacked an empty tile" << std::endl;
-				MoveDirection = STATIONARY;
+				m_MoveDirection = STATIONARY;
 				return nullptr;
 			}
 		}
 		else
 		{
 			std::cout << "Cannot attack there" << std::endl;
-			MoveDirection = STATIONARY;
+			m_MoveDirection = STATIONARY;
 			return nullptr;
 		}
 		break;
 
 	case NORTHEAST:
-		FaceDirection = NORTHEAST;
+		m_FaceDirection = NORTHEAST;
 
-		if (mLocation.first <(TileVector.size() - 1)
+		if (m_Location.first <(a_TileVector.size() - 1)
 			&&
-			mLocation.second !=0)
+			m_Location.second !=0)
 		{
-			if (TileVector[mLocation.first + 1][mLocation.second -1].GetOccupant())
+			if (a_TileVector[m_Location.first + 1][m_Location.second -1].GetOccupant())
 			{
-				std::cout << "Attacking: " << TileVector[mLocation.first + 1][mLocation.second -1].GetOccupant()->GetName() << std::endl;
-				MoveDirection = STATIONARY;
-				return TileVector[mLocation.first + 1][mLocation.second - 1].GetOccupant();
+				std::cout << "Attacking: " << a_TileVector[m_Location.first + 1][m_Location.second -1].GetOccupant()->GetName() << std::endl;
+				m_MoveDirection = STATIONARY;
+				return a_TileVector[m_Location.first + 1][m_Location.second - 1].GetOccupant();
 			}
 			else
 			{
 				std::cout << "Attacked an empty tile" << std::endl;
-				MoveDirection = STATIONARY;
+				m_MoveDirection = STATIONARY;
 				return nullptr;
 			}
 		}
 		else
 		{
 			std::cout << "Cannot attack there" << std::endl;
-			MoveDirection = STATIONARY;
+			m_MoveDirection = STATIONARY;
 			return nullptr;
 		}
 		break;
@@ -425,21 +424,20 @@ EntityClass* EntityClass::EntityMeleeAttackTile(std::vector<std::vector<Tile>> &
 
 	} //end switch statement
 	
-	MoveDirection = STATIONARY;
+	m_MoveDirection = STATIONARY;
 	return nullptr;
 }
 
-EntityClass* EntityClass::EntityRangedAttackTile(std::vector<std::vector<Tile>> &TileVector, EncounterInstance &Instance)
+EntityClass* EntityClass::EntityRangedAttackTile(std::vector<std::vector<Tile>> &a_TileVector, EncounterInstance &a_Instance)
 {
-	return TileVector[Instance.GetTargetSystem().GetLocation().first][Instance.GetTargetSystem().GetLocation().second].GetOccupant();
+	return a_TileVector[a_Instance.GetTargetSystem().GetLocation().first][a_Instance.GetTargetSystem().GetLocation().second].GetOccupant();
 }
-
 
 int EntityClass::GetTotalDamageReduction()
 {
 	int TotalDamageReduction = 0;
 	//go through equipment and add up damage reduction.
-	for (auto it = Equipment.begin(); it != Equipment.end(); it++)
+	for (auto it = m_Equipment.begin(); it != m_Equipment.end(); it++)
 	{
 		if ((*it).second != NULL)
 		{
@@ -454,9 +452,9 @@ int EntityClass::GetTotalDamageReduction()
 
 int EntityClass::GetArmorClass()
 {
-//	std::cout << EntityName << " has armor class of " << ArmorClass << std::endl;
-	ArmorClass = UpdateArmorClass();
-	return ArmorClass;
+//	std::cout << m_EntityName << " has armor class of " << m_ArmorClass << std::endl;
+	m_ArmorClass = UpdateArmorClass();
+	return m_ArmorClass;
 }
 
 int EntityClass::UpdateArmorClass()
@@ -464,7 +462,7 @@ int EntityClass::UpdateArmorClass()
 	int tempAC = 10;
 	tempAC += GetAbilityModifier(DEX);
 	
-	for (auto it = Equipment.begin(); it != Equipment.end(); it++)
+	for (auto it = m_Equipment.begin(); it != m_Equipment.end(); it++)
 	{
 		if ((*it).second != nullptr)
 		{
@@ -472,7 +470,7 @@ int EntityClass::UpdateArmorClass()
 		}
 	}
 	
-	for (auto it = Feats.begin(); it != Feats.end(); it++)
+	for (auto it = m_Feats.begin(); it != m_Feats.end(); it++)
 	{
 		if ((*it).GetDodgeBonusAdd() > 0)
 		{
@@ -486,40 +484,40 @@ int EntityClass::UpdateArmorClass()
 	return tempAC;
 }
 
-ObjectClass* EntityClass::GetEquipmentInSlot(BodyLocation Location)
+ObjectClass* EntityClass::GetEquipmentInSlot(BodyLocation a_Location)
 {
-	if (Equipment.find(Location) != Equipment.end())
+	if (m_Equipment.find(a_Location) != m_Equipment.end())
 	{
-		return Equipment[Location];
+		return m_Equipment[a_Location];
 	}
 	return nullptr;
 }
 
-void EntityClass::ClearEquipmentInSlot(BodyLocation Location)
+void EntityClass::ClearEquipmentInSlot(BodyLocation a_Location)
 {
-	if (Equipment.find(Location) != Equipment.end())
+	if (m_Equipment.find(a_Location) != m_Equipment.end())
 	{
-		delete Equipment[Location];
-		Equipment[Location] = nullptr;
+		delete m_Equipment[a_Location];
+		m_Equipment[a_Location] = nullptr;
 	}
 }
 
-void EntityClass::GenerateUnarmedStrike(EncounterInstance &Instance)
+void EntityClass::GenerateUnarmedStrike(EncounterInstance &a_Instance)
 {
-	this->UnarmedStrike = Instance.GetObjectFromMasterList("Unarmed Strike");
+	this->m_UnarmedStrike = a_Instance.GetObjectFromMasterList("Unarmed Strike");
 
 }
 void EntityClass::TwoHandWeapon()
 {
-	if (Equipment[MAINHAND] != NULL)
+	if (m_Equipment[MAINHAND] != NULL)
 	{
-		if (Equipment[OFFHAND] != NULL)
+		if (m_Equipment[OFFHAND] != NULL)
 		{
 			//this means that we are already grasping the wep in two hands we will stop
-			if (Equipment[OFFHAND]==Equipment[MAINHAND])
+			if (m_Equipment[OFFHAND]==m_Equipment[MAINHAND])
 			{
 				std::cout << "Offhand Let go" << std::endl;
-				Equipment[OFFHAND] = NULL;
+				m_Equipment[OFFHAND] = NULL;
 			}
 			else
 			{
@@ -529,16 +527,16 @@ void EntityClass::TwoHandWeapon()
 		}
 		else
 		{
-			Equipment[OFFHAND] = Equipment[MAINHAND];
-			std::cout << "Weapon Grasped in both hands" << std::endl;
+			m_Equipment[OFFHAND] = m_Equipment[MAINHAND];
+			std::cout << "m_Weapon Grasped in both hands" << std::endl;
 		}
 	} // end mainhand !=null
 	else
 	{
-		if (Equipment[OFFHAND] != NULL)
+		if (m_Equipment[OFFHAND] != NULL)
 		{
-			std::cout << "Weapon Grasped in both hands" << std::endl;
-			Equipment[MAINHAND] = Equipment[OFFHAND];
+			std::cout << "m_Weapon Grasped in both hands" << std::endl;
+			m_Equipment[MAINHAND] = m_Equipment[OFFHAND];
 		}
 	}
 }
@@ -546,7 +544,7 @@ void EntityClass::TwoHandWeapon()
 std::vector<FeatClass> EntityClass::GetActiveFeats()
 {
 	std::vector<FeatClass>ActiveFeats;
-	for (auto it = Feats.begin(); it != Feats.end(); it++)
+	for (auto it = m_Feats.begin(); it != m_Feats.end(); it++)
 	{
 		if ((*it).IsActive())
 		{
@@ -559,7 +557,7 @@ std::vector<FeatClass> EntityClass::GetActiveFeats()
 std::vector<FeatClass*> EntityClass::GetToggleableFeats()
 {
 	std::vector<FeatClass*> ToggleableFeats;
-	for (auto it = Feats.begin(); it != Feats.end(); it++)
+	for (auto it = m_Feats.begin(); it != m_Feats.end(); it++)
 	{
 	//	std::cout << "Feat" << (*it).GetName();
 		if ((*it).IsToggleAbility())
@@ -580,51 +578,51 @@ std::vector<FeatClass*> EntityClass::GetToggleableFeats()
 	return ToggleableFeats;
 }
 
-bool EntityClass::DoesSlotExist(BodyLocation Location)
+bool EntityClass::DoesSlotExist(BodyLocation a_Location)
 {
 	bool temp = false;
-	if (Equipment.find(Location) != Equipment.end())
+	if (m_Equipment.find(a_Location) != m_Equipment.end())
 	{
 		temp = true;
 	}
 	return temp;
 }
 
-void EntityClass::EntityDeath(EncounterInstance & Instance)
+void EntityClass::EntityDeath(EncounterInstance & a_Instance)
 {
 	auto location = this->GetLocation();
 	//std::cout << "Dropping items" << std::endl;
-	DropAllWornItems(Instance.GetTileMap()[location.first][location.second], Instance.GetTileMap());
+	DropAllWornItems(a_Instance.GetTileMap()[location.first][location.second], a_Instance.GetTileMap());
 	//std::cout << "Dropping items from backpack" << std::endl;
-	BackPack.DropAllAtTile(location.first, location.second, Instance.GetTileMap()[location.first][location.second], Instance.GetTileMap());
+	m_BackPack.DropAllAtTile(location.first, location.second, a_Instance.GetTileMap()[location.first][location.second], a_Instance.GetTileMap());
 	//std::cout << "Removing from init" << std::endl;
-	Instance.RemoveDeadFromLists();
+	a_Instance.RemoveDeadFromLists();
 	//std::cout << "Clearing occupant" << std::endl;
-	Instance.GetTileMap()[location.first][location.second].ClearOccupant();
+	a_Instance.GetTileMap()[location.first][location.second].ClearOccupant();
 	delete this;
 }
 
-void EntityClass::DropAllWornItems(Tile& passedTile, std::vector<std::vector<Tile>> &TileMap)
+void EntityClass::DropAllWornItems(Tile& a_passedTile, std::vector<std::vector<Tile>> &a_TileMap)
 {
-	for (auto it = Equipment.begin(); it != Equipment.end(); it++)
+	for (auto it = m_Equipment.begin(); it != m_Equipment.end(); it++)
 	{
 		if ((*it).second != nullptr)
 		{
-			(*it).second->SetLocation(this->GetLocation().first, this->GetLocation().second, TileMap);
+			(*it).second->SetLocation(this->GetLocation().first, this->GetLocation().second, a_TileMap);
 			(*it).second == nullptr;
 		}
 	}
 }
 
-bool EntityClass::EquipAsWeapon(ObjectClass* Weapon)
+bool EntityClass::EquipAsWeapon(ObjectClass* a_Weapon)
 {
-	std::cout <<"Number of offhand slots" << Equipment.count(OFFHAND) << std::endl;
-	if (Weapon->GetTwoHanded())
+	std::cout <<"Number of offhand slots" << m_Equipment.count(OFFHAND) << std::endl;
+	if (a_Weapon->GetTwoHanded())
 	{
 		std::cout << "Two handed weapon" << std::endl;
 		if (GetEquipmentInSlot(MAINHAND) == nullptr && GetEquipmentInSlot(OFFHAND) == nullptr)
 		{
-			if (EquipMainHandWeapon(Weapon)==true && EquipOffHandWeapon(Weapon)==true)
+			if (EquipMainHandWeapon(a_Weapon)==true && EquipOffHandWeapon(a_Weapon)==true)
 			{
 				return true;
 			}
@@ -642,11 +640,11 @@ bool EntityClass::EquipAsWeapon(ObjectClass* Weapon)
 	{
 		if (GetEquipmentInSlot(MAINHAND) ==nullptr || GetEquipmentInSlot(OFFHAND) == nullptr)
 		{
-			std::cout << "Equipment slot available" << std::endl;
-			if (EquipMainHandWeapon(Weapon)==false)
+			std::cout << "m_Equipment slot available" << std::endl;
+			if (EquipMainHandWeapon(a_Weapon)==false)
 			{
 				std::cout << "Failed equipping in mainhand, occupied" << std::endl;
-				if (EquipOffHandWeapon(Weapon)==false)
+				if (EquipOffHandWeapon(a_Weapon)==false)
 				{
 					std::cout << "Equipped in offhand" << std::endl;
 					return false;
@@ -666,12 +664,12 @@ bool EntityClass::EquipAsWeapon(ObjectClass* Weapon)
 	return false;
 }
 
-bool EntityClass::EquipMainHandWeapon(ObjectClass* Weapon)
+bool EntityClass::EquipMainHandWeapon(ObjectClass* a_Weapon)
 {
 	if (GetEquipmentInSlot(MAINHAND) == nullptr)
 	{
 		std::cout << "Mainhand Free" << std::endl;
-		Equipment.find(MAINHAND)->second = Weapon;
+		m_Equipment.find(MAINHAND)->second = a_Weapon;
 		return true; //successfull equip
 	}
 	else
@@ -681,13 +679,13 @@ bool EntityClass::EquipMainHandWeapon(ObjectClass* Weapon)
 	}
 }
 
-bool EntityClass::EquipOffHandWeapon(ObjectClass* Weapon)
+bool EntityClass::EquipOffHandWeapon(ObjectClass* a_Weapon)
 {
 	std::cout << "Trying to equip offhand" << std::endl;
 	if (GetEquipmentInSlot(OFFHAND) == nullptr)
 	{
 		std::cout << "Offhand free" << std::endl;
-		Equipment.find(OFFHAND)->second = Weapon;
+		m_Equipment.find(OFFHAND)->second = a_Weapon;
 		return true; // succesfull equip
 	}
 	else
@@ -697,37 +695,37 @@ bool EntityClass::EquipOffHandWeapon(ObjectClass* Weapon)
 	}
 }
 
-//void EntityClass::HandleTurn (SDL_Event& e, EncounterInstance & Instance)
+//void EntityClass::HandleTurn (SDL_Event& a_event, EncounterInstance & a_Instance)
 
-void EntityClass::handleEvent(SDL_Event& e, EncounterInstance & Instance)
+void EntityClass::handleEvent(SDL_Event& a_event, EncounterInstance & a_Instance)
 {
 	
 	//If a key was pressed
-	if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+	if (a_event.type == SDL_KEYDOWN && a_event.key.repeat == 0)
 	{
 		
-		//change the location
-		switch (e.key.keysym.sym)
+		//change the a_location
+		switch (a_event.key.keysym.sym)
 		{
 			//move to encounter handle
 		case SDLK_i: DisplayEntireInventory(); break;
 
 			//end move to encounter handle
-		case SDLK_s:MoveDirection = STATIONARY; break;
-		case SDLK_w:MoveDirection = NORTH; break;
-		case SDLK_a:MoveDirection = WEST; break;
-		case SDLK_d:MoveDirection = EAST; break;
-		case SDLK_x:MoveDirection = SOUTH; break;
+		case SDLK_s:m_MoveDirection = STATIONARY; break;
+		case SDLK_w:m_MoveDirection = NORTH; break;
+		case SDLK_a:m_MoveDirection = WEST; break;
+		case SDLK_d:m_MoveDirection = EAST; break;
+		case SDLK_x:m_MoveDirection = SOUTH; break;
 		
-		case SDLK_e:MoveDirection = NORTHEAST; break;
-		case SDLK_q:MoveDirection = NORTHWEST; break;
-		case SDLK_z:MoveDirection = SOUTHWEST; break;
-		case SDLK_c:MoveDirection = SOUTHEAST; break;
+		case SDLK_e:m_MoveDirection = NORTHEAST; break;
+		case SDLK_q:m_MoveDirection = NORTHWEST; break;
+		case SDLK_z:m_MoveDirection = SOUTHWEST; break;
+		case SDLK_c:m_MoveDirection = SOUTHEAST; break;
 
-		case SDLK_UP: MoveDirection = NORTH; break;
-		case SDLK_DOWN: MoveDirection = SOUTH; break;
-		case SDLK_LEFT: MoveDirection = WEST; break;
-		case SDLK_RIGHT: MoveDirection = EAST; break;
+		case SDLK_UP: m_MoveDirection = NORTH; break;
+		case SDLK_DOWN: m_MoveDirection = SOUTH; break;
+		case SDLK_LEFT: m_MoveDirection = WEST; break;
+		case SDLK_RIGHT: m_MoveDirection = EAST; break;
 		case SDLK_1: 
 			if (GetControlMode() != MELEEATTACKMODE && GetControlMode()!=NOCONTROLMODE) 
 			{
@@ -746,7 +744,7 @@ void EntityClass::handleEvent(SDL_Event& e, EncounterInstance & Instance)
 				if (this->GetEquipmentInSlot(MAINHAND)->IsRangedWeapon())
 				{
 					SetControlMode(RANGEDATTACKMODE);
-					Instance.GetTargetSystem().SetActive(true);
+					a_Instance.GetTargetSystem().SetActive(true);
 					break;
 				}
 			}
@@ -755,7 +753,7 @@ void EntityClass::handleEvent(SDL_Event& e, EncounterInstance & Instance)
 				if (this->GetEquipmentInSlot(OFFHAND)->IsRangedWeapon())
 				{
 					SetControlMode(RANGEDATTACKMODE);
-					Instance.GetTargetSystem().SetActive(true);
+					a_Instance.GetTargetSystem().SetActive(true);
 					break;
 				}
 			}
@@ -804,11 +802,11 @@ void EntityClass::handleEvent(SDL_Event& e, EncounterInstance & Instance)
 		case SDLK_p:
 			//std::cout << "Attempting to pathfind using BFS" << std::endl << std::endl;;
 			//PathFinder BFS;
-			//BFS.TestBreadthFirst(Instance.GetTileMap(), this->GetLocation().first, this->GetLocation().second);
+			//BFS.TestBreadthFirst(a_Instance.GetTileMap(), this->GetLocation().first, this->GetLocation().second);
 
 			std::cout << "Attempting to pathfind using DIJK" << std::endl << std::endl;
 			PathFinder DIJK;
-			DIJK.UseDijkstra(Instance.GetTileMap(), this->GetLocation().first, this->GetLocation().second, 4, 5);
+			DIJK.UseDijkstra(a_Instance.GetTileMap(), this->GetLocation().first, this->GetLocation().second, 4, 5);
 			break;
 
 		}
@@ -816,34 +814,34 @@ void EntityClass::handleEvent(SDL_Event& e, EncounterInstance & Instance)
 	}
 }
 
-bool EntityClass::move(std::vector<std::vector<Tile>> &TileVector)
+bool EntityClass::move(std::vector<std::vector<Tile>> &a_TileVector)
 {
-	if (MoveDirection == STATIONARY)
+	if (m_MoveDirection == STATIONARY)
 	{
-		TileVector[mLocation.first][mLocation.second].SetOccupant(*this);
+		a_TileVector[m_Location.first][m_Location.second].SetOccupant(*this);
 		return false;
 	}
 
-	if (this->MovementLeft <= 0)
+	if (this->m_MovementLeft <= 0)
 	{
 		//std::cout << "Not enough movement points remaining" << std::endl;
-		MoveDirection = STATIONARY;
+		m_MoveDirection = STATIONARY;
 		return false;
 	}
 
 	bool success = false;
-	switch (MoveDirection)
+	switch (m_MoveDirection)
 	{	
 	//check if we can move to the tile to next spot
 	//move to the tile if we can
 	//change moveDir to stationary
 	case NORTH:
-		FaceDirection = NORTH;
-		if (mLocation.second != 0 && TileVector[mLocation.first][mLocation.second-1].getPassable())
+		m_FaceDirection = NORTH;
+		if (m_Location.second != 0 && a_TileVector[m_Location.first][m_Location.second-1].getPassable())
 		{
-			TileVector[mLocation.first][mLocation.second].ClearOccupant();
-			mLocation.second--;
-			MovementLeft-=1;
+			a_TileVector[m_Location.first][m_Location.second].ClearOccupant();
+			m_Location.second--;
+			m_MovementLeft-=1;
 			success = true;
 		}
 		else
@@ -851,23 +849,23 @@ bool EntityClass::move(std::vector<std::vector<Tile>> &TileVector)
 			std::cout << "Cannot move there" << std::endl;
 			success = false;
 		}
-		TileVector[mLocation.first][mLocation.second].SetOccupant(*this);
+		a_TileVector[m_Location.first][m_Location.second].SetOccupant(*this);
 		
 		break;
 
 	case NORTHEAST:
-		FaceDirection = NORTHEAST;
-		if (mLocation.second != 0 && TileVector[mLocation.first][mLocation.second - 1].getPassable()
+		m_FaceDirection = NORTHEAST;
+		if (m_Location.second != 0 && a_TileVector[m_Location.first][m_Location.second - 1].getPassable()
 			&&
-			mLocation.first < TileVector.size() - 1 && TileVector[mLocation.first + 1][mLocation.second].getPassable()
+			m_Location.first < a_TileVector.size() - 1 && a_TileVector[m_Location.first + 1][m_Location.second].getPassable()
 			&&
-			TileVector[mLocation.first + 1][mLocation.second - 1].getPassable()
-			&& MovementLeft>=1 )
+			a_TileVector[m_Location.first + 1][m_Location.second - 1].getPassable()
+			&& m_MovementLeft>=1 )
 		{
-			TileVector[mLocation.first][mLocation.second].ClearOccupant();
-			mLocation.first++;
-			mLocation.second--;
-			MovementLeft -= 1.5;
+			a_TileVector[m_Location.first][m_Location.second].ClearOccupant();
+			m_Location.first++;
+			m_Location.second--;
+			m_MovementLeft -= 1.5;
 			success = true;
 		}
 		else
@@ -875,16 +873,16 @@ bool EntityClass::move(std::vector<std::vector<Tile>> &TileVector)
 			std::cout << "Cannot move there, or not enough movement remaining" << std::endl;
 			success = false;
 		}
-		TileVector[mLocation.first][mLocation.second].SetOccupant(*this);
+		a_TileVector[m_Location.first][m_Location.second].SetOccupant(*this);
 		break;
 
 	case EAST: 
-		FaceDirection = EAST;
-		if (mLocation.first < TileVector.size()-1 && TileVector[mLocation.first+1][mLocation.second].getPassable())
+		m_FaceDirection = EAST;
+		if (m_Location.first < a_TileVector.size()-1 && a_TileVector[m_Location.first+1][m_Location.second].getPassable())
 		{
-			TileVector[mLocation.first][mLocation.second].ClearOccupant();
-			mLocation.first++;
-			MovementLeft -= 1;
+			a_TileVector[m_Location.first][m_Location.second].ClearOccupant();
+			m_Location.first++;
+			m_MovementLeft -= 1;
 			success = true;
 		}
 		else
@@ -892,23 +890,23 @@ bool EntityClass::move(std::vector<std::vector<Tile>> &TileVector)
 			std::cout << "Cannot move there" << std::endl;
 			success = false;
 		}
-		TileVector[mLocation.first][mLocation.second].SetOccupant(*this);
+		a_TileVector[m_Location.first][m_Location.second].SetOccupant(*this);
 		break;
 
 	case SOUTHEAST:
-		FaceDirection = SOUTHEAST;
-		if (mLocation.first < TileVector.size() - 1 && TileVector[mLocation.first + 1][mLocation.second].getPassable()
+		m_FaceDirection = SOUTHEAST;
+		if (m_Location.first < a_TileVector.size() - 1 && a_TileVector[m_Location.first + 1][m_Location.second].getPassable()
 			&&
-			mLocation.second < TileVector[0].size() - 1 && TileVector[mLocation.first][mLocation.second + 1].getPassable()
+			m_Location.second < a_TileVector[0].size() - 1 && a_TileVector[m_Location.first][m_Location.second + 1].getPassable()
 			&&
-			TileVector[mLocation.first + 1][mLocation.second + 1].getPassable()
+			a_TileVector[m_Location.first + 1][m_Location.second + 1].getPassable()
 			&&
-			MovementLeft >= 1)
+			m_MovementLeft >= 1)
 		{
-			TileVector[mLocation.first][mLocation.second].ClearOccupant();
-			mLocation.first++;
-			mLocation.second++;
-			MovementLeft -= 1.5;
+			a_TileVector[m_Location.first][m_Location.second].ClearOccupant();
+			m_Location.first++;
+			m_Location.second++;
+			m_MovementLeft -= 1.5;
 			success = true;
 		}
 		else
@@ -916,16 +914,16 @@ bool EntityClass::move(std::vector<std::vector<Tile>> &TileVector)
 			std::cout << "Cannot move there or not enough movement left" << std::endl;
 			success = false;
 		}
-		TileVector[mLocation.first][mLocation.second].SetOccupant(*this);
+		a_TileVector[m_Location.first][m_Location.second].SetOccupant(*this);
 		break;
 
 	case SOUTH: 
-		FaceDirection = SOUTH;
-		if (mLocation.second < TileVector[0].size() - 1 && TileVector[mLocation.first][mLocation.second+1].getPassable())
+		m_FaceDirection = SOUTH;
+		if (m_Location.second < a_TileVector[0].size() - 1 && a_TileVector[m_Location.first][m_Location.second+1].getPassable())
 		{
-			TileVector[mLocation.first][mLocation.second].ClearOccupant();
-			mLocation.second++;
-			MovementLeft -= 1;
+			a_TileVector[m_Location.first][m_Location.second].ClearOccupant();
+			m_Location.second++;
+			m_MovementLeft -= 1;
 			success = true;
 		}
 		else
@@ -933,23 +931,23 @@ bool EntityClass::move(std::vector<std::vector<Tile>> &TileVector)
 			std::cout << "Cannot move there" << std::endl;
 			success = false;
 		}
-		TileVector[mLocation.first][mLocation.second].SetOccupant(*this);
+		a_TileVector[m_Location.first][m_Location.second].SetOccupant(*this);
 		break;
 
 	case SOUTHWEST:
-		FaceDirection = SOUTHWEST;
-		if (mLocation.second < TileVector[0].size() - 1 && TileVector[mLocation.first][mLocation.second + 1].getPassable()
+		m_FaceDirection = SOUTHWEST;
+		if (m_Location.second < a_TileVector[0].size() - 1 && a_TileVector[m_Location.first][m_Location.second + 1].getPassable()
 			&&
-			mLocation.first != 0 && TileVector[mLocation.first - 1][mLocation.second].getPassable()
+			m_Location.first != 0 && a_TileVector[m_Location.first - 1][m_Location.second].getPassable()
 			&&
-			TileVector[mLocation.first - 1][mLocation.second + 1].getPassable()
+			a_TileVector[m_Location.first - 1][m_Location.second + 1].getPassable()
 			&&
-			MovementLeft >= 1)
+			m_MovementLeft >= 1)
 		{
-			TileVector[mLocation.first][mLocation.second].ClearOccupant();
-			mLocation.second++;
-			mLocation.first--;
-			MovementLeft -= 1.5;
+			a_TileVector[m_Location.first][m_Location.second].ClearOccupant();
+			m_Location.second++;
+			m_Location.first--;
+			m_MovementLeft -= 1.5;
 			success = true;
 		}
 		else
@@ -957,17 +955,17 @@ bool EntityClass::move(std::vector<std::vector<Tile>> &TileVector)
 			std::cout << "Cannot move there or not enough movement left" << std::endl;
 			success = false;
 		}
-		TileVector[mLocation.first][mLocation.second].SetOccupant(*this);
+		a_TileVector[m_Location.first][m_Location.second].SetOccupant(*this);
 		break;
 
 	case WEST: 
-		FaceDirection = WEST;
+		m_FaceDirection = WEST;
 
-		if (mLocation.first !=0 && TileVector[mLocation.first - 1][mLocation.second].getPassable())
+		if (m_Location.first !=0 && a_TileVector[m_Location.first - 1][m_Location.second].getPassable())
 		{
-			TileVector[mLocation.first][mLocation.second].ClearOccupant();
-			mLocation.first--;
-			MovementLeft -= 1;
+			a_TileVector[m_Location.first][m_Location.second].ClearOccupant();
+			m_Location.first--;
+			m_MovementLeft -= 1;
 			success = true;
 		}
 		else
@@ -975,24 +973,24 @@ bool EntityClass::move(std::vector<std::vector<Tile>> &TileVector)
 			std::cout << "Cannot move there" << std::endl;
 			success = false;
 		}
-		TileVector[mLocation.first][mLocation.second].SetOccupant(*this);
+		a_TileVector[m_Location.first][m_Location.second].SetOccupant(*this);
 		break;
 
 	case NORTHWEST:
-		FaceDirection = NORTHWEST;
+		m_FaceDirection = NORTHWEST;
 
-		if (mLocation.first != 0 && TileVector[mLocation.first - 1][mLocation.second].getPassable()
+		if (m_Location.first != 0 && a_TileVector[m_Location.first - 1][m_Location.second].getPassable()
 			&&
-			mLocation.second != 0 && TileVector[mLocation.first][mLocation.second - 1].getPassable()
+			m_Location.second != 0 && a_TileVector[m_Location.first][m_Location.second - 1].getPassable()
 			&&
-			TileVector[mLocation.first - 1][mLocation.second - 1].getPassable()
+			a_TileVector[m_Location.first - 1][m_Location.second - 1].getPassable()
 			&&
-			MovementLeft >= 1)
+			m_MovementLeft >= 1)
 		{
-			TileVector[mLocation.first][mLocation.second].ClearOccupant();
-			mLocation.first--;
-			mLocation.second--;
-			MovementLeft -= 1.5;
+			a_TileVector[m_Location.first][m_Location.second].ClearOccupant();
+			m_Location.first--;
+			m_Location.second--;
+			m_MovementLeft -= 1.5;
 			success = true;
 		}
 		else
@@ -1000,11 +998,11 @@ bool EntityClass::move(std::vector<std::vector<Tile>> &TileVector)
 			std::cout << "Cannot move there or not enough movement left" << std::endl;
 			success = false;
 		}
-		TileVector[mLocation.first][mLocation.second].SetOccupant(*this);
+		a_TileVector[m_Location.first][m_Location.second].SetOccupant(*this);
 		break;
 	} //end switch statement
 
-	//std::cout << "Man moved in function, setting rend location " << std::endl;
+	//std::cout << "Man moved in function, setting rend a_location " << std::endl;
 	//std::cout << "Attempted to move" << std::endl;
 	if (success)
 	{
@@ -1014,60 +1012,60 @@ bool EntityClass::move(std::vector<std::vector<Tile>> &TileVector)
 	{
 		std::cout << "Failed move" << std::endl;
 	}
-	SetRendLocation(TileVector);
-	MoveDirection = STATIONARY;
+	SetRendLocation(a_TileVector);
+	m_MoveDirection = STATIONARY;
 	return success;
 	}
 
-void EntityClass::setCamera(SDL_Rect& camera)
+void EntityClass::setCamera(SDL_Rect& a_camera)
 {
-	//Center the camera over the entity
-	camera.x = (mBox.x + ENTITY_WIDTH / 2) - g_SCREEN_WIDTH *0.333;
-	camera.y = (mBox.y + ENTITY_HEIGHT / 2) - g_SCREEN_HEIGHT*0.375;
+	//Center the m_camera over the entity
+	a_camera.x = (m_Box.x + m_ENTITY_WIDTH / 2) - g_SCREEN_WIDTH *0.333;
+	a_camera.y = (m_Box.y + m_ENTITY_HEIGHT / 2) - g_SCREEN_HEIGHT*0.375;
 
-	//Keep the camera in bounds
-	if (camera.x < 0)
+	//Keep the m_camera in bounds
+	if (a_camera.x < 0)
 	{
-		camera.x = 0;
+		a_camera.x = 0;
 	}
-	if (camera.y < 0)
+	if (a_camera.y < 0)
 	{
-		camera.y = 0;
+		a_camera.y = 0;
 	}
-	if (camera.x > g_LEVEL_WIDTH - camera.w)
+	if (a_camera.x > g_LEVEL_WIDTH - a_camera.w)
 	{
-		camera.x = g_LEVEL_WIDTH - camera.w;
+		a_camera.x = g_LEVEL_WIDTH - a_camera.w;
 	}
-	if (camera.y > g_LEVEL_HEIGHT - camera.h)
+	if (a_camera.y > g_LEVEL_HEIGHT - a_camera.h)
 	{
-		camera.y = g_LEVEL_HEIGHT - camera.h;
+		a_camera.y = g_LEVEL_HEIGHT - a_camera.h;
 	}
 }
 
-void EntityClass::SetLocation(int x, int y, std::vector < std::vector < Tile> > &TileMap)
+void EntityClass::SetLocation(int a_x, int a_y, std::vector < std::vector < Tile> > &a_TileMap)
 {
-	mLocation.first = x;
-	mLocation.second = y;
-	TileMap[x][y].SetOccupant(*this);
-	this->SetRendLocation(TileMap);
+	m_Location.first = a_x;
+	m_Location.second = a_y;
+	a_TileMap[a_x][a_y].SetOccupant(*this);
+	this->SetRendLocation(a_TileMap);
 }
 
 std::pair<int, int> EntityClass::GetLocation()
 {
-	return mLocation;
+	return m_Location;
 }
 
-void EntityClass::SetRendLocation(std::vector<std::vector<Tile>> &TileVector)
+void EntityClass::SetRendLocation(std::vector<std::vector<Tile>> &a_TileVector)
 {
-	std::pair<int, int> tempLoc = CalcRendLocation(TileVector);
-	mBox.x = tempLoc.first;
-	mBox.y = tempLoc.second;
-	//std::cout << "New rend location=" << mBox.x << " " << mBox.y << std::endl;
+	std::pair<int, int> tempLoc = CalcRendLocation(a_TileVector);
+	m_Box.x = tempLoc.first;
+	m_Box.y = tempLoc.second;
+	//std::cout << "New rend a_location=" << m_Box.a_x << " " << m_Box.a_y << std::endl;
 }
 
-std::pair<int, int> EntityClass::CalcRendLocation(std::vector<std::vector<Tile>> &TileVector)
+std::pair<int, int> EntityClass::CalcRendLocation(std::vector<std::vector<Tile>> &a_TileVector)
 {
-	//std::cout << "Calc rend location" << std::endl;
+	//std::cout << "Calc rend a_location" << std::endl;
 	std::pair <int, int> RetVal;
 	int xTempLoc = GetLocation().first;
 	int yTempLoc = GetLocation().second;
@@ -1077,11 +1075,11 @@ std::pair<int, int> EntityClass::CalcRendLocation(std::vector<std::vector<Tile>>
 	int xOffset = 0;
 	int yOffset = 0;
 	//std::cout << "Accessing vector" << std::endl;
-	RetVal.first=TileVector[xTempLoc][yTempLoc].GetXRenderPos();
-	RetVal.second = TileVector[xTempLoc][yTempLoc].GetYRenderPos();
+	RetVal.first=a_TileVector[xTempLoc][yTempLoc].GetXRenderPos();
+	RetVal.second = a_TileVector[xTempLoc][yTempLoc].GetYRenderPos();
 
-	xOffset = 0.5 * (TileVector[xTempLoc][yTempLoc].GetWidth() - ENTITY_WIDTH);
-	yOffset = 0.5 * (TileVector[xTempLoc][yTempLoc].GetWidth() - ENTITY_HEIGHT);
+	xOffset = 0.5 * (a_TileVector[xTempLoc][yTempLoc].GetWidth() - m_ENTITY_WIDTH);
+	yOffset = 0.5 * (a_TileVector[xTempLoc][yTempLoc].GetWidth() - m_ENTITY_HEIGHT);
 
 	RetVal.first = RetVal.first + xOffset;
 	RetVal.second = RetVal.second + yOffset;
@@ -1089,10 +1087,10 @@ std::pair<int, int> EntityClass::CalcRendLocation(std::vector<std::vector<Tile>>
 	return RetVal;
 }
 
-void EntityClass::render(SDL_Rect& camera, SDL_Renderer *& Renderer)
+void EntityClass::render(SDL_Rect& a_camera, SDL_Renderer *& a_Renderer)
 {
 	double tempangle;
-	switch (FaceDirection)
+	switch (m_FaceDirection)
 	{
 	case NORTH:
 		tempangle = 180;
@@ -1127,40 +1125,40 @@ void EntityClass::render(SDL_Rect& camera, SDL_Renderer *& Renderer)
 		break;
 	}
 	//If the texture is on screen
-	if (checkCollision(camera, mBox))
+	if (checkCollision(a_camera, m_Box))
 	{
 		//Show the texture
-		mTexture->renderEntity(mBox.x - camera.x, mBox.y - camera.y, Renderer, &mBox, tempangle);
-		SideTexture->renderEntity(mBox.x - camera.x, mBox.y - camera.y, Renderer, &mBox, tempangle);
-		//std::cout << " Entity size " << mBox.h << " " << mBox.w << std::endl;
+		m_Texture->renderEntity(m_Box.x - a_camera.x, m_Box.y - a_camera.y, a_Renderer, &m_Box, tempangle);
+		m_SideTexture->renderEntity(m_Box.x - a_camera.x, m_Box.y - a_camera.y, a_Renderer, &m_Box, tempangle);
+		//std::cout << " Entity size " << m_Box.h << " " << m_Box.w << std::endl;
 	}
 }
 
-void EntityClass::SetPath(std::string Path)
+void EntityClass::SetPath(std::string a_Path)
 {
-	mPathTexture = Path;
+	m_PathTexture = a_Path;
 }
 
-void EntityClass::SetName(std::string PassedName)
+void EntityClass::SetName(std::string a_PassedName)
 {
-	EntityName = PassedName;
+	m_EntityName = a_PassedName;
 }
 
 ControlMode EntityClass::GetControlMode()
 {
-	return this->ControlSetting;
+	return this->m_ControlSetting;
 }
 
-void EntityClass::SetControlMode(ControlMode NewControl)
+void EntityClass::SetControlMode(ControlMode a_NewControl)
 {
-	this->ControlSetting = NewControl;
+	this->m_ControlSetting = a_NewControl;
 }
 
-int EntityClass::GetAbilityModifier(AbilityScoreType ability)
+int EntityClass::GetAbilityModifier(AbilityScoreType a_ability)
 {
-	int temp = (int)(floor((AbilityScore[ability] - 10) / 2));
+	int temp = (int)(floor((m_AbilityScore[a_ability] - 10) / 2));
 	//std::cout << "Checking dex, normal: " << temp << std::endl;
-	if (ability == DEX && temp > GetMaxDex())
+	if (a_ability == DEX && temp > GetMaxDex())
 	{
 		return GetMaxDex();
 	}
@@ -1173,7 +1171,7 @@ int EntityClass::GetAbilityModifier(AbilityScoreType ability)
 int EntityClass::GetMaxDex()
 {
 	int max=10;
-	for (auto it = Equipment.begin(); it != Equipment.end(); it++)
+	for (auto it = m_Equipment.begin(); it != m_Equipment.end(); it++)
 	{
 		if ((*it).second != nullptr)
 		{
@@ -1188,23 +1186,23 @@ int EntityClass::GetMaxDex()
 void EntityClass::RollInitiative()
 {
 	//get all active feat bonuses for initiative
-	std::vector<FeatClass> TempFeats = GetActiveFeats();
+	std::vector<FeatClass> m_TempFeats = GetActiveFeats();
 	int TotalIntBonus = 0;
-	for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
+	for (auto it = m_TempFeats.begin(); it != m_TempFeats.end(); it++)
 	{
 		//no feats implemented with init yet
 	}
 
 	//add them to the existing dex bonus to get initiative bonus
 	TotalIntBonus+= GetAbilityModifier(DEX);
-	Initiative = (DiceRoll(D20) + TotalIntBonus);
-	std::cout << EntityName << " rolled " << Initiative << " on initiative" << std::endl;
+	m_Initiative = (DiceRoll(D20) + TotalIntBonus);
+	std::cout << m_EntityName << " rolled " << m_Initiative << " on initiative" << std::endl;
 
 }
 
 bool EntityClass::IsTwoHanding()
 {
-	if (Equipment[MAINHAND] == Equipment[OFFHAND])
+	if (m_Equipment[MAINHAND] == m_Equipment[OFFHAND])
 	{
 		//entity is holding the same weapon in both hands, definition of two handing
 		return true;
@@ -1226,52 +1224,52 @@ void EntityClass::SwapWeaponHands()
 			TempStore = GetEquipmentInSlot(MAINHAND);
 			if (GetEquipmentInSlot(OFFHAND) != NULL)
 			{
-				Equipment[MAINHAND] = Equipment[OFFHAND];	
-				Equipment[OFFHAND] = TempStore;
+				m_Equipment[MAINHAND] = m_Equipment[OFFHAND];	
+				m_Equipment[OFFHAND] = TempStore;
 			}
 			else
 			{
-				Equipment[OFFHAND] = TempStore;
-				Equipment[MAINHAND] = NULL;
+				m_Equipment[OFFHAND] = TempStore;
+				m_Equipment[MAINHAND] = NULL;
 			}
 		
 		}
 		else if (GetEquipmentInSlot(OFFHAND) != NULL)
 		{
-			Equipment[MAINHAND] = Equipment[OFFHAND];
-			Equipment[OFFHAND] = NULL;
+			m_Equipment[MAINHAND] = m_Equipment[OFFHAND];
+			m_Equipment[OFFHAND] = NULL;
 		}
 	}
 }
 
-ObjectClass* EntityClass::PickupTile(std::vector<std::vector<Tile>> &TileVector)
+ObjectClass* EntityClass::PickupTile(std::vector<std::vector<Tile>> &a_TileVector)
 {
 	PickupItemsMenu PMenu;
 
-	return PMenu.PickupItemsRun(TileVector[mLocation.first][mLocation.second]);
+	return PMenu.PickupItemsRun(a_TileVector[m_Location.first][m_Location.second]);
 }
 
-void EntityClass::EntityPickup(std::vector<std::vector<Tile>> &TileVector)
+void EntityClass::EntityPickup(std::vector<std::vector<Tile>> &a_TileVector)
 {
-	ObjectClass* Target = PickupTile(TileVector);
+	ObjectClass* Target = PickupTile(a_TileVector);
 	if (Target != NULL)
 	{
-		//pickup the item
+		//pickup the a_item
 		
 		if (this->EquipObject(Target))
 		{
 			//std::cout << "Equipping successful" << std::endl;
-			TileVector[Target->GetLocation().first][Target->GetLocation().second].RemoveObject(Target);
+			a_TileVector[Target->GetLocation().first][Target->GetLocation().second].RemoveObject(Target);
 		}
 	}
 	//DisplayEntireInventory();
 	return;
 }
 
-ObjectClass* EntityClass::EntityInventory(std::vector<std::vector<Tile>> &TileVector)
+ObjectClass* EntityClass::EntityInventory(std::vector<std::vector<Tile>> &a_TileVector)
 {
 	InventoryMenu IMenu;
-	return IMenu.InventoryMenuRun(*this, TileVector);
+	return IMenu.InventoryMenuRun(*this, a_TileVector);
 
 }
 void EntityClass::EntityFeatMenu()
@@ -1281,27 +1279,27 @@ void EntityClass::EntityFeatMenu()
 }
 ItemContainer& EntityClass::GetBackPack()
 {
-	return BackPack;
+	return m_BackPack;
 }
 
-void EntityClass::AddToBackPack(ObjectClass * object)
+void EntityClass::AddToBackPack(ObjectClass * a_object)
 {
-	BackPack.AddItem(object);
+	m_BackPack.AddItem(a_object);
 }
 
-void EntityClass::UnEquip(BodyLocation location)
+void EntityClass::UnEquip(BodyLocation a_location)
 {
-	if (Equipment[location]!=NULL)
+	if (m_Equipment[a_location]!=NULL)
 	{
-		AddToBackPack(Equipment[location]);
-		Equipment[location] = NULL;
+		AddToBackPack(m_Equipment[a_location]);
+		m_Equipment[a_location] = NULL;
 	}
 }
-bool EntityClass::EquipArmor(ObjectClass* item)
+bool EntityClass::EquipArmor(ObjectClass* a_item)
 {
-	if (Equipment[BODY] == NULL)
+	if (m_Equipment[BODY] == NULL)
 	{
-		Equipment[BODY] = item;
+		m_Equipment[BODY] = a_item;
 		return true;
 	}
 	else 
@@ -1310,71 +1308,71 @@ bool EntityClass::EquipArmor(ObjectClass* item)
 	}
 }
 
-void EntityClass::DropFromEquipment(BodyLocation location, std::vector<std::vector<Tile>>&TileMap)
+void EntityClass::DropFromEquipment(BodyLocation a_location, std::vector<std::vector<Tile>>&a_TileMap)
 {
-	if (Equipment[location] != NULL)
+	if (m_Equipment[a_location] != NULL)
 	{
-		Equipment[location]->SetLocation(mLocation.first, mLocation.second, TileMap);
-		Equipment[location] = NULL;
+		m_Equipment[a_location]->SetLocation(m_Location.first, m_Location.second, a_TileMap);
+		m_Equipment[a_location] = NULL;
 	}
 }
 
-void EntityClass::DropFromBackPack(int index, std::vector<std::vector<Tile>>& TileMap)
+void EntityClass::DropFromBackPack(int a_index, std::vector<std::vector<Tile>>& a_TileMap)
 {
-	if (index < 0)
+	if (a_index < 0)
 	{
 		return;
 	}
-	//get item at index
-	if (BackPack.GetItemAtIndex(index)) //will not go if NULL
+	//get a_item at a_index
+	if (m_BackPack.GetItemAtIndex(a_index)) //will not go if NULL
 	{
-		BackPack.GetItemAtIndex(index)->SetLocation(mLocation.first, mLocation.second, TileMap);
-		BackPack.RemoveItemAtIndex(index);
+		m_BackPack.GetItemAtIndex(a_index)->SetLocation(m_Location.first, m_Location.second, a_TileMap);
+		m_BackPack.RemoveItemAtIndex(a_index);
 	}
-	//BackPack.DropItemAtIndex(int index);
+	//m_BackPack.DropItemAtIndex(int a_index);
 
 }
 
-bool EntityClass::EquipObject(ObjectClass* item)
+bool EntityClass::EquipObject(ObjectClass* a_item)
 {
-	//std::cout << "Equipping " << item->GetName() << " in the " << BodyLocationTextMap[item->GetBodySlot()] << std::endl;
-	if (item->GetBodySlot() == MAINHAND || item->GetBodySlot() == OFFHAND)
+	//std::cout << "Equipping " << a_item->GetName() << " in the " << BodyLocationTextMap[a_item->GetBodySlot()] << std::endl;
+	if (a_item->GetBodySlot() == MAINHAND || a_item->GetBodySlot() == OFFHAND)
 	{
 	//	std::cout << "Attempting to equip as a weapon" << std::endl;
-		if (this->EquipAsWeapon(item))
+		if (this->EquipAsWeapon(a_item))
 		{
 			//std::cout << "Equipped as a legitimate weapon" << std::endl;
 			return true;
 		}
 	}
-	if (item->GetBodySlot()==TRADEGOOD)
+	if (a_item->GetBodySlot()==TRADEGOOD)
 	{
-		if (this->EquipAsWeapon(item))
+		if (this->EquipAsWeapon(a_item))
 		{
 			std::cout << "Equipped as weapon" << std::endl;
 			return true;
 		}
 		else
 		{
-			BackPack.AddItem(item);
+			m_BackPack.AddItem(a_item);
 			std::cout << "Added to backpack" << std::endl;
 			return true;
 		}
 
 	}
-	//BodyLocation location = item->GetBodySlot();
-	if (DoesSlotExist(item->GetBodySlot())) 
+	//BodyLocation a_location = a_item->GetBodySlot();
+	if (DoesSlotExist(a_item->GetBodySlot())) 
 	{
-		if (this->GetEquipmentInSlot(item->GetBodySlot()) == NULL)
+		if (this->GetEquipmentInSlot(a_item->GetBodySlot()) == NULL)
 		{
 
-			std::cout << "Added to Equipment" << std::endl;
-			Equipment[item->GetBodySlot()] = item;
+			std::cout << "Added to m_Equipment" << std::endl;
+			m_Equipment[a_item->GetBodySlot()] = a_item;
 			return true;
 		}
 	}
 	
-	BackPack.AddItem(item);
+	m_BackPack.AddItem(a_item);
 	std::cout << "Added to backpack" << std::endl;
 	return true;
 
@@ -1384,7 +1382,7 @@ bool EntityClass::EquipObject(ObjectClass* item)
 
 void EntityClass::DisplayEntireInventory()
 {
-	for (auto iter = Equipment.begin(); iter != Equipment.end(); iter++)
+	for (auto iter = m_Equipment.begin(); iter != m_Equipment.end(); iter++)
 	{
 		if ((*iter).second != NULL)
 		{
@@ -1392,52 +1390,52 @@ void EntityClass::DisplayEntireInventory()
 		}
 	}
 	std::cout << "Backpack items: " << std::endl;
-	BackPack.DisplayItems();
+	m_BackPack.DisplayItems();
 }
 
-void EntityClass::SetAbilityScore(AbilityScoreType type, int amount)
+void EntityClass::SetAbilityScore(AbilityScoreType a_type, int a_amount)
 {
-	AbilityScore[type] = amount;
+	m_AbilityScore[a_type] = a_amount;
 }
 
 void EntityClass::DisplayAbilityScores()
 {
-	for (auto i = AbilityScore.begin(); i != AbilityScore.end(); i++)
+	for (auto i = m_AbilityScore.begin(); i != m_AbilityScore.end(); i++)
 	{
 		std::cout << AbilityScoreTextMap[(*i).first] << "  " << (*i).second << std::endl;
 	}
 }
 
 //loading functions
-bool EntityClass::LoadEntity(std::string name, std::pair<int, int> Location, bool PlayerControlled, int side, EncounterInstance &Instance)
+bool EntityClass::LoadEntity(std::string a_name, std::pair<int, int> a_Location, bool a_PlayerControlled, int a_side, EncounterInstance &a_Instance)
 {
-	name = Instance.GetCharacterFolderPath() +"\\"+ name;
+	a_name = a_Instance.GetCharacterFolderPath() +"\\"+ a_name;
 	std::ifstream reader;
-	std::cout << "Reader path: " << name << std::endl;
-	reader.open(name);
+	std::cout << "Reader path: " << a_name << std::endl;
+	reader.open(a_name);
 	LoadNameDescriptionAndTexture(reader);
 	LoadAbilityScores(reader);
-	LoadEquipment(reader, Instance.GetObjectList());
-	LoadFeats(reader, Instance);
+	LoadEquipment(reader, a_Instance.GetObjectList());
+	LoadFeats(reader, a_Instance);
 	LoadProperties(reader);
-	TeamSide = side;
-	this->SetLocation(Location.first, Location.second, Instance.GetTileMap());
+	m_TeamSide = a_side;
+	this->SetLocation(a_Location.first, a_Location.second, a_Instance.GetTileMap());
 	//generate their unarmed attack
-	GenerateUnarmedStrike(Instance);
+	GenerateUnarmedStrike(a_Instance);
 
-	std::cout << "Loaded entity: " << this->EntityName << std::endl;
+	std::cout << "Loaded entity: " << this->m_EntityName << std::endl;
 	return true;
 }
 
-bool EntityClass::LoadNameDescriptionAndTexture(std::ifstream &reader)
+bool EntityClass::LoadNameDescriptionAndTexture(std::ifstream &a_reader)
 {
-	reader.clear();
-	reader.seekg(0, std::ios::beg);
+	a_reader.clear();
+	a_reader.seekg(0, std::ios::beg);
 	std::string line = "";
 	bool GotName = false;
 	bool GotTexture = false;
 	bool GotDescription = false;
-	while (getline(reader, line))
+	while (getline(a_reader, line))
 	{
 		if (GotName &&GotTexture && GotDescription)
 		{
@@ -1449,7 +1447,7 @@ bool EntityClass::LoadNameDescriptionAndTexture(std::ifstream &reader)
 		{
 			int endchar = line.find("//");
 			line = line.substr(0, endchar);
-			//	std::cout << "ResultAfterComment " << line << std::endl;
+			//	std::cout << "ResultAfterComment " << a_line << std::endl;
 		}//end remove comments block
 
 		if (line.find("Name:") != std::string::npos)
@@ -1462,31 +1460,31 @@ bool EntityClass::LoadNameDescriptionAndTexture(std::ifstream &reader)
 		if (line.find("Texture:") != std::string::npos)
 		{
 			line = line.substr(line.find(":") + 1);
-			this->mPathTexture = line;
+			this->m_PathTexture = line;
 			GotTexture = true;
 		}
 	}
 	return false;
 }
 
-bool EntityClass::LoadAbilityScores(std::ifstream &reader)
+bool EntityClass::LoadAbilityScores(std::ifstream &a_reader)
 {
-	reader.clear();
-	reader.seekg(0, std::ios::beg);
-	if (reader.is_open())
+	a_reader.clear();
+	a_reader.seekg(0, std::ios::beg);
+	if (a_reader.is_open())
 	{
-		std::cout << "reader is open to path" << std::endl;
+		std::cout << "a_reader is open to path" << std::endl;
 	}
 	std::string line;
-	while (getline(reader, line))
+	while (getline(a_reader, line))
 	{
-	//	std::cout << line << std::endl;
+	//	std::cout << a_line << std::endl;
 		//remove comments
 		if (line.find("//") != std::string::npos)
 		{
 			int endchar = line.find("//");
 			line = line.substr(0, endchar);
-			//	std::cout << "ResultAfterComment " << line << std::endl;
+			//	std::cout << "ResultAfterComment " << a_line << std::endl;
 		}//end remove comments block
 
 		//lowercase the string
@@ -1502,7 +1500,7 @@ bool EntityClass::LoadAbilityScores(std::ifstream &reader)
 			{
 				temp = stoi(line);
 				SetAbilityScore(STR, temp);
-				//std::cout << "Line: " << line << std::endl;
+				//std::cout << "Line: " << a_line << std::endl;
 			}
 			catch(std::exception const & error)
 			{
@@ -1517,7 +1515,7 @@ bool EntityClass::LoadAbilityScores(std::ifstream &reader)
 			{
 				temp = stoi(line);
 				SetAbilityScore(DEX, temp);
-				//std::cout << "Line: " << line << std::endl;
+				//std::cout << "Line: " << a_line << std::endl;
 			}
 			catch (std::exception const & error)
 			{
@@ -1532,7 +1530,7 @@ bool EntityClass::LoadAbilityScores(std::ifstream &reader)
 			{
 				temp = stoi(line);
 				SetAbilityScore(CON, temp);
-				//std::cout << "Line: " << line << std::endl;
+				//std::cout << "Line: " << a_line << std::endl;
 			}
 			catch (std::exception const & error)
 			{
@@ -1547,7 +1545,7 @@ bool EntityClass::LoadAbilityScores(std::ifstream &reader)
 			{
 				temp = stoi(line);
 				SetAbilityScore(INT, temp);
-				//std::cout << "Line: " << line << std::endl;
+				//std::cout << "Line: " << a_line << std::endl;
 			}
 			catch (std::exception const & error)
 			{
@@ -1562,7 +1560,7 @@ bool EntityClass::LoadAbilityScores(std::ifstream &reader)
 			{
 				temp = stoi(line);
 				SetAbilityScore(WIS, temp);
-			//	std::cout << "Line: " << line << std::endl;
+			//	std::cout << "Line: " << a_line << std::endl;
 			}
 			catch (std::exception const & error)
 			{
@@ -1577,7 +1575,7 @@ bool EntityClass::LoadAbilityScores(std::ifstream &reader)
 			{
 				temp = stoi(line);
 				SetAbilityScore(CHA, temp);
-			//	std::cout <<"Line: "<< line << std::endl;
+			//	std::cout <<"Line: "<< a_line << std::endl;
 			}
 			catch (std::exception const & error)
 			{
@@ -1590,30 +1588,30 @@ bool EntityClass::LoadAbilityScores(std::ifstream &reader)
 	return true;
 }
 
-bool EntityClass::LoadEquipment(std::ifstream & reader, std::map<std::string, ObjectClass*>& MasterObjectList)
+bool EntityClass::LoadEquipment(std::ifstream & a_reader, std::map<std::string, ObjectClass*>& a_MasterObjectList)
 {
 	bool success = true;
-	reader.clear();
-	reader.seekg(0, std::ios::beg);
-	if (!reader.is_open())
+	a_reader.clear();
+	a_reader.seekg(0, std::ios::beg);
+	if (!a_reader.is_open())
 	{
-		std::cout << "reader is not open to path" << std::endl;
+		std::cout << "a_reader is not open to path" << std::endl;
 		success = false;
 		return success;
 	}
 	bool BackPackLoading = false;
 	bool EquipmentLoading = false;
 	std::string line;
-	while (getline(reader, line))
+	while (getline(a_reader, line))
 	{
 		BodyLocation TempLocation = UNKNOWNBODYSLOTTYPE;
-		//	std::cout << line << std::endl;
+		//	std::cout << a_line << std::endl;
 		//remove comments
 		if (line.find("//") != std::string::npos)
 		{
 			int endchar = line.find("//");
 			line = line.substr(0, endchar);
-			//	std::cout << "ResultAfterComment " << line << std::endl;
+			//	std::cout << "ResultAfterComment " << a_line << std::endl;
 		}//end remove comments block
 
 		if (line.find("End Backpack:")!=std::string::npos)
@@ -1635,52 +1633,52 @@ bool EntityClass::LoadEquipment(std::ifstream & reader, std::map<std::string, Ob
 		else if (line.find("Equipped:") != std::string::npos)
 		{
 			EquipmentLoading = true;
-			std::cout << "Loading Equipment" << std::endl;
+			std::cout << "Loading m_Equipment" << std::endl;
 		}
 
 		TempLocation = GetBodyLocation(line);
 		//equipment load functions
 		if (EquipmentLoading && TempLocation != UNKNOWNBODYSLOTTYPE)
 		{
-			//std::cout << line << std::endl;
+			//std::cout << a_line << std::endl;
 			line = line.substr(line.find(BodyLocationTextMap[TempLocation] + ":")+BodyLocationTextMap[TempLocation].length()+1);
-			//std::cout << "Line without location: " << line << std::endl;
-			//this line should contain the name of the object now, we search for it in our item functions
+			//std::cout << "Line without a_location: " << a_line << std::endl;
+			//this a_line should contain the a_name of the a_object now, we search for it in our a_item functions
 			if (this->DoesSlotExist(TempLocation))
 			{
 				if (line.find("Armor") != std::string::npos)
 				{
-					//std::cout << "Found armor, adding it to character " << line << std::endl;
-					if (MasterObjectList.count(line) == 0)
+					//std::cout << "Found armor, adding it to character " << a_line << std::endl;
+					if (a_MasterObjectList.count(line) == 0)
 					{
-						std::cout << line << " not found in MasterObjectList, not adding it in" << std::endl;
+						std::cout << line << " not found in a_MasterObjectList, not adding it in" << std::endl;
 					}
 					else
 					{
-					//	MasterObjectList[line]->DisplayArmorInfo();
-						Equipment[TempLocation] = new ArmorObject(*MasterObjectList[line]);
-						//std::cout << "New armor made" << line << std::endl;
-						//Equipment[TempLocation]->DisplayArmorInfo();
+					//	a_MasterObjectList[a_line]->DisplayArmorInfo();
+						m_Equipment[TempLocation] = new ArmorObject(*a_MasterObjectList[line]);
+						//std::cout << "New armor made" << a_line << std::endl;
+						//m_Equipment[TempLocation]->DisplayArmorInfo();
 					}
 				}
 				else
 				{
-					if (MasterObjectList.count(line) == 0)
+					if (a_MasterObjectList.count(line) == 0)
 					{
-						std::cout << line << " not found in MasterObjectList, not adding it in" << std::endl;
+						std::cout << line << " not found in a_MasterObjectList, not adding it in" << std::endl;
 					}
 					else
 					{
-						Equipment[TempLocation] = new ObjectClass(*MasterObjectList[line]);
-						Equipment[TempLocation]->DisplayObjectWeaponFacts();
+						m_Equipment[TempLocation] = new ObjectClass(*a_MasterObjectList[line]);
+						m_Equipment[TempLocation]->DisplayObjectWeaponFacts();
 					}
 					
 				}
 				
-				if (Equipment[TempLocation]->GetName()!=line)
+				if (m_Equipment[TempLocation]->GetName()!=line)
 				{
-					std::cout << "Error loading object equipped in " << BodyLocationTextMap[TempLocation]<< std::endl;
-					Equipment[TempLocation] = NULL;
+					std::cout << "Error loading a_object equipped in " << BodyLocationTextMap[TempLocation]<< std::endl;
+					m_Equipment[TempLocation] = NULL;
 				}
 
 			}
@@ -1694,12 +1692,12 @@ bool EntityClass::LoadEquipment(std::ifstream & reader, std::map<std::string, Ob
 					continue;
 				}
 				std::cout << line << std::endl;
-				//this should be a name then, make a new object and add it to backpack
-				if (MasterObjectList.count(line))
+				//this should be a a_name then, make a new a_object and add it to backpack
+				if (a_MasterObjectList.count(line))
 				{
-					auto tempPtr = new ObjectClass(*MasterObjectList[line]);
+					auto tempPtr = new ObjectClass(*a_MasterObjectList[line]);
 					tempPtr->SetName(line);
-					BackPack.AddItem(tempPtr);
+					m_BackPack.AddItem(tempPtr);
 				}
 			
 			}
@@ -1707,7 +1705,7 @@ bool EntityClass::LoadEquipment(std::ifstream & reader, std::map<std::string, Ob
 
 	}
 	std::cout << "Trying to load equipment" << std::endl;
-	for (auto i = Equipment.begin(); i != Equipment.end(); i++)
+	for (auto i = m_Equipment.begin(); i != m_Equipment.end(); i++)
 	{
 		if ((*i).second != NULL)
 		{
@@ -1715,27 +1713,27 @@ bool EntityClass::LoadEquipment(std::ifstream & reader, std::map<std::string, Ob
 		}
 
 	}
-	success = BackPack.LoadAll();
+	success = m_BackPack.LoadAll();
 	return success;
 }
 
-bool EntityClass::LoadFeats(std::ifstream & reader, EncounterInstance& Encounter)
+bool EntityClass::LoadFeats(std::ifstream & a_reader, EncounterInstance& a_Encounter)
 {
 	bool success = true;
-	reader.clear();
-	reader.seekg(0, std::ios::beg);
+	a_reader.clear();
+	a_reader.seekg(0, std::ios::beg);
 	bool LoadingFeats=false;
 
 	std::string line;
-	while (getline(reader, line))
+	while (getline(a_reader, line))
 	{
-		//	std::cout << line << std::endl;
+		//	std::cout << a_line << std::endl;
 		//remove comments
 		if (line.find("//") != std::string::npos)
 		{
 			int endchar = line.find("//");
 			line = line.substr(0, endchar);
-			//	std::cout << "ResultAfterComment " << line << std::endl;
+			//	std::cout << "ResultAfterComment " << a_line << std::endl;
 		}//end remove comments block
 
 		if (line.find_first_not_of(' ') == std::string::npos)
@@ -1743,21 +1741,21 @@ bool EntityClass::LoadFeats(std::ifstream & reader, EncounterInstance& Encounter
 			continue;
 		}
 
-		if (line.find("End Feats:") != std::string::npos)
+		if (line.find("End m_Feats:") != std::string::npos)
 		{
 			LoadingFeats= false;
 			break;
 		}
-		else if (line.find("Feats:") != std::string::npos)
+		else if (line.find("m_Feats:") != std::string::npos)
 		{
 			LoadingFeats = true;
 			continue;
 		}
 		if (LoadingFeats == true)
 		{
-			if (Encounter.GetMasterFeatList().count(line))
+			if (a_Encounter.GetMasterFeatList().count(line))
 			{
-				Feats.push_back(*(Encounter.GetMasterFeatList())[line]);
+				m_Feats.push_back(*(a_Encounter.GetMasterFeatList())[line]);
 			}
 			else
 			{
@@ -1771,17 +1769,17 @@ bool EntityClass::LoadFeats(std::ifstream & reader, EncounterInstance& Encounter
 
 void EntityClass::DisplayFeats()
 {
-	for (auto it = Feats.begin(); it != Feats.end(); it++)
+	for (auto it = m_Feats.begin(); it != m_Feats.end(); it++)
 	{
 		(*it).DisplayFeatFullInfo();
 	}
 }
 
-BodyLocation EntityClass::GetBodyLocation(std::string line)
+BodyLocation EntityClass::GetBodyLocation(std::string a_line)
 {
 	for (auto i = BodyLocationTextMap.begin(); i != BodyLocationTextMap.end(); i++)
 	{
-		if (line.find((*i).second) != std::string::npos)
+		if (a_line.find((*i).second) != std::string::npos)
 		{
 			//std::cout << "Here" << std::endl;
 			return (*i).first;
@@ -1800,7 +1798,7 @@ bool EntityClass::isMeleeUnit()
 			//if it is thrown do we have backup ammo in our pack?
 			if (this->GetEquipmentInSlot(MAINHAND)->IsThrowingWeapon())
 			{
-				//check if we have the same item in our backpack or in the other hand
+				//check if we have the same a_item in our backpack or in the other hand
 				if (GetBackPack().isItemPresent(GetEquipmentInSlot(MAINHAND)->GetName()))
 				{
 					return false;
@@ -1829,16 +1827,16 @@ bool EntityClass::isMeleeUnit()
 	}
 }
 
-bool EntityClass::LoadProperties(std::ifstream &reader)
+bool EntityClass::LoadProperties(std::ifstream &a_reader)
 {
-		reader.clear();
-		reader.seekg(0, std::ios::beg);
-		if (reader.is_open())
+		a_reader.clear();
+		a_reader.seekg(0, std::ios::beg);
+		if (a_reader.is_open())
 		{
-			//std::cout << "reader is open to path" << std::endl;
+			//std::cout << "a_reader is open to path" << std::endl;
 		}
 		std::string line;
-		while (getline(reader, line))
+		while (getline(a_reader, line))
 		{
 			std::cout << line << std::endl;
 			//remove comments
@@ -1846,7 +1844,7 @@ bool EntityClass::LoadProperties(std::ifstream &reader)
 			{
 				int endchar = line.find("//");
 				line = line.substr(0, endchar);
-				//	std::cout << "ResultAfterComment " << line << std::endl;
+				//	std::cout << "ResultAfterComment " << a_line << std::endl;
 			}//end remove comments block
 
 			 //lowercase the string
@@ -1879,7 +1877,7 @@ bool EntityClass::LoadProperties(std::ifstream &reader)
 					temp = stoi(line);
 					SetBaseAttackBonus(temp);
 					std::cout << "Line: " << line << std::endl;
-					std::cout << "BaseAttackBonus: " << temp << std::endl;
+					std::cout << "m_BaseAttackBonus: " << temp << std::endl;
 				}
 				catch (std::exception const & error)
 				{

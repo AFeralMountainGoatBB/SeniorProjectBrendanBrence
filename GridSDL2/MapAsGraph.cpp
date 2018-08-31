@@ -1,34 +1,34 @@
 #include "MapAsGraph.h"
 #include "Tile.h"
 
-std::vector<GraphLocation> MapAsGraph::directions = {
+std::vector<GraphLocation> MapAsGraph::m_directions = {
 	GraphLocation{ 1, 0 }, GraphLocation{ 1, 1 }, GraphLocation{ 0, -1 },  GraphLocation{ -1, -1 },
 	GraphLocation{ -1, 0 },  GraphLocation{ 1, -1 }, GraphLocation{ 0, 1 },  GraphLocation{ -1, 1 }, };
 
-void MapAsGraph::MapToGraph(std::vector<std::vector<Tile>>& Map)
+void MapAsGraph::MapToGraph(std::vector<std::vector<Tile>>& a_Map)
 {
-	for (int x = 0; x < width; x++)
+	for (int x = 0; x < m_width; x++)
 	{
-		for (int y = 0; y < height; y++)
+		for (int y = 0; y < m_height; y++)
 		{
-			if (!Map[x][y].getPassableTileType())
+			if (!a_Map[x][y].getPassableTileType())
 			{
-				walls.insert(GraphLocation{ x, y });
+				m_walls.insert(GraphLocation{ x, y });
 			}
-			else if (Map[x][y].EntityPresent())
+			else if (a_Map[x][y].EntityPresent())
 			{
 				//std::cout << "Entity being added to " << x << "," << y << std::endl;
-				Entities.insert(GraphLocation{ x,y });
+				m_Entities.insert(GraphLocation{ x,y });
 			}
 		}
 	}
 }
 
-std::vector<std::pair<GraphLocation, double>> MapAsGraph:: Getneighbors(GraphLocation id)
+std::vector<std::pair<GraphLocation, double>> MapAsGraph:: Getneighbors(GraphLocation a_id)
 {
 	std::vector<std::pair<GraphLocation, double>> results;
-	for (GraphLocation direction : directions) {
-		GraphLocation next{ id.x + direction.x, id.y + direction.y };
+	for (GraphLocation direction : m_directions) {
+		GraphLocation next{ a_id.x + direction.x, a_id.y + direction.y };
 		if (InGraph(next) && passable(next)) {
 			auto temp = std::make_pair(next, 1.0);
 			//check if entity there and add 999.0 to cost if they are there
@@ -40,8 +40,8 @@ std::vector<std::pair<GraphLocation, double>> MapAsGraph:: Getneighbors(GraphLoc
 			//checking if diagonal
 			if (abs(direction.x) == abs(direction.y))
 			{
-				GraphLocation Vertical{ id.x + direction.x, id.y };
-				GraphLocation Horizontal{ id.x, id.y + direction.y };
+				GraphLocation Vertical{ a_id.x + direction.x, a_id.y };
+				GraphLocation Horizontal{ a_id.x, a_id.y + direction.y };
 				if (passable(Vertical) == true && passable(Horizontal) == true)
 				{
 					//diag movement costs 1.5, instead of 1.0
@@ -57,7 +57,7 @@ std::vector<std::pair<GraphLocation, double>> MapAsGraph:: Getneighbors(GraphLoc
 		}//end if in graph and passable
 	}
 
-	if ((id.x + id.y) % 2 == 0) {
+	if ((a_id.x + a_id.y) % 2 == 0) {
 		std::reverse(results.begin(), results.end());
 	}
 	return results;

@@ -13,8 +13,8 @@ struct GraphLocation {
 	//distance from target to node
 	//int distance;
 
-	//each node follows these 'cardinal' directions in the map
-	//std::vector <std::pair<int, int>> directions = { {0,1}, {1,1}, {1,0},{1,-1},{0,-1},{-1,-1},{-1,0},{-1,1} };
+	//each node follows these 'cardinal' m_directions in the map
+	//std::vector <std::pair<int, int>> m_directions = { {0,1}, {1,1}, {1,0},{1,-1},{0,-1},{-1,-1},{-1,0},{-1,1} };
 };
 
 class MapAsGraph {
@@ -26,15 +26,15 @@ class MapAsGraph {
 
 public:
 	bool InGraph(GraphLocation loc) const {
-		return ((0 <= loc.x) && (loc.x < width) && (0 <= loc.y) && (loc.y < height));
+		return ((0 <= loc.x) && (loc.x < m_width) && (0 <= loc.y) && (loc.y < m_height));
 	}
 
 	bool passable(GraphLocation id) const {
-		return walls.find(id) == walls.end();
+		return m_walls.find(id) == m_walls.end();
 	}
 	
 	bool EntityPresent(GraphLocation id) const {
-		return !(Entities.find(id) == Entities.end());
+		return !(m_Entities.find(id) == m_Entities.end());
 	}
 
 	double cost(GraphLocation& from, GraphLocation& to)
@@ -57,18 +57,18 @@ public:
 
 	std::vector<std::pair<GraphLocation, double>> Getneighbors(GraphLocation id);
 
-	int GetHeight() { return height; }
-	int GetWidth() { return width; }
+	int GetHeight() { return m_height; }
+	int GetWidth() { return m_width; }
 
-	std::set<GraphLocation>& GetWalls() { return walls; }
-	std::set<GraphLocation>& GetEntities() { return Entities; }
+	std::set<GraphLocation>& GetWalls() { return m_walls; }
+	std::set<GraphLocation>& GetEntities() { return m_Entities; }
 
 private:
-	static std::vector<GraphLocation> directions;
-	int width = g_LEVEL_WIDTH / g_TILE_WIDTH;
-	int height = g_LEVEL_HEIGHT / g_TILE_HEIGHT;
-	std::set<GraphLocation> walls;
-	std::set<GraphLocation> Entities;
+	static std::vector<GraphLocation> m_directions;
+	int m_width = g_LEVEL_WIDTH / g_TILE_WIDTH;
+	int m_height = g_LEVEL_HEIGHT / g_TILE_HEIGHT;
+	std::set<GraphLocation> m_walls;
+	std::set<GraphLocation> m_Entities;
 };
 
 static bool operator < (GraphLocation a, GraphLocation b) {

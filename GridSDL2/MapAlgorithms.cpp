@@ -1,22 +1,22 @@
 #include "MapAlgorithms.h"
 
 
-void SightAlgorithm::DetermineSightAndCover(std::vector<std::vector<Tile>> & TileMap, std::pair<int, int> Source, std::pair<int, int> Target)
+void SightAlgorithm::DetermineSightAndCover(std::vector<std::vector<Tile>> & a_TileMap, std::pair<int, int> a_Source, std::pair<int, int> a_Target)
 {
-	BlockedOrObstructed = raytrace(std::make_pair(Source.first, Source.second), std::make_pair(Target.first, Target.second), TileMap);
+	m_BlockedOrObstructed = raytrace(std::make_pair(a_Source.first, a_Source.second), std::make_pair(a_Target.first, a_Target.second), a_TileMap);
 }
 
-std::pair<bool, bool> SightAlgorithm::raytrace(std::pair<int, int> Source, std::pair<int, int> Target, std::vector<std::vector<Tile>> & TileMap)
+std::pair<bool, bool> SightAlgorithm::raytrace(std::pair<int, int> a_Source, std::pair<int, int> a_Target, std::vector<std::vector<Tile>> & a_TileMap)
 {
 	std::pair<bool, bool> BlockedObstructed;
 	std::pair<bool, bool> TempBool;
-		int dx = abs(Target.first - Source.first);
-		int dy = abs(Target.second - Source.second);
-		int x = Source.first;
-		int y = Source.second;
+		int dx = abs(a_Target.first - a_Source.first);
+		int dy = abs(a_Target.second - a_Source.second);
+		int x = a_Source.first;
+		int y = a_Source.second;
 		int n = 1 + dx + dy;
-		int x_inc = (Target.first > Source.first) ? 1 : -1;
-		int y_inc = (Target.second > Source.second) ? 1 : -1;
+		int x_inc = (a_Target.first > a_Source.first) ? 1 : -1;
+		int y_inc = (a_Target.second > a_Source.second) ? 1 : -1;
 		int error = dx - dy;
 		dx *= 2;
 		dy *= 2;
@@ -24,10 +24,10 @@ std::pair<bool, bool> SightAlgorithm::raytrace(std::pair<int, int> Source, std::
 		for (; n > 0; --n)
 		{
 			//this statement checks to see if we are looking at the start or end tiles, two tiles that should not be checked for obstructions or blocking
-			if (((x == Source.first && y == Source.second) || (x == Target.first && y == Target.second))==false)
+			if (((x == a_Source.first && y == a_Source.second) || (x == a_Target.first && y == a_Target.second))==false)
 			{
-				std::cout << "x:" << x << " y:" << y << std::endl;
-				TempBool = CheckTile(x, y, TileMap);
+				std::cout << "a_x:" << x << " a_y:" << y << std::endl;
+				TempBool = CheckTile(x, y, a_TileMap);
 			}
 			if (TempBool.first == true)
 			{
@@ -54,23 +54,23 @@ std::pair<bool, bool> SightAlgorithm::raytrace(std::pair<int, int> Source, std::
 	return BlockedObstructed;
 }
 
-std::pair<bool, bool> SightAlgorithm:: CheckTile(int x, int y, std::vector<std::vector<Tile>> & TileMap)
+std::pair<bool, bool> SightAlgorithm:: CheckTile(int a_x, int a_y, std::vector<std::vector<Tile>> & a_TileMap)
 {
 	bool block;
 	bool obstructed;
-	if (TileMap[x][y].getType()>g_TILE_STONE && TileMap[x][y].getType()!=g_TILE_WATER)
+	if (a_TileMap[a_x][a_y].getType()>g_TILE_STONE && a_TileMap[a_x][a_y].getType()!=g_TILE_WATER)
 	{
 		block = true;
 	}
-	if (TileMap[x][y].EntityPresent())
+	if (a_TileMap[a_x][a_y].EntityPresent())
 	{
 		obstructed = true;
 	}
 	return (std::make_pair(block, obstructed));
 }
 
-std::pair<bool,bool> SightAlgorithm::CheckAll(std::pair<int, int> Source, std::pair<int, int> Target, std::vector<std::vector<Tile>> & TileMap)
+std::pair<bool,bool> SightAlgorithm::CheckAll(std::pair<int, int> a_Source, std::pair<int, int> a_Target, std::vector<std::vector<Tile>> & a_TileMap)
 {
-	DetermineSightAndCover(TileMap, Source, Target);
-	return BlockedOrObstructed;
+	DetermineSightAndCover(a_TileMap, a_Source, a_Target);
+	return m_BlockedOrObstructed;
 }

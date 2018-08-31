@@ -3,60 +3,60 @@
 
 button::button()
 {
-	mPosition.x = 0;
-	mPosition.y = 0;
+	m_Position.x = 0;
+	m_Position.y = 0;
 }
 
 /*
-button::button(int x, int y, int width, int height, void (Log::*funct)(), std::string textureName, std::map<std::string, LTexture*> &TextureMap, std::string Path)
+button::button(int a_x, int a_y, int m_width, int m_height, void (Log::*funct)(), std::string a_textureName, std::map<std::string, LTexture*> &a_TextureMap, std::string a_Path)
 {
-	mPosition.x = x;
-	mPosition.y = y;
-	mPosition.h = height;
-	mPosition.w = width;
+	m_Position.a_x = a_x;
+	m_Position.a_y = a_y;
+	m_Position.h = m_height;
+	m_Position.w = m_width;
 
 	//On_Click = funct;
-	TexturePath = textureName;
+	m_TexturePath = a_textureName;
 
-	if (TextureMap.count(Path + "\\" + textureName)) 
+	if (a_TextureMap.count(a_Path + "\\" + a_textureName)) 
 	{
-		mTexture = TextureMap[Path + "\\" + textureName];
-		std::cout << textureName << " Loaded into " << this->name <<  std::endl;
+		m_Texture = a_TextureMap[a_Path + "\\" + a_textureName];
+		std::cout << a_textureName << " Loaded into " << this->m_name <<  std::endl;
 	}
 	else
 	{
-		std::cout << "No matching texture found " << Path << "\\" << textureName << std::endl;
-		mTexture = TextureMap[Path + "\\" + "QuestionMark.png"];
+		std::cout << "No matching texture found " << a_Path << "\\" << a_textureName << std::endl;
+		m_Texture = a_TextureMap[a_Path + "\\" + "QuestionMark.png"];
 	}
 
 
 }
 */
 
-void button::SetTexture(std::string textureName, std::map<std::string, LTexture*> &TextureMap, std::string Path)
+void button::SetTexture(std::string a_textureName, std::map<std::string, LTexture*> &a_TextureMap, std::string a_Path)
 {
-	if (TextureMap.count(Path + "\\" + textureName))
+	if (a_TextureMap.count(a_Path + "\\" + a_textureName))
 	{
-		mTexture = TextureMap[Path + "\\" + textureName];
-		std::cout << textureName << " Loaded into " << this->name << std::endl;
+		m_Texture = a_TextureMap[a_Path + "\\" + a_textureName];
+		std::cout << a_textureName << " Loaded into " << this->m_name << std::endl;
 	}
 	else
 	{
-		std::cout << "No matching texture found " << Path << "\\" << textureName << std::endl;
-		mTexture = TextureMap[Path + "\\" + "QuestionMark.png"];
+		std::cout << "No matching texture found " << a_Path << "\\" << a_textureName << std::endl;
+		m_Texture = a_TextureMap[a_Path + "\\" + "QuestionMark.png"];
 	}
 }
 
-void button::setPosition(int x, int y, int width, int height)
+void button::setPosition(int a_x, int a_y, int a_width, int a_height)
 {
-	mPosition.x = x;
-	mPosition.y = y;
-	mPosition.h = height;
-	mPosition.w = width;
+	m_Position.x = a_x;
+	m_Position.y = a_y;
+	m_Position.h = a_height;
+	m_Position.w = a_width;
 }
 
-void button::render(SDL_Renderer*& renderer)
+void button::render(SDL_Renderer*& a_renderer)
 {
-	//std::cout << "rendering at" << mPosition.x+50 << ", " << mPosition.y << " Height " <<mPosition.h << " width " << mPosition.w <<std::endl;	
-	mTexture->renderEntity(mPosition.x, mPosition.y, renderer, &mPosition);
+	//std::cout << "rendering at" << m_Position.a_x+50 << ", " << m_Position.a_y << " Height " <<m_Position.h << " m_width " << m_Position.w <<std::endl;	
+	m_Texture->renderEntity(m_Position.x, m_Position.y, a_renderer, &m_Position);
 }

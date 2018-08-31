@@ -16,8 +16,8 @@ public:
 	virtual void AttackNormal(EntityClass &Source, EntityClass &Target, EncounterInstance &Instance) = 0;
 	virtual void AttackDualWield(EntityClass &Source, EntityClass &Target, EncounterInstance &Instance) = 0;
 	//data
-	AbilityScoreType UsesAttributeForAttackRoll;
-	AbilityScoreType UsesAttributeForDamageRoll;
+	AbilityScoreType m_UsesAttributeForAttackRoll;
+	AbilityScoreType m_UsesAttributeForDamageRoll;
 	
 };
 
@@ -37,15 +37,16 @@ public:
 
 	int TotalFeatAttackBonus(EntityClass &Source);
 	
-AbilityScoreType UsesAttributeForAttackRoll=STR;
-AbilityScoreType UsesAttributeForDamageRoll=STR;
+
 private:
-	bool Critical=false;
-	std::vector<FeatClass> TempFeats;
-	std::string AttackResult;
-	std::string DamageResult;
-	std::vector<CircumstanceType> Circumstances;
-	ObjectClass* Weapon;
+	AbilityScoreType m_UsesAttributeForAttackRoll=STR;
+	AbilityScoreType m_UsesAttributeForDamageRoll=STR;
+	bool m_Critical=false;
+	std::vector<FeatClass> m_TempFeats;
+	std::string m_AttackResult;
+	std::string m_DamageResult;
+	std::vector<CircumstanceType> m_Circumstances;
+	ObjectClass* m_Weapon;
 	bool CheckProficiency(EntityClass &Source);
 	
 };
@@ -73,21 +74,15 @@ public:
 	void UseAmmo(EntityClass &Source);
 
 private:
-	AbilityScoreType UsesAttributeForAttackRoll = DEX;
-	AbilityScoreType UsesAttributeForDamageRoll = DEX;
-	bool Critical = false;
-	std::vector<FeatClass> TempFeats;
-	std::string AttackResult;
-	std::string DamageResult;
-	std::vector<CircumstanceType> Circumstances;
-	ObjectClass* Weapon;
-	int Distance;
+	AbilityScoreType m_UsesAttributeForAttackRoll = DEX;
+	AbilityScoreType m_UsesAttributeForDamageRoll = DEX;
+	bool m_Critical = false;
+	std::vector<FeatClass> m_TempFeats;
+	std::string m_AttackResult;
+	std::string m_DamageResult;
+	std::vector<CircumstanceType> m_Circumstances;
+	ObjectClass* m_Weapon;
+	int m_Distance;
 	bool CheckProficiency(EntityClass &Source);
-
-};
-
-class SpecialAttack :public AttackClass
-{
-
 
 };

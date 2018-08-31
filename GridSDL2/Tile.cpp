@@ -5,43 +5,43 @@
 Tile::Tile()
 {
 	//default offsets
-	mBox.x = 0;
-	mBox.y = 0;
+	m_Box.x = 0;
+	m_Box.y = 0;
 
-	//still the same tile and width
-	mBox.w = g_TILE_WIDTH;
-	mBox.h = g_TILE_HEIGHT;
+	//still the same tile and m_width
+	m_Box.w = g_TILE_WIDTH;
+	m_Box.h = g_TILE_HEIGHT;
 	//0 should always be a passable tile
-	mType = 0;
+	m_type = 0;
 }
 
-Tile::Tile(int x, int y, int tileType)
+Tile::Tile(int a_x, int a_y, int a_tileType)
 {
 	//Get the offsets
-	mBox.x = x;
-	mBox.y = y;
+	m_Box.x = a_x;
+	m_Box.y = a_y;
 
 	//Set the collision box
-	mBox.w = g_TILE_WIDTH;
-	mBox.h = g_TILE_HEIGHT;
+	m_Box.w = g_TILE_WIDTH;
+	m_Box.h = g_TILE_HEIGHT;
 
 	//Get the tile type
-	mType = tileType;
+	m_type = a_tileType;
 
 }
 
-void Tile::render(SDL_Rect& camera, LTexture &TileTexture, SDL_Rect gTileClips[], SDL_Renderer *&Renderer)
+void Tile::render(SDL_Rect& a_camera, LTexture &a_TileTexture, SDL_Rect a_TileClips[], SDL_Renderer *&a_Renderer)
 {
 	//If the tile is on screen
-	if (checkCollision(camera, mBox))
+	if (checkCollision(a_camera, m_Box))
 	{
 		//Show the tile
-		TileTexture.renderTile(mBox.x - camera.x, mBox.y - camera.y, Renderer, &gTileClips[mType]);
+		a_TileTexture.renderTile(m_Box.x - a_camera.x, m_Box.y - a_camera.y, a_Renderer, &a_TileClips[m_type]);
 
 		if (GetTopObject())
 		{
 			//std::cout << "An object is here, rendering it" << std::endl;
-			GetTopObject()->render(camera, Renderer);
+			GetTopObject()->render(a_camera, a_Renderer);
 			//std::cout << "It rendered" << std::endl;
 		}
 	}
@@ -49,7 +49,7 @@ void Tile::render(SDL_Rect& camera, LTexture &TileTexture, SDL_Rect gTileClips[]
 
 bool Tile::getPassable()
 {
-	if (mType >= g_TILE_CENTER && mType <= g_TILE_TOPLEFT || mOccupied==true)
+	if (m_type >= g_TILE_CENTER && m_type <= g_TILE_TOPLEFT || m_Occupied==true)
 	{
 		return false;
 	}
@@ -61,7 +61,7 @@ bool Tile::getPassable()
 
 bool Tile::getPassableTileType()
 {
-	if (mType >= g_TILE_CENTER && mType <= g_TILE_TOPLEFT)
+	if (m_type >= g_TILE_CENTER && m_type <= g_TILE_TOPLEFT)
 	{
 		return false;
 	}
@@ -73,75 +73,75 @@ bool Tile::getPassableTileType()
 
 int Tile::getType()
 {
-	return mType;
+	return m_type;
 }
 
 SDL_Rect Tile::getBox()
 {
-	return mBox;
+	return m_Box;
 }
 
 int Tile::GetXRenderPos()
 {
-	return mBox.x;
+	return m_Box.x;
 }
 
 int Tile::GetYRenderPos()
 {
-	return mBox.y;
+	return m_Box.y;
 }
 
 int Tile::GetWidth()
 {
-	return mBox.w;
+	return m_Box.w;
 }
 
 void Tile::ClearOccupant()
 {
-	Occupant = nullptr;
-	mOccupied = false;
+	m_occupant = nullptr;
+	m_Occupied = false;
 }
 
-void Tile::SetOccupant(EntityClass &Entity)
+void Tile::SetOccupant(EntityClass &a_Entity)
 {
-	Occupant = &Entity;
-	mOccupied = true;
+	m_occupant = &a_Entity;
+	m_Occupied = true;
 }
 
 EntityClass* Tile::GetOccupant()
 {
-	return Occupant;
+	return m_occupant;
 }
 
-void Tile:: AddItem(ObjectClass* Item)
+void Tile:: AddItem(ObjectClass* a_item)
 {
 	
-	ItemsPresent.push_back(Item);
-	//ItemsPresent.back()->DisplayObjectWeaponFacts();
+	m_ItemsPresent.push_back(a_item);
+	//m_ItemsPresent.back()->DisplayObjectWeaponFacts();
 }
 
-Tile Tile::RemoveObject(ObjectClass* item)
+Tile Tile::RemoveObject(ObjectClass* a_item)
 {
-	for (auto iter = ItemsPresent.begin(); iter != ItemsPresent.end(); iter++)
+	for (auto iter = m_ItemsPresent.begin(); iter != m_ItemsPresent.end(); iter++)
 	{
-		//	std::cout<<"top object name " << this->GetTopObject()->GetName()<<std::endl;
-		if (item == (*iter))
+		//	std::cout<<"top object m_name " << this->GetTopObject()->GetName()<<std::endl;
+		if (a_item == (*iter))
 		{
-			std::cout << "Item found, removing" << std::endl;
+			std::cout << "a_item found, removing" << std::endl;
 			//(*iter) = nullptr;
-			this->ItemsPresent.erase(iter);
+			this->m_ItemsPresent.erase(iter);
 			return *this;
 		}
 		
 	}
-	std::cout << "Item not found" << std::endl;
+	std::cout << "a_item not found" << std::endl;
 }
 
 ObjectClass* Tile::GetTopObject()
 {
-	if (!ItemsPresent.empty())
+	if (!m_ItemsPresent.empty())
 	{
-	return ItemsPresent[0];
+	return m_ItemsPresent[0];
 	}
 	else
 	{
@@ -151,10 +151,10 @@ ObjectClass* Tile::GetTopObject()
 
  std::vector<ObjectClass*>& Tile::GetItemsPresent()
 {
-	return ItemsPresent;
+	return m_ItemsPresent;
 }
 
  bool Tile::EntityPresent()
  {
-	 return mOccupied;
+	 return m_Occupied;
  }

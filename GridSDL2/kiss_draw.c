@@ -78,70 +78,70 @@ int kiss_textwidth(kiss_font font, char *str1, char *str2)
 	return width;
 }
 
-int kiss_renderimage(SDL_Renderer *renderer, kiss_image image,
+int kiss_renderimage(SDL_Renderer *m_renderer, kiss_image image,
 	int x, int y, SDL_Rect *clip)
 {
 	SDL_Rect dst;
 
-	if (!renderer || !image.image) return -1;
+	if (!m_renderer || !image.image) return -1;
 	kiss_makerect(&dst, x, y, image.w, image.h);
 	if (clip) dst.w = clip->w;
 	if (clip) dst.h = clip->h;
-	SDL_RenderCopy(renderer, image.image, clip, &dst);
+	SDL_RenderCopy(m_renderer, image.image, clip, &dst);
 	return 0;
 }
 
-int kiss_rendertext(SDL_Renderer *renderer, char *text, int x, int y,
+int kiss_rendertext(SDL_Renderer *m_renderer, char *text, int x, int y,
 	kiss_font font, SDL_Color color)
 {
 	SDL_Surface *surface;
 	kiss_image image;
 
-	if (!text || !renderer || !font.font) return -1;
+	if (!text || !m_renderer || !font.font) return -1;
 	surface = TTF_RenderUTF8_Blended(font.font, text, color);
-	image.image = SDL_CreateTextureFromSurface(renderer, surface);
+	image.image = SDL_CreateTextureFromSurface(m_renderer, surface);
 	SDL_QueryTexture(image.image, NULL, NULL, &image.w, &image.h);
 	if (surface) SDL_FreeSurface(surface);
-	kiss_renderimage(renderer, image, x, y, NULL);
+	kiss_renderimage(m_renderer, image, x, y, NULL);
 	SDL_DestroyTexture(image.image);
 	return 0;
 }
 
-int kiss_fillrect(SDL_Renderer *renderer, SDL_Rect *rect, SDL_Color color)
+int kiss_fillrect(SDL_Renderer *m_renderer, SDL_Rect *rect, SDL_Color color)
 {
-	if (!renderer || !rect) return -1;
-	SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-	SDL_RenderFillRect(renderer, rect);
+	if (!m_renderer || !rect) return -1;
+	SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
+	SDL_RenderFillRect(m_renderer, rect);
 	return 0;
 }
 
-int kiss_decorate(SDL_Renderer *renderer, SDL_Rect *rect, SDL_Color color,
+int kiss_decorate(SDL_Renderer *m_renderer, SDL_Rect *rect, SDL_Color color,
 	int edge)
 {
 	SDL_Rect outlinerect;
 	int d, i;
 
 	d = 2 * edge;
-	if (!renderer || !rect || rect->w < d + 6 || rect->h < d + 6)
+	if (!m_renderer || !rect || rect->w < d + 6 || rect->h < d + 6)
 		return -1;
-	SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+	SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
 	for (i = 0; i < 2; i++) {
 		kiss_makerect(&outlinerect, rect->x + edge + i,
 			rect->y + edge + i, rect->w - d - i - i,
 			rect->h - d - i - i);
-		SDL_RenderDrawRect(renderer, &outlinerect);
+		SDL_RenderDrawRect(m_renderer, &outlinerect);
 	}
 	return 0;
 }
 
 int kiss_image_new(kiss_image *image, char *fname, kiss_array *a,
-	SDL_Renderer* renderer)
+	SDL_Renderer* m_renderer)
 {
 	char buf[KISS_MAX_LENGTH];
 
 	if (!image || !fname) return -1;
 	kiss_string_copy(buf, KISS_MAX_LENGTH, RESDIR, fname);
-	if (!(image->image = IMG_LoadTexture(renderer, buf))) {
+	if (!(image->image = IMG_LoadTexture(m_renderer, buf))) {
 		fprintf(stderr, "Cannot load image %s\n", fname);
 		return -1;
 	}
@@ -163,8 +163,8 @@ int kiss_font_new(kiss_font *font, char *fname, kiss_array *a, int size)
 	}
 	if (a) kiss_array_append(a, FONT_TYPE, font->font);
 	font->fontheight = TTF_FontHeight(font->font);
-	font->spacing = (int) kiss_spacing * font->fontheight;
-	font->lineheight = font->fontheight + font->spacing;
+	font->m_spacing = (int) kiss_spacing * font->fontheight;
+	font->lineheight = font->fontheight + font->m_spacing;
 	font->ascent = TTF_FontAscent(font->font);
 	TTF_GlyphMetrics(font->font, 'W', NULL, NULL, NULL, NULL,
 		&(font->advance));
@@ -175,7 +175,7 @@ int kiss_font_new(kiss_font *font, char *fname, kiss_array *a, int size)
 SDL_Renderer* kiss_init(char* title, kiss_array *a, int w, int h)
 {
 	SDL_Window *window;
-	SDL_Renderer *renderer;
+	SDL_Renderer *m_renderer;
 	SDL_Rect srect;
 	int r;
 
@@ -194,34 +194,34 @@ SDL_Renderer* kiss_init(char* title, kiss_array *a, int w, int h)
 	kiss_array_new(a);
 	window = SDL_CreateWindow(title, srect.w / 2 - w / 2, srect.h / 2 - h / 2, w, h, SDL_WINDOW_SHOWN);
 	if (window) kiss_array_append(a, WINDOW_TYPE, window);
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	if (renderer) kiss_array_append(a, RENDERER_TYPE, renderer);
+	m_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	if (m_renderer) kiss_array_append(a, RENDERER_TYPE, m_renderer);
 	r += kiss_font_new(&kiss_textfont, "kiss_font.ttf", a, kiss_textfont_size);
 	r += kiss_font_new(&kiss_buttonfont, "kiss_font.ttf", a, kiss_buttonfont_size);
 
-	r += kiss_image_new(&kiss_normal, "kiss_normal.png", a, renderer);
-	r += kiss_image_new(&kiss_prelight, "kiss_prelight.png", a, renderer);
-	r += kiss_image_new(&kiss_active, "kiss_active.png", a, renderer);
+	r += kiss_image_new(&kiss_normal, "kiss_normal.png", a, m_renderer);
+	r += kiss_image_new(&kiss_prelight, "kiss_prelight.png", a, m_renderer);
+	r += kiss_image_new(&kiss_active, "kiss_active.png", a, m_renderer);
 
-	r += kiss_image_new(&kiss_normal_long, "kiss_normal_long.png", a, renderer);
-	r += kiss_image_new(&kiss_prelight_long, "kiss_prelight_long.png", a, renderer);
-	r += kiss_image_new(&kiss_active_long, "kiss_active_long.png", a, renderer);
+	r += kiss_image_new(&kiss_normal_long, "kiss_normal_long.png", a, m_renderer);
+	r += kiss_image_new(&kiss_prelight_long, "kiss_prelight_long.png", a, m_renderer);
+	r += kiss_image_new(&kiss_active_long, "kiss_active_long.png", a, m_renderer);
 
-	r += kiss_image_new(&kiss_bar, "kiss_bar.png", a, renderer);
-	r += kiss_image_new(&kiss_vslider, "kiss_vslider.png", a, renderer);
-	r += kiss_image_new(&kiss_hslider, "kiss_hslider.png", a, renderer);
-	r += kiss_image_new(&kiss_up, "kiss_up.png", a, renderer);
-	r += kiss_image_new(&kiss_down, "kiss_down.png", a, renderer);
-	r += kiss_image_new(&kiss_left, "kiss_left.png", a, renderer);
-	r += kiss_image_new(&kiss_right, "kiss_right.png", a, renderer);
-	r += kiss_image_new(&kiss_combo, "kiss_combo.png", a, renderer);
-	r += kiss_image_new(&kiss_selected, "kiss_selected.png", a, renderer);
-	r += kiss_image_new(&kiss_unselected, "kiss_unselected.png", a, renderer);
+	r += kiss_image_new(&kiss_bar, "kiss_bar.png", a, m_renderer);
+	r += kiss_image_new(&kiss_vslider, "kiss_vslider.png", a, m_renderer);
+	r += kiss_image_new(&kiss_hslider, "kiss_hslider.png", a, m_renderer);
+	r += kiss_image_new(&kiss_up, "kiss_up.png", a, m_renderer);
+	r += kiss_image_new(&kiss_down, "kiss_down.png", a, m_renderer);
+	r += kiss_image_new(&kiss_left, "kiss_left.png", a, m_renderer);
+	r += kiss_image_new(&kiss_right, "kiss_right.png", a, m_renderer);
+	r += kiss_image_new(&kiss_combo, "kiss_combo.png", a, m_renderer);
+	r += kiss_image_new(&kiss_selected, "kiss_selected.png", a, m_renderer);
+	r += kiss_image_new(&kiss_unselected, "kiss_unselected.png", a, m_renderer);
 	if (r) {
 		kiss_clean(a);
 		return NULL;
 	}
-	return renderer;	
+	return m_renderer;	
 }
 
 int kiss_clean(kiss_array *a)

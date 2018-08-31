@@ -28,6 +28,6 @@ public:
 
 private:
 
-	std::map <GraphLocation, GraphLocation> came_from_graph;
-	std::map<GraphLocation, double> cost_so_far;
+	std::map <GraphLocation, GraphLocation> m_came_from_graph;
+	std::map<GraphLocation, double> m_cost_so_far;
 };

@@ -9,46 +9,46 @@ RangedAttack::RangedAttack()
 
 }
 
-void RangedAttack::AttackNormal(EntityClass & Source, EntityClass &Target, EncounterInstance &Instance) 
+void RangedAttack::AttackNormal(EntityClass & a_Source, EntityClass &a_Target, EncounterInstance &a_Instance) 
 {
-	TempFeats = Source.GetActiveFeats();
+	m_TempFeats = a_Source.GetActiveFeats();
 
-	std::string DamageResult = "";
-	std::string AttackResult = Source.GetName() + " attacks at range " + Target.GetName() + ": ";
+	std::string m_DamageResult = "";
+	std::string m_AttackResult = a_Source.GetName() + " attacks at range " + a_Target.GetName() + ": ";
 
-	if (!DetermineAndSetWeapon(Source)) //determines weapon being used, if no weapons equipped 
+	if (!DetermineAndSetWeapon(a_Source)) //determines weapon being used, if no weapons equipped 
 	{
-		AttackResult = "Something went wrong, no ranged weapons equipped";
-		Instance.AddLog(AttackResult);
+		m_AttackResult = "Something went wrong, no ranged weapons equipped";
+		a_Instance.AddLog(m_AttackResult);
 		return;
 	}
 
 	SightAlgorithm CheckSight;
 
-	Distance = CalcDistance(Source, Target, Instance);
-	AttackResult += std::to_string(Distance) + "ft. attack ";
-	int DistancePenalty = CalcDistancePenalty(Source, Target, Instance);
+	m_Distance = CalcDistance(a_Source, a_Target, a_Instance);
+	m_AttackResult += std::to_string(m_Distance) + "ft. attack ";
+	int DistancePenalty = CalcDistancePenalty(a_Source, a_Target, a_Instance);
 
 	std::pair<bool, bool> BlockObstructed;
-	BlockObstructed = CheckSight.CheckAll(Source.GetLocation(), Target.GetLocation(), Instance.GetTileMap());
+	BlockObstructed = CheckSight.CheckAll(a_Source.GetLocation(), a_Target.GetLocation(), a_Instance.GetTileMap());
 	if (BlockObstructed.first == true)
 	{
 		std::cout << "Tile is blocked" << std::endl;
-		Instance.AddLog("Tile is blocked, cannot be attacked from this positon");
+		a_Instance.AddLog("Tile is blocked, cannot be attacked from this positon");
 		return;
 	}
 	else if (BlockObstructed.second == true)
 	{
 		std::cout << "Tile is obstructed" << std::endl;
-		Instance.AddLog("Target has cover from attack");
-		Circumstances.push_back(TARGETHASCOVER);
+		a_Instance.AddLog("a_Target has cover from attack");
+		m_Circumstances.push_back(TARGETHASCOVER);
 	}
 	else
 	{
 	//	std::cout << "Tile is not blocked or obstructed" << std::endl;
 	}
 
-	int TotalAttackRollBonus = CalcTotalAttackBonus(Source);
+	int TotalAttackRollBonus = CalcTotalAttackBonus(a_Source);
 	if (BlockObstructed.second == true)
 	{
 		TotalAttackRollBonus -= 4;
@@ -57,67 +57,67 @@ void RangedAttack::AttackNormal(EntityClass & Source, EntityClass &Target, Encou
 
 	//roll dice and add bonus
 	int RollAmount = DiceRoll(D20);
-	AttackResult += std::to_string(RollAmount); 
+	m_AttackResult += std::to_string(RollAmount); 
 	if (TotalAttackRollBonus > 0)
 	{
-		AttackResult += "+";
+		m_AttackResult += "+";
 	}
 	else
 	{
-		AttackResult += "-";
+		m_AttackResult += "-";
 	}
-	AttackResult += std::to_string(TotalAttackRollBonus);
-	AttackResult += "=" + std::to_string(RollAmount + TotalAttackRollBonus);
-	if (RollAmount >= Weapon->GetCritInformation().first)
+	m_AttackResult += std::to_string(TotalAttackRollBonus);
+	m_AttackResult += "=" + std::to_string(RollAmount + TotalAttackRollBonus);
+	if (RollAmount >= m_Weapon->GetCritInformation().first)
 	{
-		Critical = true;
+		m_Critical = true;
 		//todo calc crit bonuses
 	}
 
-	AttackResult += " AC: " + std::to_string(Target.GetArmorClass());
-	if (Target.GetArmorClass() <= (RollAmount + TotalAttackRollBonus))
+	m_AttackResult += " AC: " + std::to_string(a_Target.GetArmorClass());
+	if (a_Target.GetArmorClass() <= (RollAmount + TotalAttackRollBonus))
 	{
-		int TotalDamageBonus = CalcTotalDamageBonus(Source, Instance);
+		int TotalDamageBonus = CalcTotalDamageBonus(a_Source, a_Instance);
 		//attack connected
-		AttackResult += " *Hit*";
+		m_AttackResult += " *Hit*";
 
-		if (Critical)
+		if (m_Critical)
 		{
-			AttackResult += " *Threat*";
+			m_AttackResult += " *Threat*";
 			RollAmount = DiceRoll(D20);
-			AttackResult += "Crit Check = " + std::to_string(RollAmount + TotalAttackRollBonus);
-			if ((RollAmount + TotalAttackRollBonus ) >= Target.GetArmorClass())
+			m_AttackResult += "Crit Check = " + std::to_string(RollAmount + TotalAttackRollBonus);
+			if ((RollAmount + TotalAttackRollBonus ) >= a_Target.GetArmorClass())
 			{
-				AttackResult += " Success! x" + std::to_string(Weapon->GetCritInformation().second) + " Damage*";
+				m_AttackResult += " Success! x" + std::to_string(m_Weapon->GetCritInformation().second) + " Damage*";
 			}
 			else
 			{
 				//std::cout << "Crit fail" << std::endl;
-				Critical = false;
-				AttackResult += "*Fail, NonCritical*";
+				m_Critical = false;
+				m_AttackResult += "*Fail, NonCritical*";
 			}
 		}
-		int CritMult = Weapon->GetCritInformation().second;
+		int CritMult = m_Weapon->GetCritInformation().second;
 
-		DamageResult += Source.GetName() + " Damages " + Target.GetName() + " ";
+		m_DamageResult += a_Source.GetName() + " Damages " + a_Target.GetName() + " ";
 
 		int totalDamageRoll = 0;
-		for (int i = 0; i < Weapon->GetDamageDice().first; i++)
+		for (int i = 0; i < m_Weapon->GetDamageDice().first; i++)
 		{
-			totalDamageRoll += DiceRoll(Weapon->GetDamageDice().second);
+			totalDamageRoll += DiceRoll(m_Weapon->GetDamageDice().second);
 		}
 		totalDamageRoll += TotalDamageBonus;
-		DamageResult += std::to_string(Weapon->GetDamageDice().first) + "d" + std::to_string(Weapon->GetDamageDice().second);
+		m_DamageResult += std::to_string(m_Weapon->GetDamageDice().first) + "d" + std::to_string(m_Weapon->GetDamageDice().second);
 
 		if (TotalDamageBonus >= 0)
 		{
-			DamageResult += "+" + std::to_string(TotalDamageBonus);
+			m_DamageResult += "+" + std::to_string(TotalDamageBonus);
 		}
 		else
 		{
-			DamageResult += std::to_string(TotalDamageBonus);
+			m_DamageResult += std::to_string(TotalDamageBonus);
 		}
-		if (Critical)
+		if (m_Critical)
 		{
 			totalDamageRoll = totalDamageRoll * CritMult;
 		}
@@ -126,100 +126,100 @@ void RangedAttack::AttackNormal(EntityClass & Source, EntityClass &Target, Encou
 			totalDamageRoll = 1;
 		}
 
-		DamageResult += "=" + std::to_string(totalDamageRoll) + " ";
-		if (Critical)
+		m_DamageResult += "=" + std::to_string(totalDamageRoll) + " ";
+		if (m_Critical)
 		{
-			DamageResult += "(X" + std::to_string(CritMult) + ") ";
+			m_DamageResult += "(X" + std::to_string(CritMult) + ") ";
 		}
-		DamageResult += Target.GetName() + " Resists " + std::to_string(Target.GetTotalDamageReduction());
+		m_DamageResult += a_Target.GetName() + " Resists " + std::to_string(a_Target.GetTotalDamageReduction());
 		//do damage
-		totalDamageRoll -= (Target.GetTotalDamageReduction());
-		Target.SubHitPoints(totalDamageRoll);
-		if (Target.GetHitPoints()<=0)
+		totalDamageRoll -= (a_Target.GetTotalDamageReduction());
+		a_Target.SubHitPoints(totalDamageRoll);
+		if (a_Target.GetHitPoints()<=0)
 		{
-			std::cout << "Target: " << Target.GetName() << std::endl;
-			Target.EntityDeath(Instance);
+			std::cout << "a_Target: " << a_Target.GetName() << std::endl;
+			a_Target.EntityDeath(a_Instance);
 		}
-		Instance.AddLog(AttackResult);
-		Instance.AddLog(DamageResult);
+		a_Instance.AddLog(m_AttackResult);
+		a_Instance.AddLog(m_DamageResult);
 	}
 	else //hit missed
 	{
-		AttackResult += "*Miss*";
-		Instance.AddLog(AttackResult);
+		m_AttackResult += "*Miss*";
+		a_Instance.AddLog(m_AttackResult);
 	}
 
-	UseAmmo(Source);
+	UseAmmo(a_Source);
 
 	return;
 }
 
-void RangedAttack::AttackDualWield(EntityClass & Source, EntityClass &Target, EncounterInstance &Instance) {
+void RangedAttack::AttackDualWield(EntityClass & a_Source, EntityClass &a_Target, EncounterInstance &a_Instance) {
 
 }
 
-int RangedAttack::CalcTotalAttackBonus(EntityClass & Source)
+int RangedAttack::CalcTotalAttackBonus(EntityClass & a_Source)
 {
-	DetermineAndSetWeapon(Source);
-	std::vector<WeaponType> TempWeaponTypes = Weapon->GetWeaponType();
-	int CritMult = Weapon->GetCritInformation().second;
+	DetermineAndSetWeapon(a_Source);
+	std::vector<WeaponType> TempWeaponTypes = m_Weapon->GetWeaponType();
+	int CritMult = m_Weapon->GetCritInformation().second;
 	int TotalAttackRollBonus = 0;
 
-	int TotalWeaponAttackBonus = TotalFeatAttackBonus(Source);
+	int TotalWeaponAttackBonus = TotalFeatAttackBonus(a_Source);
 	
 	TotalAttackRollBonus += TotalWeaponAttackBonus;
 	//add base attack bonus and strength or dex bonus!
-	int BaBAndAttb = Source.GetBaseAttackBonus() + Source.GetAbilityModifier(UsesAttributeForAttackRoll);
+	int BaBAndAttb = a_Source.GetBaseAttackBonus() + a_Source.GetAbilityModifier(m_UsesAttributeForAttackRoll);
 	TotalAttackRollBonus += BaBAndAttb;
-	//std::cout << "Bab and attribute bonuses: " << Source.GetBaseAttackBonus() << ", " << Source.GetAbilityModifier(UsesAttributeForAttackRoll) << std::endl;
+	//std::cout << "Bab and attribute bonuses: " << a_Source.GetBaseAttackBonus() << ", " << a_Source.GetAbilityModifier(m_UsesAttributeForAttackRoll) << std::endl;
 
 	return TotalAttackRollBonus;
 }
 
-int RangedAttack::TotalFeatAttackBonus(EntityClass&Source)
+int RangedAttack::TotalFeatAttackBonus(EntityClass&a_Source)
 {
 	int TotalAttackBonus = 0;
 
-	TempFeats = Source.GetActiveFeats();
+	m_TempFeats = a_Source.GetActiveFeats();
 
-	if (std::find(Circumstances.begin(), Circumstances.end(), MELEEATTACK) == Circumstances.end())
+	if (std::find(m_Circumstances.begin(), m_Circumstances.end(), MELEEATTACK) == m_Circumstances.end())
 	{
-		Circumstances.push_back(MELEEATTACK);
+		m_Circumstances.push_back(MELEEATTACK);
 	}
 
-	if (Source.IsTwoHanding())
+	if (a_Source.IsTwoHanding())
 	{
-		if (std::find(Circumstances.begin(), Circumstances.end(), TWOHANDING) == Circumstances.end())
+		if (std::find(m_Circumstances.begin(), m_Circumstances.end(), TWOHANDING) == m_Circumstances.end())
 		{
-			Circumstances.push_back(TWOHANDING);
+			m_Circumstances.push_back(TWOHANDING);
 		}
 	}
 
-	auto TempWeaponTypes = Weapon->GetWeaponType();
-	std::cout << "Checking feat bonuses for weapon type for weapon: " << Weapon->GetName() << std::endl;
+	auto TempWeaponTypes = m_Weapon->GetWeaponType();
+	std::cout << "Checking feat bonuses for weapon type for weapon: " << m_Weapon->GetName() << std::endl;
 	//get the feats that match the weapontype attackroll for bonuses(add) (subtract)
-	for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
+	for (auto it = m_TempFeats.begin(); it != m_TempFeats.end(); it++)
 	{
 		for (auto Type = TempWeaponTypes.begin(); Type != TempWeaponTypes.end(); Type++)
 		{
 			if ((*it).GetWeaponAttackBonuses().count(*Type)) //true if > 0
 			{
-				std::cout << "Found feat: " << (*it).GetName() << " applies to: " << Weapon->GetName() << std::endl;
+				std::cout << "Found feat: " << (*it).GetName() << " applies to: " << m_Weapon->GetName() << std::endl;
 				std::cout << (*it).GetName() << "adds " << (*it).GetWeaponAttackBonuses()[*Type] << " to attack " << std::endl;
 				TotalAttackBonus += ((*it).GetWeaponAttackBonuses())[*Type];
 			}
 			if ((*it).GetWeaponAttackBonusSubtract().count(*Type)) //true if > 0
 			{
-				std::cout << "Found feat: " << (*it).GetName() << " applies to: " << Weapon->GetName() << std::endl;
+				std::cout << "Found feat: " << (*it).GetName() << " applies to: " << m_Weapon->GetName() << std::endl;
 				std::cout << (*it).GetName() << " subtracts " << (*it).GetWeaponAttackBonuses()[*Type] << " from attack " << std::endl;
 				TotalAttackBonus -= ((*it).GetWeaponAttackBonusSubtract())[*Type];
 			}
 		}
 	}
 	//add circumstance feats to hit in
-	for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
+	for (auto it = m_TempFeats.begin(); it != m_TempFeats.end(); it++)
 	{
-		for (auto Type = Circumstances.begin(); Type != Circumstances.end(); Type++)
+		for (auto Type = m_Circumstances.begin(); Type != m_Circumstances.end(); Type++)
 		{
 			if ((*it).GetCircumstanceAttackBonusAdd().count(*Type))
 			{
@@ -233,7 +233,7 @@ int RangedAttack::TotalFeatAttackBonus(EntityClass&Source)
 	}
 
 	//check for proficency
-	bool isProficient = CheckProficiency(Source);
+	bool isProficient = CheckProficiency(a_Source);
 	if (isProficient != true)
 	{
 	//	std::cout << "Character not proficient" << std::endl;
@@ -243,14 +243,14 @@ int RangedAttack::TotalFeatAttackBonus(EntityClass&Source)
 	return TotalAttackBonus;
 }
 
-int RangedAttack::CalcTotalDamageBonus(EntityClass &Source, EncounterInstance &Instance)
+int RangedAttack::CalcTotalDamageBonus(EntityClass &a_Source, EncounterInstance &a_Instance)
 {
 	int TotalDamageBonus = 0;
 	//add damage bonuses
 	//weapontypes
-	for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
+	for (auto it = m_TempFeats.begin(); it != m_TempFeats.end(); it++)
 	{
-		for (auto Type = Weapon->GetWeaponType().begin(); Type != Weapon->GetWeaponType().end(); Type++)
+		for (auto Type = m_Weapon->GetWeaponType().begin(); Type != m_Weapon->GetWeaponType().end(); Type++)
 		{
 			if ((*it).GetWeaponDamageBonuses().count(*Type)) //true if > 0
 			{
@@ -263,9 +263,9 @@ int RangedAttack::CalcTotalDamageBonus(EntityClass &Source, EncounterInstance &I
 		}
 	}
 	//circumstance bonuses to damage
-	for (auto it = TempFeats.begin(); it != TempFeats.end(); it++)
+	for (auto it = m_TempFeats.begin(); it != m_TempFeats.end(); it++)
 	{
-		for (auto Type = Circumstances.begin(); Type != Circumstances.end(); Type++)
+		for (auto Type = m_Circumstances.begin(); Type != m_Circumstances.end(); Type++)
 		{
 			if ((*it).GetCircumstanceAttackDamageAdd().count(*Type))
 			{
@@ -278,39 +278,39 @@ int RangedAttack::CalcTotalDamageBonus(EntityClass &Source, EncounterInstance &I
 		}
 	}
 
-	TotalDamageBonus += Source.GetAbilityModifier(UsesAttributeForDamageRoll);
+	TotalDamageBonus += a_Source.GetAbilityModifier(m_UsesAttributeForDamageRoll);
 	return TotalDamageBonus;
 }
 
-int RangedAttack::CalcDistancePenalty(EntityClass &Source, EntityClass &Target, EncounterInstance & Instance)
+int RangedAttack::CalcDistancePenalty(EntityClass &a_Source, EntityClass &a_Target, EncounterInstance & a_Instance)
 {
-	int rangeincrement = Weapon->GetRangeIncrement();
-	int distance = CalcDistance(Source, Target, Instance);
-	std::cout << "Range increment of " << Weapon->GetName() << " " << rangeincrement << std::endl;
+	int rangeincrement = m_Weapon->GetRangeIncrement();
+	int distance = CalcDistance(a_Source, a_Target, a_Instance);
+	std::cout << "Range increment of " << m_Weapon->GetName() << " " << rangeincrement << std::endl;
 	int totalpenalty = 0;
 	
 	if (rangeincrement != 0)
 	{
-		totalpenalty = Distance / rangeincrement;
+		totalpenalty = m_Distance / rangeincrement;
 	}
 	else
 	{
 		std::cout << "Error: Range increment is zero" << std::endl;
 	}
 	
-	std::cout << "total penalty for: " << Distance << " Distance with increment " << rangeincrement << std::endl;
+	std::cout << "total penalty for: " << m_Distance << " m_Distance with increment " << rangeincrement << std::endl;
 
 	return totalpenalty;
 }
 
-int RangedAttack::CalcDistance(EntityClass &Source, EntityClass &Target, EncounterInstance& Instance)
+int RangedAttack::CalcDistance(EntityClass &a_Source, EntityClass &a_Target, EncounterInstance& a_Instance)
 {
 	//squareroot of absolute value of((x2-x1)^2 + (y2 - y1)^2)
 	//1 will be source, 2 be target
-	int x1 = Source.GetLocation().first*5;
-	int x2 = Target.GetLocation().first*5;
-	int y1 = Source.GetLocation().second*5;
-	int y2 = Target.GetLocation().second*5;
+	int x1 = a_Source.GetLocation().first*5;
+	int x2 = a_Target.GetLocation().first*5;
+	int y1 = a_Source.GetLocation().second*5;
+	int y2 = a_Target.GetLocation().second*5;
 
 	int xSquareTotal = (x2 - x1) * (x2 - x1);
 	int ySquareTotal = (y2 - y1) * (y2 - y1);
@@ -319,19 +319,19 @@ int RangedAttack::CalcDistance(EntityClass &Source, EntityClass &Target, Encount
 
 	if (TotalDistance <= 30)
 	{
-		if (find(Circumstances.begin(), Circumstances.end(), POINTBLANK) == Circumstances.end())
+		if (find(m_Circumstances.begin(), m_Circumstances.end(), POINTBLANK) == m_Circumstances.end())
 		{
-			Circumstances.push_back(POINTBLANK);
+			m_Circumstances.push_back(POINTBLANK);
 		}
 	}
 	return TotalDistance;
 }
 
-bool RangedAttack::CheckProficiency(EntityClass &Source)
+bool RangedAttack::CheckProficiency(EntityClass &a_Source)
 {
-	auto TempWeaponTypes = Weapon->GetWeaponType();
+	auto TempWeaponTypes = m_Weapon->GetWeaponType();
 	std::vector<FeatClass> ProfFeats;
-	for (auto i = TempFeats.begin(); i != TempFeats.end(); i++)
+	for (auto i = m_TempFeats.begin(); i != m_TempFeats.end(); i++)
 	{
 		if ((i)->GetWeaponProficiencies().size()>0)
 		{
@@ -358,55 +358,55 @@ bool RangedAttack::CheckProficiency(EntityClass &Source)
 	return false;
 }
 
-bool RangedAttack::DetermineAndSetWeapon(EntityClass &Source)
+bool RangedAttack::DetermineAndSetWeapon(EntityClass &a_Source)
 {
-	Weapon = Source.GetEquipmentInSlot(MAINHAND);
-	if (Weapon != nullptr && Weapon->IsRangedWeapon())
+	m_Weapon = a_Source.GetEquipmentInSlot(MAINHAND);
+	if (m_Weapon != nullptr && m_Weapon->IsRangedWeapon())
 	{
-		DetermineAttbUsed(Source);
+		DetermineAttbUsed(a_Source);
 		return true;
 	}
-	Weapon = Source.GetEquipmentInSlot(OFFHAND);
-	if (Weapon != nullptr && Weapon->IsRangedWeapon())
+	m_Weapon = a_Source.GetEquipmentInSlot(OFFHAND);
+	if (m_Weapon != nullptr && m_Weapon->IsRangedWeapon())
 	{
-		DetermineAttbUsed(Source);
+		DetermineAttbUsed(a_Source);
 		return true;
 	}
 	std::cout << "Something went wrong, no ranged weapon equipped" << std::endl;
 	return false;
 }
 
-void RangedAttack::DetermineAttbUsed(EntityClass &Source)
+void RangedAttack::DetermineAttbUsed(EntityClass &a_Source)
 {
-	if (Weapon != nullptr && Weapon->IsRangedWeapon())
+	if (m_Weapon != nullptr && m_Weapon->IsRangedWeapon())
 	{
-		if (Weapon->IsThrowingWeapon() && (Source.GetAbilityModifier(STR) > Source.GetAbilityModifier(DEX)))
+		if (m_Weapon->IsThrowingWeapon() && (a_Source.GetAbilityModifier(STR) > a_Source.GetAbilityModifier(DEX)))
 		{
-			UsesAttributeForAttackRoll = STR;
-			UsesAttributeForDamageRoll = STR;
+			m_UsesAttributeForAttackRoll = STR;
+			m_UsesAttributeForDamageRoll = STR;
 			std::cout << "str ranged wep" << std::endl;
 		}
 		else
 		{
 			std::cout << "dex ranged wep" << std::endl;
-			UsesAttributeForAttackRoll = DEX;
-			UsesAttributeForDamageRoll = DEX;
+			m_UsesAttributeForAttackRoll = DEX;
+			m_UsesAttributeForDamageRoll = DEX;
 		}
 		return;
 	}
 }
 
-void RangedAttack::UseAmmo(EntityClass &Source)
+void RangedAttack::UseAmmo(EntityClass &a_Source)
 {
-	if (Weapon->IsThrowingWeapon())
+	if (m_Weapon->IsThrowingWeapon())
 	{
-		if ((Source.GetEquipmentInSlot(MAINHAND) != nullptr) && (Source.GetEquipmentInSlot(MAINHAND)->GetName()==Weapon->GetName()))
+		if ((a_Source.GetEquipmentInSlot(MAINHAND) != nullptr) && (a_Source.GetEquipmentInSlot(MAINHAND)->GetName()==m_Weapon->GetName()))
 		{
-			Source.ClearEquipmentInSlot(MAINHAND);
+			a_Source.ClearEquipmentInSlot(MAINHAND);
 		}
-		else if ((Source.GetEquipmentInSlot(OFFHAND) != nullptr) && (Source.GetEquipmentInSlot(OFFHAND)->GetName() == Weapon->GetName()))
+		else if ((a_Source.GetEquipmentInSlot(OFFHAND) != nullptr) && (a_Source.GetEquipmentInSlot(OFFHAND)->GetName() == m_Weapon->GetName()))
 		{
-			Source.ClearEquipmentInSlot(OFFHAND);
+			a_Source.ClearEquipmentInSlot(OFFHAND);
 		}
 	}
 

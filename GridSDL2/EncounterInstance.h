@@ -1,7 +1,6 @@
 #pragma once
 #include "GeneralHeaders.h"
 #include "Texture.h"
-#include "Dot.h"
 #include "Tile.h"
 #include <map>
 #include "EntityClass.h"
@@ -16,21 +15,6 @@ class AIPlayer;
 class EncounterInstance
 {
 	public:
-	LTexture gDotTexture;
-	LTexture gTileTexture;
-	
-	SDL_Texture * MenuPort;
-	SDL_Texture * BottomPort;
-	TTF_Font *gFont = NULL;
-	SDL_Rect gTileClips[g_TOTAL_TILE_SPRITES];
-	//Event handler
-	SDL_Event e;
-
-	//tileset map
-	std::map<std::string, std::string> SpriteSet;
-
-	//pointer to the activeUnit whose turn it is
-	EntityClass* ActiveUnit;
 	void RollInitative(); 
 	void NextInInitiative();
 	void RemoveDeadFromLists();
@@ -40,19 +24,12 @@ class EncounterInstance
 	bool CheckForEndOfEncounter();
 	bool CheckPlayerWin();
 	bool CheckAIWin();
-
-	//The window we'll be rendering to
-	SDL_Window* gWindow = NULL;
 	
-	//The window renderer
-	SDL_Renderer* gRenderer = NULL;
-	SDL_Rect camera = { 0, 0, (g_SCREEN_WIDTH/4)*3, (g_SCREEN_HEIGHT / 4) * 3 };
-
 	EncounterInstance();
 
-	void HandleEvents(SDL_Event &e);
+	void HandleEvents(SDL_Event &m_event);
 	
-	bool init(SDL_Renderer *&gRenderer, SDL_Window *&gWindow); // initializes SDL and window we are rendering to
+	bool init(SDL_Renderer *&gRenderer, SDL_Window *&m_EncounterWindow); // initializes SDL and m_window we are rendering to
 	bool LoadAllMedia(SDL_Renderer *&Renderer, SDL_Rect &gTileClips);
 	bool loadMedia(LTexture &gDotTexture, LTexture &gTileTexture, LTexture &mEntityTexture, SDL_Renderer *&Renderer, SDL_Rect &gTileClips);
 	bool setTiles(SDL_Rect gTileClips[]);
@@ -67,12 +44,12 @@ class EncounterInstance
 	bool checkCollision(SDL_Rect a, SDL_Rect b);
 
 	//destruction functions
-	void close(LTexture &gDotTexture, LTexture &gTileTexture, SDL_Renderer*& gRenderer, SDL_Window*& gWindow);
+	void close(LTexture &gTileTexture, SDL_Renderer*& gRenderer, SDL_Window*& m_EncounterWindow);
 
 	//running game functions
 	bool RunEncounter(); // master run function
 
-	bool UpdateMap(); // update / draw cycle for map
+	bool UpdateMap(); // update / m_draw cycle for map
 
 	Tile & GetTileAt(int x, int y);
 	std::vector< std::vector<Tile>>& GetTileMap();
@@ -89,43 +66,66 @@ class EncounterInstance
 	//log functions
 	void AddLog(std::string LogEntry);
 
-	std::map<std::string, FeatClass*>& GetMasterFeatList() { return MasterFeatList; }
+	std::map<std::string, FeatClass*>& GetMasterFeatList() { return m_MasterFeatList; }
 	
-	TargetSystem& GetTargetSystem() { return TargetSys; }
+	TargetSystem& GetTargetSystem() { return m_TargetSys; }
 	
-	int GetMapHeight() { return TileMapHeight; }
-	int GetMapWidth() { return TileMapWidth; }
+	int GetMapHeight() { return m_TileMapHeight; }
+	int GetMapWidth() { return m_TileMapWidth; }
 
-	ObjectClass& GetObjectFromMasterList(std::string name) { return *MasterObjectList[name]; }
+	ObjectClass& GetObjectFromMasterList(std::string m_name) { return *m_MasterObjectList[m_name]; }
 
 private: 
-	static const int TileMapWidth = g_LEVEL_WIDTH / g_TILE_WIDTH;
-	static const int TileMapHeight = g_LEVEL_HEIGHT / g_TILE_HEIGHT;
-	std::vector < std::vector < Tile> > TileMap;
-	std::vector<EntityClass*> EntityList;
-	std::list<EntityClass*> InitiativeList;
-	std::vector<ObjectClass*> ObjectList;
-	TargetSystem TargetSys;
+	static const int m_TileMapWidth = g_LEVEL_WIDTH / g_TILE_WIDTH;
+	static const int m_TileMapHeight = g_LEVEL_HEIGHT / g_TILE_HEIGHT;
+	std::vector < std::vector < Tile> > m_TileMap;
+	std::vector<EntityClass*> m_EntityList;
+	std::list<EntityClass*> m_InitiativeList;
+	std::vector<ObjectClass*> m_ObjectList;
+	TargetSystem m_TargetSys;
+
+	//The m_window we'll be rendering to
+	SDL_Window* m_EncounterWindow = NULL;
+
+	//The m_window renderer
+	SDL_Renderer* m_Renderer = NULL;
+	SDL_Rect m_camera = { 0, 0, (g_SCREEN_WIDTH / 4) * 3, (g_SCREEN_HEIGHT / 4) * 3 };
+
+
+	SDL_Texture * m_MenuPort;
+	SDL_Texture * m_BottomPort;
+	TTF_Font *m_MasterFont = NULL;
+	SDL_Rect m_EncounterTileClips[g_TOTAL_TILE_SPRITES];
+	//Event handler
+	SDL_Event m_event;
+
+	//tileset map
+	std::map<std::string, std::string> m_SpriteSet;
+
+	//pointer to the activeUnit whose turn it is
+	EntityClass* m_ActiveUnit;
+
+	LTexture m_TileTexture;
 	
-	std::map<std::string, ObjectClass*> MasterObjectList;
-	std::map<std::string, FeatClass*> MasterFeatList;
+	std::map<std::string, ObjectClass*> m_MasterObjectList;
+	std::map<std::string, FeatClass*> m_MasterFeatList;
 	
-	Log ActionLog;
-	EntityInfoDisplay InfoPanel;
+	Log m_ActionLog;
+	EntityInfoDisplay m_InfoPanel;
 
 	//resources stuff
-	std::string FontPath = "Data\\Fonts";
-	std::string TextureFolderPath = "Data\\Textures"; //parent directory for textures
-	std::string CharacterFolderPath = "Data\\Characters";
-	std::string ItemFolderPath = "Data\\Items";
-	std::string MapFolderPath = "Data\\Maps";
-	std::string FeatFolderPath = "Data\\Feats";
-	std::vector<std::string> WeaponLists = { "SimpleWeapons.txt", "MartialWeapons.txt", "ExoticWeapons.txt"};
-	std::vector<std::string> ArmorLists = { "BaseArmorList.txt" };
-	std::vector<std::string> FeatLists = { "BaseProficiencies.txt", "GeneralFeats.txt" };
-	std::string CurrentMapPath = "";
-	std::map<std::string, LTexture*> Textures;
-	std::string TilePath = "";
+	std::string m_FontPath = "Data\\Fonts";
+	std::string m_TextureFolderPath = "Data\\Textures"; //parent directory for textures
+	std::string m_CharacterFolderPath = "Data\\Characters";
+	std::string m_ItemFolderPath = "Data\\Items";
+	std::string m_MapFolderPath = "Data\\Maps";
+	std::string m_FeatFolderPath = "Data\\Feats";
+	std::vector<std::string> m_WeaponLists = { "SimpleWeapons.txt", "MartialWeapons.txt", "ExoticWeapons.txt"};
+	std::vector<std::string> m_ArmorLists = { "BaseArmorList.txt" };
+	std::vector<std::string> m_FeatLists = { "BaseProficiencies.txt", "GeneralFeats.txt" };
+	std::string m_CurrentMapPath = "";
+	std::map<std::string, LTexture*> m_Textures;
+	std::string m_TilePath = "";
 	
 
 	//loading functions 
@@ -142,11 +142,11 @@ public:
 	std::map<std::string, ObjectClass*> & GetObjectList();
 
 	//mastercalls all other load functions
-	//passes map name to loadmap, gets location of objects and entities and constructs vectors of strings
+	//passes map m_name to loadmap, gets location of m_objects and entities and constructs vectors of strings
 	bool ScenarioLoad(std::string path); 
 
-	//loads all loose objects on the tiles, passed by ScenarioLoad
-	bool LoadObjectIntoTile(int x, int y, std::string name);
+	//loads all loose m_objects on the tiles, passed by ScenarioLoad
+	bool LoadObjectIntoTile(int x, int y, std::string m_name);
 
 	bool LoadWeaponList(std::string path);
 	bool LoadArmorList(std::string path);

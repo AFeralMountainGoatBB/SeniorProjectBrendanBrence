@@ -37,12 +37,12 @@ int kiss_window_new(kiss_window *window, kiss_window *wdw, int decorate,
 	return 0;
 }
 
-int kiss_window_event(kiss_window *window, SDL_Event *event, int *draw)
+int kiss_window_event(kiss_window *window, SDL_Event *event, int *m_draw)
 {
 	if (!window || !window->visible || !event) return 0;
 	if (event->type == SDL_WINDOWEVENT &&
 		event->window.event == SDL_WINDOWEVENT_EXPOSED)
-		*draw = 1;
+		*m_draw = 1;
 	if (!window->focus && (!window->wdw ||
 		(window->wdw && !window->wdw->focus)))
 		return 0;
@@ -53,13 +53,13 @@ int kiss_window_event(kiss_window *window, SDL_Event *event, int *draw)
 	return 0;
 }
 
-int kiss_window_draw(kiss_window *window, SDL_Renderer *renderer)
+int kiss_window_draw(kiss_window *window, SDL_Renderer *m_renderer)
 {
 	if (window && window->wdw) window->visible = window->wdw->visible;
-	if (!window || !window->visible || !renderer) return 0;
-	kiss_fillrect(renderer, &window->rect, window->bg);
+	if (!window || !window->visible || !m_renderer) return 0;
+	kiss_fillrect(m_renderer, &window->rect, window->bg);
 	if (window->decorate)
-		kiss_decorate(renderer, &window->rect, kiss_blue, kiss_edge);
+		kiss_decorate(m_renderer, &window->rect, kiss_blue, kiss_edge);
 	return 1;
 }
 
@@ -76,14 +76,14 @@ int kiss_label_new(kiss_label *label, kiss_window *wdw, char *text,
 	return 0;
 }
 
-int kiss_label_draw(kiss_label *label, SDL_Renderer *renderer)
+int kiss_label_draw(kiss_label *label, SDL_Renderer *m_renderer)
 {
 	char buf[KISS_MAX_LABEL], *p;
 	int len, y;
 
 	if (label && label->wdw) label->visible = label->wdw->visible;
-	if (!label || !label->visible || !renderer) return 0;
-	y = label->rect.y + label->font.spacing / 2;
+	if (!label || !label->visible || !m_renderer) return 0;
+	y = label->rect.y + label->font.m_spacing / 2;
 	len = strlen(label->text);
 	if (len > KISS_MAX_LABEL - 2)
 		label->text[len - 1] = '\n';
@@ -91,7 +91,7 @@ int kiss_label_draw(kiss_label *label, SDL_Renderer *renderer)
 		strcat(label->text, "\n");
 	for (p = label->text; *p; p = strchr(p, '\n') + 1) {
 		kiss_string_copy(buf, strcspn(p, "\n") + 1, p, NULL);
-		kiss_rendertext(renderer, buf, label->rect.x, y,
+		kiss_rendertext(m_renderer, buf, label->rect.x, y,
 			label->font, label->textcolor);
 		y += label->font.lineheight;
 	}
@@ -123,27 +123,27 @@ int kiss_button_new(kiss_button *button, kiss_window *wdw, char *text, int x, in
 	return 0;
 }
 
-int kiss_button_event(kiss_button *button, SDL_Event *event, int *draw)
+int kiss_button_event(kiss_button *button, SDL_Event *event, int *m_draw)
 {
 	if (!button || !button->visible || !event) 
 		return 0;
 	if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_EXPOSED)
-		*draw = 1;
+		*m_draw = 1;
 	if (!button->focus && (!button->wdw || (button->wdw && !button->wdw->focus)))
 		return 0;
 	if (event->type == SDL_MOUSEBUTTONDOWN && kiss_pointinrect(event->button.x, event->button.y, &button->rect)) {
 		button->active = 1;
-		*draw = 1;
+		*m_draw = 1;
 	} else if (event->type == SDL_MOUSEBUTTONUP && kiss_pointinrect(event->button.x, event->button.y, &button->rect) && button->active) {
 		button->active = 0;
-		*draw = 1;
+		*m_draw = 1;
 		return 1;
 	} else if (event->type == SDL_MOUSEMOTION && kiss_pointinrect(event->motion.x, event->motion.y, &button->rect)) {
 		button->prelight = 1;
-		*draw = 1;
+		*m_draw = 1;
 	} else if (event->type == SDL_MOUSEMOTION && !kiss_pointinrect(event->motion.x, event->motion.y, &button->rect)) {
 		button->prelight = 0;
-		*draw = 1;
+		*m_draw = 1;
 		if (button->active) {
 			button->active = 0;
 			return 1;
@@ -152,17 +152,17 @@ int kiss_button_event(kiss_button *button, SDL_Event *event, int *draw)
 	return 0;
 }
 
-int kiss_button_draw(kiss_button *button, SDL_Renderer *renderer)
+int kiss_button_draw(kiss_button *button, SDL_Renderer *m_renderer)
 {
 	if (button && button->wdw) button->visible = button->wdw->visible;
-	if (!button || !button->visible || !renderer) return 0;
+	if (!button || !button->visible || !m_renderer) return 0;
 	if (button->active)
-		kiss_renderimage(renderer, button->activeimg, button->rect.x, button->rect.y, NULL);
+		kiss_renderimage(m_renderer, button->activeimg, button->rect.x, button->rect.y, NULL);
 	else if (button->prelight && !button->active)
-		kiss_renderimage(renderer, button->prelightimg, button->rect.x, button->rect.y, NULL);
+		kiss_renderimage(m_renderer, button->prelightimg, button->rect.x, button->rect.y, NULL);
 	else
-		kiss_renderimage(renderer, button->normalimg, button->rect.x, button->rect.y, NULL);
-	kiss_rendertext(renderer, button->text, button->textx, button->texty, button->font, button->textcolor);
+		kiss_renderimage(m_renderer, button->normalimg, button->rect.x, button->rect.y, NULL);
+	kiss_rendertext(m_renderer, button->text, button->textx, button->texty, button->font, button->textcolor);
 	return 1;
 }
 
@@ -183,12 +183,12 @@ int kiss_selectbutton_new(kiss_selectbutton *selectbutton, kiss_window *wdw,
 }
 
 int kiss_selectbutton_event(kiss_selectbutton *selectbutton,
-	SDL_Event *event, int *draw)
+	SDL_Event *event, int *m_draw)
 {
 	if (!selectbutton || !selectbutton->visible || !event) return 0;
 	if (event->type == SDL_WINDOWEVENT &&
 		event->window.event == SDL_WINDOWEVENT_EXPOSED)
-		*draw = 1;
+		*m_draw = 1;
 	if (!selectbutton->focus && (!selectbutton->wdw ||
 		(selectbutton->wdw && !selectbutton->wdw->focus)))
 		return 0;
@@ -196,23 +196,23 @@ int kiss_selectbutton_event(kiss_selectbutton *selectbutton,
 		kiss_pointinrect(event->button.x, event->button.y,
 		&selectbutton->rect)) {
 		selectbutton->selected ^= 1;
-		*draw = 1;
+		*m_draw = 1;
 		return 1;
 	}
 	return 0;
 }
 
 int kiss_selectbutton_draw(kiss_selectbutton *selectbutton,
-	SDL_Renderer *renderer)
+	SDL_Renderer *m_renderer)
 {
 	if (selectbutton && selectbutton->wdw)
 		selectbutton->visible = selectbutton->wdw->visible;
-	if (!selectbutton || !selectbutton->visible || !renderer) return 0;
+	if (!selectbutton || !selectbutton->visible || !m_renderer) return 0;
 	if (selectbutton->selected)
-		kiss_renderimage(renderer, selectbutton->selectedimg,
+		kiss_renderimage(m_renderer, selectbutton->selectedimg,
 			selectbutton->rect.x, selectbutton->rect.y, NULL);
 	else
-		kiss_renderimage(renderer, selectbutton->unselectedimg,
+		kiss_renderimage(m_renderer, selectbutton->unselectedimg,
 			selectbutton->rect.x, selectbutton->rect.y, NULL);
 	return 1;
 }
@@ -252,9 +252,9 @@ int kiss_vscrollbar_new(kiss_vscrollbar *vscrollbar, kiss_window *wdw,
 	return 0;
 }
 
-static void vnewpos(kiss_vscrollbar *vscrollbar, double step, int *draw)
+static void vnewpos(kiss_vscrollbar *vscrollbar, double step, int *m_draw)
 {
-	*draw = 1;
+	*m_draw = 1;
 	vscrollbar->fraction += step;
 	vscrollbar->lasttick = kiss_getticks();
 	if (vscrollbar->fraction < -0.000001) vscrollbar->fraction = 0.;
@@ -270,7 +270,7 @@ static void vnewpos(kiss_vscrollbar *vscrollbar, double step, int *draw)
 }
 
 int kiss_vscrollbar_event(kiss_vscrollbar *vscrollbar, SDL_Event *event,
-	int *draw)
+	int *m_draw)
 {
 	if (!vscrollbar || !vscrollbar->visible) return 0;
 	if (!(SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT))) {
@@ -279,17 +279,17 @@ int kiss_vscrollbar_event(kiss_vscrollbar *vscrollbar, SDL_Event *event,
 		vscrollbar->lasttick = 0;
 	} else if (vscrollbar->upclicked && kiss_getticks() >
 		vscrollbar->lasttick + kiss_click_interval) {
-		vnewpos(vscrollbar, -vscrollbar->step, draw);
+		vnewpos(vscrollbar, -vscrollbar->step, m_draw);
 		return 1;
 	} else if (vscrollbar->downclicked && kiss_getticks() >
 		vscrollbar->lasttick + kiss_click_interval) {
-		vnewpos(vscrollbar, vscrollbar->step, draw);
+		vnewpos(vscrollbar, vscrollbar->step, m_draw);
 		return 1;
 	}
 	if (!event) return 0;
 	if (event->type == SDL_WINDOWEVENT &&
 		event->window.event == SDL_WINDOWEVENT_EXPOSED)
-		*draw = 1;
+		*m_draw = 1;
 	if (!vscrollbar->focus && (!vscrollbar->wdw ||
 		(vscrollbar->wdw && !vscrollbar->wdw->focus)))
 		return 0;
@@ -330,25 +330,25 @@ int kiss_vscrollbar_event(kiss_vscrollbar *vscrollbar, SDL_Event *event,
 		(event->motion.state & SDL_BUTTON(SDL_BUTTON_LEFT)) &&
 		vscrollbar->sliderclicked) {
 		vnewpos(vscrollbar, 1. * event->motion.yrel /
-			vscrollbar->maxpos, draw);
+			vscrollbar->maxpos, m_draw);
 		return 1;
 	}
 	return 0;
 }
 
-int kiss_vscrollbar_draw(kiss_vscrollbar *vscrollbar, SDL_Renderer *renderer)
+int kiss_vscrollbar_draw(kiss_vscrollbar *vscrollbar, SDL_Renderer *m_renderer)
 {
 	if (vscrollbar && vscrollbar->wdw)
 		vscrollbar->visible = vscrollbar->wdw->visible;
-	if (!vscrollbar || !vscrollbar->visible || !renderer) return 0;
+	if (!vscrollbar || !vscrollbar->visible || !m_renderer) return 0;
 	vscrollbar->sliderrect.y = vscrollbar->uprect.y +
 		vscrollbar->uprect.h + (int) (vscrollbar->fraction *
 		vscrollbar->maxpos);
-	kiss_renderimage(renderer, vscrollbar->up, vscrollbar->uprect.x,
+	kiss_renderimage(m_renderer, vscrollbar->up, vscrollbar->uprect.x,
 		vscrollbar->uprect.y, NULL);
-	kiss_renderimage(renderer, vscrollbar->down, vscrollbar->downrect.x,
+	kiss_renderimage(m_renderer, vscrollbar->down, vscrollbar->downrect.x,
 		vscrollbar->downrect.y + kiss_slider_padding, NULL);
-	kiss_renderimage(renderer, vscrollbar->vslider,
+	kiss_renderimage(m_renderer, vscrollbar->vslider,
 		vscrollbar->sliderrect.x, vscrollbar->sliderrect.y, NULL);
 	return 1;
 }
@@ -390,9 +390,9 @@ int kiss_hscrollbar_new(kiss_hscrollbar *hscrollbar, kiss_window *wdw,
 	return 0;
 }
 
-static void hnewpos(kiss_hscrollbar *hscrollbar, double step, int *draw)
+static void hnewpos(kiss_hscrollbar *hscrollbar, double step, int *m_draw)
 {
-	*draw = 1;
+	*m_draw = 1;
 	hscrollbar->fraction += step;
 	hscrollbar->lasttick = kiss_getticks();
 	if (hscrollbar->fraction < -0.000001) hscrollbar->fraction = 0.;
@@ -408,7 +408,7 @@ static void hnewpos(kiss_hscrollbar *hscrollbar, double step, int *draw)
 }
 
 int kiss_hscrollbar_event(kiss_hscrollbar *hscrollbar, SDL_Event *event,
-	int *draw)
+	int *m_draw)
 {
 	if (!hscrollbar || !hscrollbar->visible) return 0;
 	if (!(SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT))) {
@@ -417,17 +417,17 @@ int kiss_hscrollbar_event(kiss_hscrollbar *hscrollbar, SDL_Event *event,
 		hscrollbar->lasttick = 0;
 	} else if (hscrollbar->leftclicked && kiss_getticks() >
 		hscrollbar->lasttick + kiss_click_interval) {
-		hnewpos(hscrollbar, -hscrollbar->step, draw);
+		hnewpos(hscrollbar, -hscrollbar->step, m_draw);
 		return 1;
 	} else if (hscrollbar->rightclicked && kiss_getticks() >
 		hscrollbar->lasttick + kiss_click_interval) {
-		hnewpos(hscrollbar, hscrollbar->step, draw);
+		hnewpos(hscrollbar, hscrollbar->step, m_draw);
 		return 1;
 	}
 	if (!event) return 0;
 	if (event->type == SDL_WINDOWEVENT &&
 		event->window.event == SDL_WINDOWEVENT_EXPOSED)
-		*draw = 1;
+		*m_draw = 1;
 	if (!hscrollbar->focus && (!hscrollbar->wdw ||
 		(hscrollbar->wdw && !hscrollbar->wdw->focus)))
 		return 0;
@@ -468,26 +468,26 @@ int kiss_hscrollbar_event(kiss_hscrollbar *hscrollbar, SDL_Event *event,
 		(event->motion.state & SDL_BUTTON(SDL_BUTTON_LEFT)) &&
 		hscrollbar->sliderclicked) {
 		hnewpos(hscrollbar, 1. * event->motion.xrel /
-			hscrollbar->maxpos, draw);
+			hscrollbar->maxpos, m_draw);
 		return 1;
 	}
 	return 0;
 }
 
-int kiss_hscrollbar_draw(kiss_hscrollbar *hscrollbar, SDL_Renderer *renderer)
+int kiss_hscrollbar_draw(kiss_hscrollbar *hscrollbar, SDL_Renderer *m_renderer)
 {
 	if (hscrollbar && hscrollbar->wdw)
 		hscrollbar->visible = hscrollbar->wdw->visible;
-	if (!hscrollbar || !hscrollbar->visible || !renderer) return 0;
+	if (!hscrollbar || !hscrollbar->visible || !m_renderer) return 0;
 	hscrollbar->sliderrect.x = hscrollbar->leftrect.x +
 		hscrollbar->leftrect.w + (int) (hscrollbar->fraction *
 		hscrollbar->maxpos);
-	kiss_renderimage(renderer, hscrollbar->left, hscrollbar->leftrect.x,
+	kiss_renderimage(m_renderer, hscrollbar->left, hscrollbar->leftrect.x,
 		hscrollbar->leftrect.y, NULL);
-	kiss_renderimage(renderer, hscrollbar->right,
+	kiss_renderimage(m_renderer, hscrollbar->right,
 		hscrollbar->rightrect.x + kiss_slider_padding,
 		hscrollbar->rightrect.y, NULL);
-	kiss_renderimage(renderer, hscrollbar->hslider,
+	kiss_renderimage(m_renderer, hscrollbar->hslider,
 		hscrollbar->sliderrect.x, hscrollbar->sliderrect.y, NULL);
 	return 1;
 }
@@ -514,7 +514,7 @@ int kiss_progressbar_new(kiss_progressbar *progressbar, kiss_window *wdw,
 }
 
 int kiss_progressbar_event(kiss_progressbar *progressbar, SDL_Event *event,
-	int *draw)
+	int *m_draw)
 {
 	if (!progressbar || !progressbar->visible) return 0;
 	if (progressbar->run && kiss_getticks() > progressbar->lasttick +
@@ -525,113 +525,113 @@ int kiss_progressbar_event(kiss_progressbar *progressbar, SDL_Event *event,
 			progressbar->fraction = 1.;
 		}
 		progressbar->lasttick = kiss_getticks();
-		*draw = 1;
+		*m_draw = 1;
 	}
 	return 1;
 }
 
 int kiss_progressbar_draw(kiss_progressbar *progressbar,
-	SDL_Renderer *renderer)
+	SDL_Renderer *m_renderer)
 {
 	SDL_Rect clip;
 
 	if (progressbar && progressbar->wdw)
 		progressbar->visible = progressbar->wdw->visible;
-	if (!progressbar || !progressbar->visible || !renderer)
+	if (!progressbar || !progressbar->visible || !m_renderer)
 		return 0;
-	kiss_fillrect(renderer, &progressbar->rect, progressbar->bg);
-	kiss_decorate(renderer, &progressbar->rect, kiss_blue, kiss_edge);
+	kiss_fillrect(m_renderer, &progressbar->rect, progressbar->bg);
+	kiss_decorate(m_renderer, &progressbar->rect, kiss_blue, kiss_edge);
 	progressbar->barrect.w = (int) (progressbar->width *
 		progressbar->fraction + 0.5);
 	kiss_makerect(&clip, 0, 0, progressbar->barrect.w,
 		progressbar->barrect.h);
-	kiss_renderimage(renderer, progressbar->bar, progressbar->barrect.x,
+	kiss_renderimage(m_renderer, progressbar->bar, progressbar->barrect.x,
 		progressbar->barrect.y, &clip);
 	return 1;
 }
 
-int kiss_entry_new(kiss_entry *entry, kiss_window *wdw, int decorate,
+int kiss_entry_new(kiss_entry *m_entry, kiss_window *wdw, int decorate,
 	char *text, int x, int y, int w)
 {
-	if (!entry || !text) return -1;
-	if (entry->font.magic != KISS_MAGIC) entry->font = kiss_textfont;
-	if (w < 2 * kiss_border + entry->font.advance) return -1;
-	entry->bg = kiss_white;
-	entry->normalcolor = kiss_black;
-	entry->activecolor = kiss_blue;
-	entry->textwidth = w - 2 * kiss_border;
-	kiss_string_copy(entry->text, kiss_maxlength(entry->font,
-		entry->textwidth, text, NULL), text, NULL);
-	kiss_makerect(&entry->rect, x, y, w, entry->font.fontheight +
+	if (!m_entry || !text) return -1;
+	if (m_entry->font.magic != KISS_MAGIC) m_entry->font = kiss_textfont;
+	if (w < 2 * kiss_border + m_entry->font.advance) return -1;
+	m_entry->bg = kiss_white;
+	m_entry->normalcolor = kiss_black;
+	m_entry->activecolor = kiss_blue;
+	m_entry->textwidth = w - 2 * kiss_border;
+	kiss_string_copy(m_entry->text, kiss_maxlength(m_entry->font,
+		m_entry->textwidth, text, NULL), text, NULL);
+	kiss_makerect(&m_entry->rect, x, y, w, m_entry->font.fontheight +
 		2 * kiss_border);
-	entry->decorate = decorate;
-	entry->textx = x + kiss_border;
-	entry->texty = y + kiss_border;
-	entry->active = 0;
-	entry->visible = 0;
-	entry->focus = 0;
-	entry->wdw = wdw;
+	m_entry->decorate = decorate;
+	m_entry->textx = x + kiss_border;
+	m_entry->texty = y + kiss_border;
+	m_entry->active = 0;
+	m_entry->visible = 0;
+	m_entry->focus = 0;
+	m_entry->wdw = wdw;
 	return 0;
 }
 
-int kiss_entry_event(kiss_entry *entry, SDL_Event *event, int *draw)
+int kiss_entry_event(kiss_entry *m_entry, SDL_Event *event, int *m_draw)
 {
-	if (!entry || !entry->visible || !event) return 0;
+	if (!m_entry || !m_entry->visible || !event) return 0;
 	if (event->type == SDL_WINDOWEVENT &&
 		event->window.event == SDL_WINDOWEVENT_EXPOSED)
-		*draw = 1;
-	if (!entry->focus && (!entry->wdw ||
-		(entry->wdw && !entry->wdw->focus)))
+		*m_draw = 1;
+	if (!m_entry->focus && (!m_entry->wdw ||
+		(m_entry->wdw && !m_entry->wdw->focus)))
 		return 0;
-	if (event->type == SDL_MOUSEBUTTONDOWN && !entry->active &&
+	if (event->type == SDL_MOUSEBUTTONDOWN && !m_entry->active &&
 		kiss_pointinrect(event->button.x, event->button.y,
-		&entry->rect)) {
-		entry->active = 1;
-		if (entry->wdw) entry->wdw->focus = 0;
-		entry->focus = 1;
-		*draw = 1;
-	} else if (event->type == SDL_KEYDOWN && entry->active &&
+		&m_entry->rect)) {
+		m_entry->active = 1;
+		if (m_entry->wdw) m_entry->wdw->focus = 0;
+		m_entry->focus = 1;
+		*m_draw = 1;
+	} else if (event->type == SDL_KEYDOWN && m_entry->active &&
 		event->key.keysym.scancode == SDL_SCANCODE_RETURN) {
-		entry->active = 0;
-		if (entry->wdw) entry->wdw->focus = 1;
-		entry->focus = 0;
-		*draw = 1;
+		m_entry->active = 0;
+		if (m_entry->wdw) m_entry->wdw->focus = 1;
+		m_entry->focus = 0;
+		*m_draw = 1;
 		return 1;
-	} else if (event->type == SDL_TEXTINPUT && entry->active) {
-		if (kiss_textwidth(entry->font, entry->text,
-			event->text.text) < entry->textwidth &&
-			strlen(entry->text) + strlen(event->text.text) <
+	} else if (event->type == SDL_TEXTINPUT && m_entry->active) {
+		if (kiss_textwidth(m_entry->font, m_entry->text,
+			event->text.text) < m_entry->textwidth &&
+			strlen(m_entry->text) + strlen(event->text.text) <
 			KISS_MAX_LENGTH)
-			strcat(entry->text, event->text.text);
-		*draw = 1;
-	} else if (event->type == SDL_KEYDOWN && entry->active &&
+			strcat(m_entry->text, event->text.text);
+		*m_draw = 1;
+	} else if (event->type == SDL_KEYDOWN && m_entry->active &&
 		event->key.keysym.scancode == SDL_SCANCODE_BACKSPACE) {
-		kiss_backspace(entry->text);
-		*draw = 1;
-	} else if (event->type == SDL_KEYDOWN && entry->active &&
+		kiss_backspace(m_entry->text);
+		*m_draw = 1;
+	} else if (event->type == SDL_KEYDOWN && m_entry->active &&
 		(event->key.keysym.mod & KMOD_CTRL) &&
 		event->key.keysym.scancode == SDL_SCANCODE_U) {
-		strcpy(entry->text, "");
-		*draw = 1;
+		strcpy(m_entry->text, "");
+		*m_draw = 1;
 	}
 	return 0;
 }
 
-int kiss_entry_draw(kiss_entry *entry, SDL_Renderer *renderer)
+int kiss_entry_draw(kiss_entry *m_entry, SDL_Renderer *m_renderer)
 {
 	SDL_Color color;
 
-	if (entry && entry->wdw) entry->visible = entry->wdw->visible;
-	if (!entry || !entry->visible || !renderer) return 0;
-	kiss_fillrect(renderer, &entry->rect, entry->bg);
+	if (m_entry && m_entry->wdw) m_entry->visible = m_entry->wdw->visible;
+	if (!m_entry || !m_entry->visible || !m_renderer) return 0;
+	kiss_fillrect(m_renderer, &m_entry->rect, m_entry->bg);
 	color = kiss_blue;
-	if (entry->active) color = kiss_green;
-	if (entry->decorate)
-		kiss_decorate(renderer, &entry->rect, color, kiss_edge);
-	color = entry->normalcolor;
-	if (entry->active) color = entry->activecolor;
-	kiss_rendertext(renderer, entry->text, entry->textx, entry->texty,
-		entry->font, color);
+	if (m_entry->active) color = kiss_green;
+	if (m_entry->decorate)
+		kiss_decorate(m_renderer, &m_entry->rect, color, kiss_edge);
+	color = m_entry->normalcolor;
+	if (m_entry->active) color = m_entry->activecolor;
+	kiss_rendertext(m_renderer, m_entry->text, m_entry->textx, m_entry->texty,
+		m_entry->font, color);
 	return 1;
 }
 
@@ -670,7 +670,7 @@ static int textbox_numoflines(kiss_textbox *textbox)
 	return numoflines;
 }
 
-int kiss_textbox_event(kiss_textbox *textbox, SDL_Event *event, int *draw)
+int kiss_textbox_event(kiss_textbox *textbox, SDL_Event *event, int *m_draw)
 {
 	int texty, textmaxy, numoflines;
 
@@ -679,7 +679,7 @@ int kiss_textbox_event(kiss_textbox *textbox, SDL_Event *event, int *draw)
 		return 0;
 	if (event->type == SDL_WINDOWEVENT &&
 		event->window.event == SDL_WINDOWEVENT_EXPOSED)
-		*draw = 1;
+		*m_draw = 1;
 	if (!textbox->focus && (!textbox->wdw ||
 		(textbox->wdw && !textbox->wdw->focus)))
 		return 0;
@@ -704,17 +704,17 @@ int kiss_textbox_event(kiss_textbox *textbox, SDL_Event *event, int *draw)
 		if (texty < textmaxy)
 			textbox->highlightline =
 				texty / textbox->font.lineheight;
-		*draw = 1;
+		*m_draw = 1;
 	} else if (event->type == SDL_MOUSEMOTION &&
 		!kiss_pointinrect(event->motion.x, event->motion.y,
 		&textbox->textrect)) {
 		textbox->highlightline = -1;
-		*draw = 1;
+		*m_draw = 1;
 	}
 	return 0;
 }
 
-int kiss_textbox_draw(kiss_textbox *textbox, SDL_Renderer *renderer)
+int kiss_textbox_draw(kiss_textbox *textbox, SDL_Renderer *m_renderer)
 {
 	SDL_Rect highlightrect;
 	char buf[KISS_MAX_LENGTH];
@@ -722,21 +722,21 @@ int kiss_textbox_draw(kiss_textbox *textbox, SDL_Renderer *renderer)
 
 	if (textbox && textbox->wdw)
 		textbox->visible = textbox->wdw->visible;
-	if (!textbox || !textbox->visible || !renderer)
+	if (!textbox || !textbox->visible || !m_renderer)
 		return 0;
-	kiss_fillrect(renderer, &textbox->rect, textbox->bg);
+	kiss_fillrect(m_renderer, &textbox->rect, textbox->bg);
 	if (textbox->decorate)
-		kiss_decorate(renderer, &textbox->rect, kiss_blue, kiss_edge);
+		kiss_decorate(m_renderer, &textbox->rect, kiss_blue, kiss_edge);
 	if (textbox->highlightline >= 0) {
 		kiss_makerect(&highlightrect, textbox->textrect.x, textbox->textrect.y + textbox->highlightline * textbox->font.lineheight,	textbox->textrect.w, textbox->font.lineheight);
-		kiss_fillrect(renderer, &highlightrect, textbox->hlcolor);
+		kiss_fillrect(m_renderer, &highlightrect, textbox->hlcolor);
 	}
 	if (!textbox->array || !textbox->array->length) return 0;
 	numoflines = textbox_numoflines(textbox);
 	for (i = 0; i < numoflines; i++) {
 		kiss_string_copy(buf, kiss_maxlength(textbox->font, textbox->textwidth,	(char *) kiss_array_data(textbox->array, textbox->firstline + i), NULL),
 			(char *) kiss_array_data(textbox->array, textbox->firstline + i), NULL);
-		kiss_rendertext(renderer, buf, textbox->textrect.x,	textbox->textrect.y + i * textbox->font.lineheight +textbox->font.spacing / 2, textbox->font, textbox->textcolor);
+		kiss_rendertext(m_renderer, buf, textbox->textrect.x,	textbox->textrect.y + i * textbox->font.lineheight +textbox->font.m_spacing / 2, textbox->font, textbox->textcolor);
 	}
 	return 1;
 }
@@ -747,13 +747,13 @@ int kiss_combobox_new(kiss_combobox *combobox, kiss_window *wdw,
 	if (!combobox || !a || !text) return -1;
 	if (combobox->combo.magic != KISS_MAGIC)
 		combobox->combo = kiss_combo;
-	kiss_entry_new(&combobox->entry, wdw, 1, text, x, y, w);
-	strcpy(combobox->text, combobox->entry.text);
+	kiss_entry_new(&combobox->m_entry, wdw, 1, text, x, y, w);
+	strcpy(combobox->text, combobox->m_entry.text);
 	kiss_window_new(&combobox->window, NULL, 0, x,
-		y + combobox->entry.rect.h, w +
+		y + combobox->m_entry.rect.h, w +
 		combobox->vscrollbar.up.w, h);
 	if (kiss_textbox_new(&combobox->textbox, &combobox->window, 1,
-		a, x, y + combobox->entry.rect.h, w, h) == -1)
+		a, x, y + combobox->m_entry.rect.h, w, h) == -1)
 		return -1;
 	if (kiss_vscrollbar_new(&combobox->vscrollbar, &combobox->window,
 		x + combobox->textbox.rect.w, combobox->textbox.rect.y,
@@ -769,13 +769,13 @@ int kiss_combobox_new(kiss_combobox *combobox, kiss_window *wdw,
 	return 0;
 }
 
-int kiss_combobox_event(kiss_combobox *combobox, SDL_Event *event, int *draw)
+int kiss_combobox_event(kiss_combobox *combobox, SDL_Event *event, int *m_draw)
 {
 	int firstline, index;
 
 	if (!combobox || !combobox->visible) return 0;
 	if (kiss_vscrollbar_event(&combobox->vscrollbar, event,
-		draw) && combobox->textbox.array->length -
+		m_draw) && combobox->textbox.array->length -
 		combobox->textbox.maxlines >= 0) {
 		combobox->vscrollbar.step = 0.;
 		if (combobox->textbox.array->length -
@@ -787,56 +787,56 @@ int kiss_combobox_event(kiss_combobox *combobox, SDL_Event *event, int *draw)
 			combobox->textbox.maxlines) *
 			combobox->vscrollbar.fraction + 0.5);
 		if (firstline >= 0) combobox->textbox.firstline = firstline;
-		*draw = 1;
+		*m_draw = 1;
 	}
 	if (!event) return 0;
 	if (event->type == SDL_WINDOWEVENT &&
 		event->window.event == SDL_WINDOWEVENT_EXPOSED)
-		*draw = 1;
+		*m_draw = 1;
 	if (event->type == SDL_MOUSEBUTTONDOWN &&
 		kiss_pointinrect(event->button.x, event->button.y,
-		&combobox->entry.rect)) {
+		&combobox->m_entry.rect)) {
 		combobox->window.visible = 1;
-		*draw = 1;
+		*m_draw = 1;
 	}
-	if (kiss_entry_event(&combobox->entry, event, draw)) {
+	if (kiss_entry_event(&combobox->m_entry, event, m_draw)) {
 		combobox->window.visible = 0;
-		strcpy(combobox->text, combobox->entry.text);
-		*draw = 1;
+		strcpy(combobox->text, combobox->m_entry.text);
+		*m_draw = 1;
 		return 1;
-	} else if (kiss_textbox_event(&combobox->textbox, event, draw)) {
+	} else if (kiss_textbox_event(&combobox->textbox, event, m_draw)) {
 		combobox->window.visible = 0;
-		combobox->entry.active = 0;
-		if (combobox->entry.wdw) combobox->entry.wdw->focus = 1;
-		combobox->entry.focus = 0;
+		combobox->m_entry.active = 0;
+		if (combobox->m_entry.wdw) combobox->m_entry.wdw->focus = 1;
+		combobox->m_entry.focus = 0;
 		index = combobox->textbox.firstline +
 			combobox->textbox.selectedline;
-		kiss_string_copy(combobox->entry.text,
+		kiss_string_copy(combobox->m_entry.text,
 			kiss_maxlength(combobox->textbox.font,
-			combobox->entry.textwidth,
+			combobox->m_entry.textwidth,
 			(char *) kiss_array_data(combobox->textbox.array,
 			index), NULL),
 			(char *) kiss_array_data(combobox->textbox.array,
 			index), NULL);
-		*draw = 1;
+		*m_draw = 1;
 		return 1;
 	}
 	return 0;
 }
 
-int kiss_combobox_draw(kiss_combobox *combobox, SDL_Renderer *renderer)
+int kiss_combobox_draw(kiss_combobox *combobox, SDL_Renderer *m_renderer)
 {
 	if (combobox && combobox->wdw)
 		combobox->visible = combobox->wdw->visible;
-	if (!combobox || !combobox->visible || !renderer) return 0;
-	kiss_renderimage(renderer, combobox->combo,
-		combobox->entry.rect.x + combobox->entry.rect.w,
-		combobox->entry.rect.y + combobox->entry.rect.h -
+	if (!combobox || !combobox->visible || !m_renderer) return 0;
+	kiss_renderimage(m_renderer, combobox->combo,
+		combobox->m_entry.rect.x + combobox->m_entry.rect.w,
+		combobox->m_entry.rect.y + combobox->m_entry.rect.h -
 		combobox->combo.h - kiss_edge, NULL);
-	kiss_entry_draw(&combobox->entry, renderer);
-	kiss_window_draw(&combobox->window, renderer);
-	kiss_vscrollbar_draw(&combobox->vscrollbar, renderer);
-	kiss_textbox_draw(&combobox->textbox, renderer);
+	kiss_entry_draw(&combobox->m_entry, m_renderer);
+	kiss_window_draw(&combobox->window, m_renderer);
+	kiss_vscrollbar_draw(&combobox->vscrollbar, m_renderer);
+	kiss_textbox_draw(&combobox->textbox, m_renderer);
 	return 1;
 }
 

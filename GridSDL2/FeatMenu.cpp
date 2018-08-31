@@ -3,179 +3,179 @@
 
 FeatMenu::FeatMenu()
 {
-	quit = 0;
-	draw = 1;
-	textbox_width = 400;
-	textbox_height = 250;
-	renderer = kiss_init("FeatMenu", &objects, 640, 480);
-	if (!renderer)
+	m_quit = 0;
+	m_draw = 1;
+	m_textbox_width = 400;
+	m_textbox_height = 250;
+	m_renderer = kiss_init("FeatMenu", &m_objects, 640, 480);
+	if (!m_renderer)
 	{
 		std::cout << "Renderer wrong" << std::endl;
 		return;
 	}
-	kiss_array_new(&a1);
-	kiss_array_append(&objects, ARRAY_TYPE, &a1);
+	kiss_array_new(&m_array1);
+	kiss_array_append(&m_objects, ARRAY_TYPE, &m_array1);
 
 
 	/* Arrange the widgets nicely relative to each other */
-	kiss_window_new(&MainWindow, NULL, 1, 0, 0, kiss_screen_width, kiss_screen_height);
+	kiss_window_new(&m_MainWindow, NULL, 1, 0, 0, kiss_screen_width, kiss_screen_height);
 
 
-	kiss_textbox_new(&Feats, &MainWindow, 1, &a1, kiss_screen_width *0.15, 3 * kiss_normal.h - kiss_screen_height / 15, textbox_width+50, textbox_height);
-	kiss_vscrollbar_new(&vscrollbar1, &MainWindow, Feats.rect.x + textbox_width, Feats.rect.y, textbox_height);
-	kiss_label_new(&FeatsTextBoxLabel, &MainWindow, "Feats", Feats.rect.x + kiss_edge, Feats.rect.y - kiss_textfont.lineheight);
-	kiss_entry_new(&entry, &MainWindow, 1, "Select Item to interact with", kiss_screen_width / 10, Feats.rect.y + textbox_height, textbox_width + 2 * kiss_up.w + kiss_edge);
+	kiss_textbox_new(&m_Feats, &m_MainWindow, 1, &m_array1, kiss_screen_width *0.15, 3 * kiss_normal.h - kiss_screen_height / 15, m_textbox_width+50, m_textbox_height);
+	kiss_vscrollbar_new(&m_vscrollbar1, &m_MainWindow, m_Feats.rect.x + m_textbox_width, m_Feats.rect.y, m_textbox_height);
+	kiss_label_new(&m_FeatsTextBoxLabel, &m_MainWindow, "m_Feats", m_Feats.rect.x + kiss_edge, m_Feats.rect.y - kiss_textfont.lineheight);
+	kiss_entry_new(&m_entry, &m_MainWindow, 1, "Select Item to interact with", kiss_screen_width / 10, m_Feats.rect.y + m_textbox_height, m_textbox_width + 2 * kiss_up.w + kiss_edge);
 	
-	kiss_button_new(&ToggleFeatButton, &MainWindow, "Toggle", kiss_screen_width*.5 - (.5*kiss_normal.w), entry.rect.y + entry.rect.h + 10);
-	kiss_button_new(&IncreaseFeatButton, &MainWindow, "+", ToggleFeatButton.rect.x+60, ToggleFeatButton.rect.y);
-	kiss_button_new(&DecreaseFeatButton, &MainWindow, "-", ToggleFeatButton.rect.x-60, ToggleFeatButton.rect.y);
-	kiss_button_new(&FeatDescriptionButton, &MainWindow, "Description", ToggleFeatButton.rect.x, ToggleFeatButton.rect.y + 30);
-	kiss_button_new(&button_cancel, &MainWindow, "Cancel", FeatDescriptionButton.rect.x, FeatDescriptionButton.rect.y + 30);
+	kiss_button_new(&m_ToggleFeatButton, &m_MainWindow, "Toggle", kiss_screen_width*.5 - (.5*kiss_normal.w), m_entry.rect.y + m_entry.rect.h + 10);
+	kiss_button_new(&m_IncreaseFeatButton, &m_MainWindow, "+", m_ToggleFeatButton.rect.x+60, m_ToggleFeatButton.rect.y);
+	kiss_button_new(&m_DecreaseFeatButton, &m_MainWindow, "-", m_ToggleFeatButton.rect.x-60, m_ToggleFeatButton.rect.y);
+	kiss_button_new(&m_FeatDescriptionButton, &m_MainWindow, "Description", m_ToggleFeatButton.rect.x, m_ToggleFeatButton.rect.y + 30);
+	kiss_button_new(&m_button_cancel, &m_MainWindow, "Cancel", m_FeatDescriptionButton.rect.x, m_FeatDescriptionButton.rect.y + 30);
 
 
-	kiss_window_new(&DescriptionWindow, NULL, 1, 0, 0, 200, 200);
-	kiss_button_new(&DescriptionOkButton, &DescriptionWindow, "OK", DescriptionWindow.rect.w / 2 - DescriptionOkButton.rect.x / 2, DescriptionWindow.rect.h*.8);
-	kiss_label_new(&Descript1, &DescriptionWindow, "", DescriptionWindow.rect.w*0.2, DescriptionWindow.rect.h*0.2);
-	kiss_label_new(&Descript2, &DescriptionWindow, "", Descript1.rect.x,Descript1.rect.y+Descript1.rect.h+5);
-	kiss_label_new(&Descript3, &DescriptionWindow, "", Descript2.rect.x, Descript2.rect.y + Descript2.rect.h + 5);
+	kiss_window_new(&m_DescriptionWindow, NULL, 1, 0, 0, 200, 200);
+	kiss_button_new(&m_DescriptionOkButton, &m_DescriptionWindow, "OK", m_DescriptionWindow.rect.w / 2 - m_DescriptionOkButton.rect.x / 2, m_DescriptionWindow.rect.h*.8);
+	kiss_label_new(&m_Descript1, &m_DescriptionWindow, "", m_DescriptionWindow.rect.w*0.2, m_DescriptionWindow.rect.h*0.2);
+	kiss_label_new(&m_Descript2, &m_DescriptionWindow, "", m_Descript1.rect.x,m_Descript1.rect.y+m_Descript1.rect.h+5);
+	kiss_label_new(&m_Descript3, &m_DescriptionWindow, "", m_Descript2.rect.x, m_Descript2.rect.y + m_Descript2.rect.h + 5);
 
 
-	MainWindow.visible = 1;
-	DescriptionWindow.visible = 0;
+	m_MainWindow.visible = 1;
+	m_DescriptionWindow.visible = 0;
 	//end setup
 
 }
 
-void FeatMenu::text_reset(kiss_textbox *textbox, kiss_vscrollbar *vscrollbar)
+void FeatMenu::text_reset(kiss_textbox *a_textbox, kiss_vscrollbar *a_vscrollbar)
 {
-	qsort(textbox->array->data, textbox->array->length, sizeof(void *), kiss_string_compare);
-	vscrollbar->step = 0.;
-	if (textbox->array->length - textbox->maxlines > 0)
-		vscrollbar->step = 1. / (textbox->array->length - textbox->maxlines);
-	textbox->firstline = 0;
-	textbox->highlightline = -1;
-	vscrollbar->fraction = 0.;
+	qsort(a_textbox->array->data, a_textbox->array->length, sizeof(void *), kiss_string_compare);
+	a_vscrollbar->step = 0.;
+	if (a_textbox->array->length - a_textbox->maxlines > 0)
+		a_vscrollbar->step = 1. / (a_textbox->array->length - a_textbox->maxlines);
+	a_textbox->firstline = 0;
+	a_textbox->highlightline = -1;
+	a_vscrollbar->fraction = 0.;
 }
 
 
 /* The widget arguments are widgets that this widget talks with */
-void FeatMenu::textbox1_event(kiss_textbox *textbox, SDL_Event *e, kiss_vscrollbar *vscrollbar2, kiss_entry *entry, int *draw)
+void FeatMenu::textbox1_event(kiss_textbox *a_textbox, SDL_Event *a_event, kiss_vscrollbar *a_vscrollbar2, kiss_entry *a_entry, int *a_draw)
 {
 	int index;
 
-	if (kiss_textbox_event(textbox, e, draw)) {
-		index = textbox->firstline + textbox->selectedline;
-		if (strcmp((char *)kiss_array_data(textbox->array, index), "")) {
-			kiss_string_copy(entry->text, entry->textwidth / kiss_textfont.advance, (char *)kiss_array_data(textbox->array, index), NULL);
-			*draw = 1;
-			entry->selectedIndex = textbox->selectedline;
-			//std::cout << textbox->selectedline << std::endl;
+	if (kiss_textbox_event(a_textbox, a_event, a_draw)) {
+		index = a_textbox->firstline + a_textbox->selectedline;
+		if (strcmp((char *)kiss_array_data(a_textbox->array, index), "")) {
+			kiss_string_copy(a_entry->text, a_entry->textwidth / kiss_textfont.advance, (char *)kiss_array_data(a_textbox->array, index), NULL);
+			*a_draw = 1;
+			a_entry->selectedIndex = a_textbox->selectedline;
+			//std::cout << a_textbox->selectedline << std::endl;
 		}
 	}
 }
 
-void FeatMenu::vscrollbar1_event(kiss_vscrollbar *vscrollbar, SDL_Event *e, kiss_textbox *textbox2, int *draw)
+void FeatMenu::vscrollbar1_event(kiss_vscrollbar *a_vscrollbar, SDL_Event *a_event, kiss_textbox *a_textbox2, int *a_draw)
 {
 	int firstline;
 
-	if (kiss_vscrollbar_event(vscrollbar, e, draw) &&
-		textbox2->array->length) {
-		firstline = (int)((textbox2->array->length -
-			textbox2->maxlines) * vscrollbar->fraction + 0.5);
-		if (firstline >= 0) textbox2->firstline = firstline;
-		*draw = 1;
+	if (kiss_vscrollbar_event(a_vscrollbar, a_event, a_draw) &&
+		a_textbox2->array->length) {
+		firstline = (int)((a_textbox2->array->length -
+			a_textbox2->maxlines) * a_vscrollbar->fraction + 0.5);
+		if (firstline >= 0) a_textbox2->firstline = firstline;
+		*a_draw = 1;
 	}
 }
 
-void FeatMenu::CloseDescriptionEvent(kiss_button *button, SDL_Event *e, kiss_window *window1, kiss_label *label_sel,
-	kiss_entry *entry, kiss_label *label_res, int *draw, EntityClass& Source)
+void FeatMenu::CloseDescriptionEvent(kiss_button *a_button, SDL_Event *a_event, kiss_window *a_window1, kiss_label *a_label_sel,
+	kiss_entry *a_entry, kiss_label *a_label_res, int *a_Source, EntityClass& Source)
 {
 	char buf[KISS_MAX_LENGTH];
-	if (kiss_button_event(button, e, draw)) {
+	if (kiss_button_event(a_button, a_event, a_Source)) {
 		kiss_string_copy(buf,
-			kiss_maxlength(kiss_textfont, window1->rect.w - 2 * kiss_vslider.w, label_sel->text, entry->text), label_sel->text, entry->text);
-		if (entry->selectedIndex > 2)
-			//this->SelectedItem = Source.GetBackPack().GetItems()[entry->selectedIndex];
+			kiss_maxlength(kiss_textfont, a_window1->rect.w - 2 * kiss_vslider.w, a_label_sel->text, a_entry->text), a_label_sel->text, a_entry->text);
+		if (a_entry->selectedIndex > 2)
+			//this->m_SelectedItem = a_Source.GetBackPack().GetItems()[a_entry->selectedIndex];
 
-			window1->focus = 0;
-		button->prelight = 0;
+			a_window1->focus = 0;
+		a_button->prelight = 0;
 
-		*draw = 1;
-		quit = 1;
+		*a_Source = 1;
+		m_quit = 1;
 	}
 }
 
-void FeatMenu::button_cancel_event(kiss_button *button, SDL_Event *e, int *quit, int *draw)
+void FeatMenu::button_cancel_event(kiss_button *a_button, SDL_Event *a_event, int *a_quit, int *a_draw)
 {
-	if (kiss_button_event(button, e, draw))
+	if (kiss_button_event(a_button, a_event, a_draw))
 	{
-		*quit = 1;
+		*a_quit = 1;
 	}
 }
 
-void FeatMenu::FeatMenuRun(EntityClass &Source)
+void FeatMenu::FeatMenuRun(EntityClass &a_Source)
 {
-	RepopulateList(Source);
-	while (!quit) {
+	RepopulateList(a_Source);
+	while (!m_quit) {
 		/* Some code may be written here */
 		SDL_Delay(10);
-		while (SDL_PollEvent(&e)) {
-			if (e.type == SDL_QUIT)
-				quit = 1;
+		while (SDL_PollEvent(&m_event)) {
+			if (m_event.type == SDL_QUIT)
+				m_quit = 1;
 
-			kiss_window_event(&MainWindow, &e, &draw);
+			kiss_window_event(&m_MainWindow, &m_event, &m_draw);
 
-			textbox1_event(&Feats, &e, &vscrollbar1, &entry, &draw);
-			vscrollbar1_event(&vscrollbar1, &e, &Feats, &draw);
-			button_cancel_event(&button_cancel, &e, &quit, &draw);
-			ToggleFeatEvent(&ToggleFeatButton, &e, &quit, &draw, &entry, Source);
-			IncreaseFeatEvent(&IncreaseFeatButton, &e, &quit, &draw, &entry, Source);
-			DecreaseFeatEvent(&DecreaseFeatButton, &e, &quit, &draw, &entry, Source);
-			ViewFeatDescriptionEvent(&FeatDescriptionButton, &e, &quit, &draw, &entry, Source);
-			kiss_entry_event(&entry, &e, &draw);
+			textbox1_event(&m_Feats, &m_event, &m_vscrollbar1, &m_entry, &m_draw);
+			vscrollbar1_event(&m_vscrollbar1, &m_event, &m_Feats, &m_draw);
+			button_cancel_event(&m_button_cancel, &m_event, &m_quit, &m_draw);
+			ToggleFeatEvent(&m_ToggleFeatButton, &m_event, &m_quit, &m_draw, &m_entry, a_Source);
+			IncreaseFeatEvent(&m_IncreaseFeatButton, &m_event, &m_quit, &m_draw, &m_entry, a_Source);
+			DecreaseFeatEvent(&m_DecreaseFeatButton, &m_event, &m_quit, &m_draw, &m_entry, a_Source);
+			ViewFeatDescriptionEvent(&m_FeatDescriptionButton, &m_event, &m_quit, &m_draw, &m_entry, a_Source);
+			kiss_entry_event(&m_entry, &m_event, &m_draw);
 		}
 
-		vscrollbar1_event(&vscrollbar1, NULL, &Feats, &draw);
+		vscrollbar1_event(&m_vscrollbar1, NULL, &m_Feats, &m_draw);
 
-		if (!draw) continue;
-		SDL_RenderClear(renderer);
+		if (!m_draw) continue;
+		SDL_RenderClear(m_renderer);
 
-		kiss_window_draw(&MainWindow, renderer);
-		kiss_label_draw(&FeatsTextBoxLabel, renderer);
+		kiss_window_draw(&m_MainWindow, m_renderer);
+		kiss_label_draw(&m_FeatsTextBoxLabel, m_renderer);
 
-		kiss_vscrollbar_draw(&vscrollbar1, renderer);
-		kiss_textbox_draw(&Feats, renderer);
-		kiss_label_draw(&label_sel, renderer);
+		kiss_vscrollbar_draw(&m_vscrollbar1, m_renderer);
+		kiss_textbox_draw(&m_Feats, m_renderer);
+		kiss_label_draw(&m_label_sel, m_renderer);
 
-		kiss_label_draw(&Descript1, renderer);
-		kiss_label_draw(&Descript2, renderer);
-		kiss_label_draw(&Descript3, renderer);
+		kiss_label_draw(&m_Descript1, m_renderer);
+		kiss_label_draw(&m_Descript2, m_renderer);
+		kiss_label_draw(&m_Descript3, m_renderer);
 
-		kiss_entry_draw(&entry, renderer);
-		kiss_button_draw(&FeatDescriptionButton, renderer);
-		kiss_button_draw(&ToggleFeatButton, renderer);
-		kiss_button_draw(&IncreaseFeatButton, renderer);
-		kiss_button_draw(&DecreaseFeatButton, renderer);
-		kiss_button_draw(&button_cancel, renderer);
+		kiss_entry_draw(&m_entry, m_renderer);
+		kiss_button_draw(&m_FeatDescriptionButton, m_renderer);
+		kiss_button_draw(&m_ToggleFeatButton, m_renderer);
+		kiss_button_draw(&m_IncreaseFeatButton, m_renderer);
+		kiss_button_draw(&m_DecreaseFeatButton, m_renderer);
+		kiss_button_draw(&m_button_cancel, m_renderer);
 
-		kiss_label_draw(&label_res, renderer);
+		kiss_label_draw(&m_label_res, m_renderer);
 
-		SDL_RenderPresent(renderer);
-		draw = 0;
+		SDL_RenderPresent(m_renderer);
+		m_draw = 0;
 	}
-	kiss_clean(&objects);
+	kiss_clean(&m_objects);
 	return;
 }
 
-void FeatMenu::RepopulateList(EntityClass& Source)
+void FeatMenu::RepopulateList(EntityClass& a_Source)
 {
 	//std::cout << "Displaying Inventory" << std::endl;
-	for (int i = 0; i < Feats.array->length;)
+	for (int i = 0; i < m_Feats.array->length;)
 	{
-		kiss_array_remove(Feats.array, i);
+		kiss_array_remove(m_Feats.array, i);
 	}
 	//std::cout << "Checking for togglefeats" << std::endl;
-	auto ToggleFeats = Source.GetToggleableFeats();
+	auto ToggleFeats = a_Source.GetToggleableFeats();
 	//toggleable feats
 	if (!ToggleFeats.empty())
 	{
@@ -193,7 +193,7 @@ void FeatMenu::RepopulateList(EntityClass& Source)
 				}
 				if ((*it)->IsActive())
 				{
-					temp += (" - Active");
+					temp += (" - m_Active");
 				}
 				else
 				{
@@ -201,7 +201,7 @@ void FeatMenu::RepopulateList(EntityClass& Source)
 				}
 				char *ItemNameCstring = new char[temp.length() + 1];
 				strcpy(ItemNameCstring, temp.c_str());
-				kiss_array_appendstring(Feats.array, 0, ItemNameCstring, NULL);
+				kiss_array_appendstring(m_Feats.array, 0, ItemNameCstring, NULL);
 			}
 		}
 	else 
@@ -209,65 +209,65 @@ void FeatMenu::RepopulateList(EntityClass& Source)
 		std::string temp = "No Toggleable feats";
 		char *ItemNameCstring = new char[temp.length() + 1];
 		strcpy(ItemNameCstring, temp.c_str());
-		kiss_array_appendstring(Feats.array, 0, ItemNameCstring, NULL);
+		kiss_array_appendstring(m_Feats.array, 0, ItemNameCstring, NULL);
 	}
 }
 
-void FeatMenu::ToggleFeatEvent(kiss_button *button, SDL_Event *e, int *quit, int *draw, kiss_entry* entry, EntityClass& Source)
+void FeatMenu::ToggleFeatEvent(kiss_button *a_button, SDL_Event *a_event, int *a_quit, int *a_draw, kiss_entry* a_entry, EntityClass& a_Source)
 {
-	if (kiss_button_event(button, e, draw))
+	if (kiss_button_event(a_button, a_event, a_draw))
 	{
-		unsigned index = entry->selectedIndex;
-		if (Source.GetToggleableFeats().empty())
+		unsigned index = a_entry->selectedIndex;
+		if (a_Source.GetToggleableFeats().empty())
 		{
 			return;
 		}
-		if (index >= Source.GetToggleableFeats().size())
+		if (index >= a_Source.GetToggleableFeats().size())
 		{
 			return;
 		}
-		Source.GetToggleableFeats()[index]->SwitchActive();
-		RepopulateList(Source);
+		a_Source.GetToggleableFeats()[index]->SwitchActive();
+		RepopulateList(a_Source);
 	}
 }
 
-void FeatMenu::ViewFeatDescriptionEvent(kiss_button *button, SDL_Event *e, int *quit, int *draw, kiss_entry* entry, EntityClass& Source)
+void FeatMenu::ViewFeatDescriptionEvent(kiss_button *a_button, SDL_Event *a_event, int *a_quit, int *a_draw, kiss_entry* a_entry, EntityClass& a_Source)
 {
-	if (kiss_button_event(button, e, draw))
+	if (kiss_button_event(a_button, a_event, a_draw))
 	{
-		unsigned index = entry->selectedIndex;
-		if (!Source.GetToggleableFeats().empty() && index < Source.GetToggleableFeats().size())
+		unsigned index = a_entry->selectedIndex;
+		if (!a_Source.GetToggleableFeats().empty() && index < a_Source.GetToggleableFeats().size())
 		{
 			
 			return;
 		}
-		//printout to other window? std::string desc = Source.GetToggleableFeats()[index]
-		RepopulateList(Source);
+		//printout to other m_window? std::string desc = a_Source.GetToggleableFeats()[index]
+		RepopulateList(a_Source);
 	}
 }
 
-void FeatMenu::IncreaseFeatEvent(kiss_button *button, SDL_Event *e, int *quit, int *draw,kiss_entry * entry, EntityClass& Source)
+void FeatMenu::IncreaseFeatEvent(kiss_button *a_button, SDL_Event *a_event, int *a_quit, int *a_draw,kiss_entry * a_entry, EntityClass& a_Source)
 {
-	if (kiss_button_event(button, e, draw))
+	if (kiss_button_event(a_button, a_event, a_draw))
 	{
-		unsigned index = entry->selectedIndex;
-		if (!Source.GetToggleableFeats().empty() && index < Source.GetToggleableFeats().size())
+		unsigned index = a_entry->selectedIndex;
+		if (!a_Source.GetToggleableFeats().empty() && index < a_Source.GetToggleableFeats().size())
 		{
-			Source.GetToggleableFeats()[index]->IncreaseFeat();
+			a_Source.GetToggleableFeats()[index]->IncreaseFeat();
 		}
-		RepopulateList(Source);
+		RepopulateList(a_Source);
 	}
 }
 
-void FeatMenu::DecreaseFeatEvent(kiss_button *button, SDL_Event *e, int *quit, int *draw, kiss_entry * entry, EntityClass& Source)
+void FeatMenu::DecreaseFeatEvent(kiss_button *a_button, SDL_Event *a_event, int *a_quit, int *a_entry, kiss_entry * m_entry, EntityClass& a_Source)
 {
-	if (kiss_button_event(button, e, draw))
+	if (kiss_button_event(a_button, a_event, a_entry))
 	{
-		unsigned index = entry->selectedIndex;
-		if (!Source.GetToggleableFeats().empty() && index < Source.GetToggleableFeats().size())
+		unsigned index = m_entry->selectedIndex;
+		if (!a_Source.GetToggleableFeats().empty() && index < a_Source.GetToggleableFeats().size())
 		{
-			Source.GetToggleableFeats()[index]->DecreaseFeat();
+			a_Source.GetToggleableFeats()[index]->DecreaseFeat();
 		}
-		RepopulateList(Source);
+		RepopulateList(a_Source);
 	}
 }

@@ -7,7 +7,7 @@ EncounterInstance::EncounterInstance()
 {
 }
 
-bool EncounterInstance::init(SDL_Renderer *&gRenderer, SDL_Window *&gWindow)
+bool EncounterInstance::init(SDL_Renderer *&a_Renderer, SDL_Window *&a_EncounterWindow)
 {
 	//Initialization flag
 	bool success = true;
@@ -26,9 +26,9 @@ bool EncounterInstance::init(SDL_Renderer *&gRenderer, SDL_Window *&gWindow)
 			printf("Warning: Linear texture filtering not enabled!");
 		}
 
-		//Create window
-		gWindow = SDL_CreateWindow("WotC Lawsuit bait", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_SCREEN_WIDTH, g_SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-		if (gWindow == NULL)
+		//Create m_window
+		a_EncounterWindow = SDL_CreateWindow("WotC Lawsuit bait", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_SCREEN_WIDTH, g_SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		if (a_EncounterWindow == NULL)
 		{
 			printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
 			success = false;
@@ -36,17 +36,17 @@ bool EncounterInstance::init(SDL_Renderer *&gRenderer, SDL_Window *&gWindow)
 		else
 		{
 			std::cout << "Window created" << std::endl;
-			//Create renderer for window
-			gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-			if (gRenderer == NULL)
+			//Create renderer for m_window
+			a_Renderer = SDL_CreateRenderer(a_EncounterWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+			if (a_Renderer == NULL)
 			{
-				printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
+				printf("a_Renderer could not be created! SDL Error: %s\n", SDL_GetError());
 				success = false;
 			}
 			else
 			{
 				//Initialize renderer color
-				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+				SDL_SetRenderDrawColor(a_Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
 				//Initialize PNG loading
 				int imgFlags = IMG_INIT_PNG;
@@ -69,25 +69,24 @@ bool EncounterInstance::init(SDL_Renderer *&gRenderer, SDL_Window *&gWindow)
 	return success;
 }
 
-
-SDL_Texture* loadTexture(std::string path, SDL_Renderer *& gRenderer)
+SDL_Texture* loadTexture(std::string a_path, SDL_Renderer *& a_Renderer)
 {
 	//The final texture
 	SDL_Texture* newTexture = NULL;
 
-	//Load image at specified path
-	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
+	//Load image at specified a_path
+	SDL_Surface* loadedSurface = IMG_Load(a_path.c_str());
 	if (loadedSurface == NULL)
 	{
-		printf("Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError());
+		printf("Unable to load image %s! SDL_image Error: %s\n", a_path.c_str(), IMG_GetError());
 	}
 	else
 	{
 		//Create texture from surface pixels
-		newTexture = SDL_CreateTextureFromSurface(gRenderer, loadedSurface);
+		newTexture = SDL_CreateTextureFromSurface(a_Renderer, loadedSurface);
 		if (newTexture == NULL)
 		{
-			printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
+			printf("Unable to create texture from %s! SDL Error: %s\n", a_path.c_str(), SDL_GetError());
 		}
 
 		//Get rid of old loaded surface
@@ -98,13 +97,13 @@ SDL_Texture* loadTexture(std::string path, SDL_Renderer *& gRenderer)
 }
 
 //get every texture file, create corresponding texture with loadfromfile and store it in the encounter's map
-bool EncounterInstance::LoadAllMedia(SDL_Renderer *&Renderer, SDL_Rect &gTileClips)
+bool EncounterInstance::LoadAllMedia(SDL_Renderer *&a_Renderer, SDL_Rect &a_TileClips)
 {
 	bool Success = true;
 	//std::cout << "Loading gfont" << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl;
-	gFont = TTF_OpenFont("Baldur.ttf", 20);
-	ActionLog.SetFont(gFont);
-	if (gFont == NULL)
+	m_MasterFont = TTF_OpenFont("Baldur.ttf", 20);
+	m_ActionLog.SetFont(m_MasterFont);
+	if (m_MasterFont == NULL)
 	{
 		printf("Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
 		Success = false;
@@ -112,13 +111,13 @@ bool EncounterInstance::LoadAllMedia(SDL_Renderer *&Renderer, SDL_Rect &gTileCli
 
 	for (auto & Iterator : fs::directory_iterator(GetTextureFolderPath()))
 	{
-		Textures[Iterator.path().string()] = new LTexture();
-	//	if(TempTexture.loadFromFile(Iterator.path().string(), Renderer))
-		if (Textures[Iterator.path().string()]->loadFromFile(Iterator.path().string(), Renderer))
+		m_Textures[Iterator.path().string()] = new LTexture();
+	//	if(TempTexture.loadFromFile(Iterator.a_path().string(), a_Renderer))
+		if (m_Textures[Iterator.path().string()]->loadFromFile(Iterator.path().string(), a_Renderer))
 		{
-			//Textures[Iterator.path().string()]= &TempTexture;
+			//m_Textures[Iterator.a_path().string()]= &TempTexture;
 			std::cout << "Loaded " << Iterator.path().string() << std::endl;
-			std::cout<< Textures[Iterator.path().string()]->getWidth() << std::endl;
+			std::cout<< m_Textures[Iterator.path().string()]->getWidth() << std::endl;
 			
 		}
 		else
@@ -128,10 +127,10 @@ bool EncounterInstance::LoadAllMedia(SDL_Renderer *&Renderer, SDL_Rect &gTileCli
 		}
 
 	}
-	//std::cout << "Test" << Textures[GetTextureFolderPath() + "\\tiles.png"]->getWidth() << std::endl;
+	//std::cout << "Test" << m_Textures[GetTextureFolderPath() + "\\tiles.png"]->getWidth() << std::endl;
 	
 	
-	if (!gTileTexture.loadFromFile(SpriteSet["TileSet"], Renderer))
+	if (!m_TileTexture.loadFromFile(m_SpriteSet["TileSet"], a_Renderer))
 	{
 		printf("Failed to load tile set texture!\n");
 		Success = false;
@@ -139,98 +138,47 @@ bool EncounterInstance::LoadAllMedia(SDL_Renderer *&Renderer, SDL_Rect &gTileCli
 	
 	//loadMenuPortTest
 
-	MenuPort = loadTexture("menu background parchment 3 black background vertical.png", Renderer);
-	//MenuPort = loadTexture("MenuPortTest.png", Renderer);
-	BottomPort = loadTexture("menu background parchment 3 black background horizontal.png", Renderer);
+	m_MenuPort = loadTexture("menu background parchment 3 black background vertical.png", a_Renderer);
+	//m_MenuPort = loadTexture("MenuPortTest.png", a_Renderer);
+	m_BottomPort = loadTexture("menu background parchment 3 black background horizontal.png", a_Renderer);
 
-	if (!MenuPort)
+	if (!m_MenuPort)
 	{
-		std::cout << "Failed to load MenuPort" << std::endl;
+		std::cout << "Failed to load m_MenuPort" << std::endl;
 	}
 
 	//loadBottomPortTest
-	if (!BottomPort)
+	if (!m_BottomPort)
 	{
-		std::cout << "Failed to load BottomPort" << std::endl;
+		std::cout << "Failed to load m_BottomPort" << std::endl;
 	}
 
 	return Success;
 }
 
-bool EncounterInstance::loadMedia(LTexture &gDotTexture, LTexture &gTileTexture, LTexture &mEntityTexture, SDL_Renderer *&Renderer, SDL_Rect &gTileClips)
-{
-	//Loading success flag
-	bool success = true;
-
-	//Load dot texture
-	if (!gDotTexture.loadFromFile("dot.bmp", Renderer))
-	{
-		printf("Failed to load dot texture!\n");
-		success = false;
-	}
-	else
-	{
-		Textures["dot.bmp"] = &gDotTexture;
-	}
-
-
-	//Load tile texture
-	if (!gTileTexture.loadFromFile(SpriteSet["TileSet"], Renderer))
-	{
-		printf("Failed to load tile set texture!\n");
-		success = false;
-	}
-
-	//Load tile map
-	if (!setTiles(&gTileClips))
-	{
-		printf("Failed to load tile set!\n");
-		success = false;
-	}
-	//loadMenuPortTest
-
-	MenuPort = loadTexture("menu background parchment 3 black background vertical.png", Renderer);
-	//MenuPort = loadTexture("MenuPortTest.png", Renderer);
-	BottomPort = loadTexture("menu background parchment 3 black background horizontal.png", Renderer);
-
-	if (!MenuPort)
-	{
-		std::cout << "Failed to load MenuPort" << std::endl;
-	}
-
-	//loadBottomPortTest
-	if(!BottomPort)
-	{
-		std::cout << "Failed to load BottomPort" << std::endl;
-	}
-
-	return success;
-}
-
-void EncounterInstance::close(LTexture &gDotTexture, LTexture &gTileTexture, SDL_Renderer*& gRenderer, SDL_Window*& gWindow)
+void EncounterInstance::close(LTexture &a_TileTexture, SDL_Renderer*& a_Renderer, SDL_Window*& a_EncounterWindow)
 {
 	//Deallocate tiles
 	for (int i = 0; i < g_TOTAL_TILES; ++i)
 	{
 		//delete tiles
-		}
+	}
 
 	//Free loaded images
-	//gDotTexture.free();
-	gTileTexture.free();
+	a_TileTexture.free();
 
-	//Destroy window	
-	SDL_DestroyRenderer(gRenderer);
-	SDL_DestroyWindow(gWindow);
-	gWindow = NULL;
-	gRenderer = NULL;
+	//Destroy m_window	
+	SDL_DestroyRenderer(a_Renderer);
+	SDL_DestroyWindow(a_EncounterWindow);
+	a_EncounterWindow = NULL;
+	a_Renderer = NULL;
 
 	//Quit SDL subsystems
 	IMG_Quit();
 	SDL_Quit();
 }
 
-bool EncounterInstance::checkCollision(SDL_Rect a, SDL_Rect b)
+bool EncounterInstance::checkCollision(SDL_Rect a_a, SDL_Rect a_b)
 {
 	//The sides of the rectangles
 	int leftA, leftB;
@@ -239,16 +187,16 @@ bool EncounterInstance::checkCollision(SDL_Rect a, SDL_Rect b)
 	int bottomA, bottomB;
 
 	//Calculate the sides of rect A
-	leftA = a.x;
-	rightA = a.x + a.w;
-	topA = a.y;
-	bottomA = a.y + a.h;
+	leftA = a_a.x;
+	rightA = a_a.x + a_a.w;
+	topA = a_a.y;
+	bottomA = a_a.y + a_a.h;
 
 	//Calculate the sides of rect B
-	leftB = b.x;
-	rightB = b.x + b.w;
-	topB = b.y;
-	bottomB = b.y + b.h;
+	leftB = a_b.x;
+	rightB = a_b.x + a_b.w;
+	topB = a_b.y;
+	bottomB = a_b.y + a_b.h;
 
 	//If any of the sides from A are outside of B
 	if (bottomA <= topB)
@@ -275,7 +223,7 @@ bool EncounterInstance::checkCollision(SDL_Rect a, SDL_Rect b)
 	return true;
 }
 
-bool EncounterInstance::setTiles(SDL_Rect gTileClips[])
+bool EncounterInstance::setTiles(SDL_Rect a_TileClips[])
 {
 	//Success flag
 	bool tilesLoaded = true;
@@ -284,8 +232,8 @@ bool EncounterInstance::setTiles(SDL_Rect gTileClips[])
 	int x = 0, y = 0;
 
 	//Open the map
-	std::cout << "Loading the map at: " << this->MapFolderPath + "\\" + this->CurrentMapPath << std::endl;
-	std::ifstream map(this->MapFolderPath + "\\" + this->CurrentMapPath);
+	std::cout << "Loading the map at: " << this->m_MapFolderPath + "\\" + this->m_CurrentMapPath << std::endl;
+	std::ifstream map(this->m_MapFolderPath + "\\" + this->m_CurrentMapPath);
 
 	//If the map couldn't be loaded
 	if (!map)
@@ -295,11 +243,11 @@ bool EncounterInstance::setTiles(SDL_Rect gTileClips[])
 	}
 	else
 	{
-		AllocateTileMap(TileMapWidth, TileMapHeight);
+		AllocateTileMap(m_TileMapWidth, m_TileMapHeight);
 		//Initialize the tiles
-		for (int YPos = 0; YPos < TileMapHeight; YPos++)
+		for (int YPos = 0; YPos < m_TileMapHeight; YPos++)
 		{
-			for (int XPos = 0; XPos < TileMapWidth; XPos++)
+			for (int XPos = 0; XPos < m_TileMapWidth; XPos++)
 			{		
 			//Determines what kind of tile will be made
 			int tileType = -1;
@@ -307,7 +255,7 @@ bool EncounterInstance::setTiles(SDL_Rect gTileClips[])
 			//Read tile from map file
 			map >> tileType;
 
-			//If the was a problem in reading the map
+			//If the was a_a problem in reading the map
 			if (map.fail())
 			{
 				//Stop loading map
@@ -316,13 +264,13 @@ bool EncounterInstance::setTiles(SDL_Rect gTileClips[])
 				break;
 			}
 
-			//If the number is a valid tile number
+			//If the number is a_a valid tile number
 			if ((tileType >= 0) && (tileType < g_TOTAL_TILE_SPRITES))
 			{
 			//	std::cout << "Tile type loaded" << std::endl;
-				TileMap[XPos][YPos] = new Tile(x, y, tileType);
-			//	TileMap[XPos][YPos].
-				//tiles[i] = new Tile(x, y, tileType);
+				m_TileMap[XPos][YPos] = new Tile(x, y, tileType);
+			//	m_TileMap[XPos][YPos].
+				//tiles[i] = new Tile(a_x, a_y, tileType);
 			}
 			//If we don't recognize the tile type
 			else
@@ -354,7 +302,7 @@ bool EncounterInstance::setTiles(SDL_Rect gTileClips[])
 		
 	if (tilesLoaded)
 		{
-			ClipTileSheet(gTileClips);		
+			ClipTileSheet(a_TileClips);		
 		}
 	//Close the file
 	map.close();
@@ -365,95 +313,95 @@ bool EncounterInstance::setTiles(SDL_Rect gTileClips[])
 
 void EncounterInstance::DebugTileMap()
 {
-	for (unsigned y = 0; y < TileMap[0].size(); y++)
+	for (unsigned y = 0; y < m_TileMap[0].size(); y++)
 	{
-		for (unsigned i = 0; i < TileMap.size(); i++)
+		for (unsigned i = 0; i < m_TileMap.size(); i++)
 		{
-			std::cout << TileMap[i][y].getType() << "  ";
+			std::cout << m_TileMap[i][y].getType() << "  ";
 		}
 		std::cout << std::endl;
 	}
 }
 
-void EncounterInstance::ClipTileSheet(SDL_Rect gTileClips[])
+void EncounterInstance::ClipTileSheet(SDL_Rect a_TileClips[])
 {
-	gTileClips[g_TILE_GRASS].x = 0;
-	gTileClips[g_TILE_GRASS].y = 0;
-	gTileClips[g_TILE_GRASS].w = g_TILE_WIDTH;
-	gTileClips[g_TILE_GRASS].h = g_TILE_HEIGHT;
+	a_TileClips[g_TILE_GRASS].x = 0;
+	a_TileClips[g_TILE_GRASS].y = 0;
+	a_TileClips[g_TILE_GRASS].w = g_TILE_WIDTH;
+	a_TileClips[g_TILE_GRASS].h = g_TILE_HEIGHT;
 
-	gTileClips[g_TILE_DIRT].x = 0;
-	gTileClips[g_TILE_DIRT].y = 80;
-	gTileClips[g_TILE_DIRT].w = g_TILE_WIDTH;
-	gTileClips[g_TILE_DIRT].h = g_TILE_HEIGHT;
+	a_TileClips[g_TILE_DIRT].x = 0;
+	a_TileClips[g_TILE_DIRT].y = 80;
+	a_TileClips[g_TILE_DIRT].w = g_TILE_WIDTH;
+	a_TileClips[g_TILE_DIRT].h = g_TILE_HEIGHT;
 
-	gTileClips[g_TILE_STONE].x = 0;
-	gTileClips[g_TILE_STONE].y = 160;
-	gTileClips[g_TILE_STONE].w = g_TILE_WIDTH;
-	gTileClips[g_TILE_STONE].h = g_TILE_HEIGHT;
+	a_TileClips[g_TILE_STONE].x = 0;
+	a_TileClips[g_TILE_STONE].y = 160;
+	a_TileClips[g_TILE_STONE].w = g_TILE_WIDTH;
+	a_TileClips[g_TILE_STONE].h = g_TILE_HEIGHT;
 
-	gTileClips[g_TILE_TOPLEFT].x = 80;
-	gTileClips[g_TILE_TOPLEFT].y = 0;
-	gTileClips[g_TILE_TOPLEFT].w = g_TILE_WIDTH;
-	gTileClips[g_TILE_TOPLEFT].h = g_TILE_HEIGHT;
+	a_TileClips[g_TILE_TOPLEFT].x = 80;
+	a_TileClips[g_TILE_TOPLEFT].y = 0;
+	a_TileClips[g_TILE_TOPLEFT].w = g_TILE_WIDTH;
+	a_TileClips[g_TILE_TOPLEFT].h = g_TILE_HEIGHT;
 
-	gTileClips[g_TILE_LEFT].x = 80;
-	gTileClips[g_TILE_LEFT].y = 80;
-	gTileClips[g_TILE_LEFT].w = g_TILE_WIDTH;
-	gTileClips[g_TILE_LEFT].h = g_TILE_HEIGHT;
+	a_TileClips[g_TILE_LEFT].x = 80;
+	a_TileClips[g_TILE_LEFT].y = 80;
+	a_TileClips[g_TILE_LEFT].w = g_TILE_WIDTH;
+	a_TileClips[g_TILE_LEFT].h = g_TILE_HEIGHT;
 
-	gTileClips[g_TILE_BOTTOMLEFT].x = 80;
-	gTileClips[g_TILE_BOTTOMLEFT].y = 160;
-	gTileClips[g_TILE_BOTTOMLEFT].w = g_TILE_WIDTH;
-	gTileClips[g_TILE_BOTTOMLEFT].h = g_TILE_HEIGHT;
+	a_TileClips[g_TILE_BOTTOMLEFT].x = 80;
+	a_TileClips[g_TILE_BOTTOMLEFT].y = 160;
+	a_TileClips[g_TILE_BOTTOMLEFT].w = g_TILE_WIDTH;
+	a_TileClips[g_TILE_BOTTOMLEFT].h = g_TILE_HEIGHT;
 
-	gTileClips[g_TILE_TOP].x = 160;
-	gTileClips[g_TILE_TOP].y = 0;
-	gTileClips[g_TILE_TOP].w = g_TILE_WIDTH;
-	gTileClips[g_TILE_TOP].h = g_TILE_HEIGHT;
+	a_TileClips[g_TILE_TOP].x = 160;
+	a_TileClips[g_TILE_TOP].y = 0;
+	a_TileClips[g_TILE_TOP].w = g_TILE_WIDTH;
+	a_TileClips[g_TILE_TOP].h = g_TILE_HEIGHT;
 
-	gTileClips[g_TILE_CENTER].x = 160;
-	gTileClips[g_TILE_CENTER].y = 80;
-	gTileClips[g_TILE_CENTER].w = g_TILE_WIDTH;
-	gTileClips[g_TILE_CENTER].h = g_TILE_HEIGHT;
+	a_TileClips[g_TILE_CENTER].x = 160;
+	a_TileClips[g_TILE_CENTER].y = 80;
+	a_TileClips[g_TILE_CENTER].w = g_TILE_WIDTH;
+	a_TileClips[g_TILE_CENTER].h = g_TILE_HEIGHT;
 
-	gTileClips[g_TILE_BOTTOM].x = 160;
-	gTileClips[g_TILE_BOTTOM].y = 160;
-	gTileClips[g_TILE_BOTTOM].w = g_TILE_WIDTH;
-	gTileClips[g_TILE_BOTTOM].h = g_TILE_HEIGHT;
+	a_TileClips[g_TILE_BOTTOM].x = 160;
+	a_TileClips[g_TILE_BOTTOM].y = 160;
+	a_TileClips[g_TILE_BOTTOM].w = g_TILE_WIDTH;
+	a_TileClips[g_TILE_BOTTOM].h = g_TILE_HEIGHT;
 
-	gTileClips[g_TILE_TOPRIGHT].x = 240;
-	gTileClips[g_TILE_TOPRIGHT].y = 0;
-	gTileClips[g_TILE_TOPRIGHT].w = g_TILE_WIDTH;
-	gTileClips[g_TILE_TOPRIGHT].h = g_TILE_HEIGHT;
+	a_TileClips[g_TILE_TOPRIGHT].x = 240;
+	a_TileClips[g_TILE_TOPRIGHT].y = 0;
+	a_TileClips[g_TILE_TOPRIGHT].w = g_TILE_WIDTH;
+	a_TileClips[g_TILE_TOPRIGHT].h = g_TILE_HEIGHT;
 
-	gTileClips[g_TILE_RIGHT].x = 240;
-	gTileClips[g_TILE_RIGHT].y = 80;
-	gTileClips[g_TILE_RIGHT].w = g_TILE_WIDTH;
-	gTileClips[g_TILE_RIGHT].h = g_TILE_HEIGHT;
+	a_TileClips[g_TILE_RIGHT].x = 240;
+	a_TileClips[g_TILE_RIGHT].y = 80;
+	a_TileClips[g_TILE_RIGHT].w = g_TILE_WIDTH;
+	a_TileClips[g_TILE_RIGHT].h = g_TILE_HEIGHT;
 
-	gTileClips[g_TILE_WATER].x = 240;
-	gTileClips[g_TILE_WATER].y = 160;
-	gTileClips[g_TILE_WATER].w = g_TILE_WIDTH;
-	gTileClips[g_TILE_WATER].h = g_TILE_HEIGHT;
+	a_TileClips[g_TILE_WATER].x = 240;
+	a_TileClips[g_TILE_WATER].y = 160;
+	a_TileClips[g_TILE_WATER].w = g_TILE_WIDTH;
+	a_TileClips[g_TILE_WATER].h = g_TILE_HEIGHT;
 }
 
-bool EncounterInstance::touchesWall(SDL_Rect box)
+bool EncounterInstance::touchesWall(SDL_Rect a_box)
 {
-	//std::cout << "Checking box" << std::endl;
+	//std::cout << "Checking a_box" << std::endl;
 	//Go through the tiles
-	for (unsigned y = 0; y < TileMap[0].size(); y++)
+	for (unsigned y = 0; y < m_TileMap[0].size(); y++)
 	{
-		for (unsigned x = 0; x < TileMap.size(); x++)
+		for (unsigned x = 0; x < m_TileMap.size(); x++)
 		{
-			if ((TileMap[x][y].getType() >= g_TILE_CENTER) && (TileMap[x][y].getType() <= g_TILE_TOPLEFT))
+			if ((m_TileMap[x][y].getType() >= g_TILE_CENTER) && (m_TileMap[x][y].getType() <= g_TILE_TOPLEFT))
 			{
-				if (checkCollision(box, TileMap[x][y].getBox()))
+				if (checkCollision(a_box, m_TileMap[x][y].getBox()))
 				{
 					return true;
 				}
 			}
-			//TileMap[x][y].render(camera, gTileTexture, gTileClips, gRenderer);
+			//m_TileMap[a_x][a_y].render(m_camera, m_TileTexture, m_EncounterTileClips, m_Renderer);
 		}
 	}
 
@@ -461,25 +409,25 @@ bool EncounterInstance::touchesWall(SDL_Rect box)
 	return false;
 }
 
-void EncounterInstance::AllocateTileMap(int width, int height)
+void EncounterInstance::AllocateTileMap(int a_width, int a_height)
 {
-	TileMap.resize(width);
-	for (int i = 0; i < width; i++)
+	m_TileMap.resize(a_width);
+	for (int i = 0; i < a_width; i++)
 	{
 		//std::cout << "Resizing " << i << std::endl;
-		TileMap[i].resize(height);
+		m_TileMap[i].resize(a_height);
 	}
 	std::cout << "Vectors Resized" << std::endl;
 }
 
-void EncounterInstance::RenderTiles(SDL_Rect camera, LTexture &gTileTexture, SDL_Rect gTileClips[], SDL_Renderer*& gRenderer)
+void EncounterInstance::RenderTiles(SDL_Rect a_camera, LTexture &a_TileTexture, SDL_Rect a_TileClips[], SDL_Renderer*& a_Renderer)
 {
-	for (unsigned y = 0; y < TileMap[0].size(); y++)
+	for (unsigned y = 0; y < m_TileMap[0].size(); y++)
 	{
-		for (unsigned x = 0; x < TileMap.size(); x++)
+		for (unsigned x = 0; x < m_TileMap.size(); x++)
 		{
-			//std::cout << "Rendering tile " << x << ", " << y << std::endl;
-			TileMap[x][y].render(camera, gTileTexture, gTileClips, gRenderer);
+			//std::cout << "Rendering tile " << a_x << ", " << a_y << std::endl;
+			m_TileMap[x][y].render(a_camera, a_TileTexture, a_TileClips, a_Renderer);
 		}
 	}
 }
@@ -487,46 +435,46 @@ void EncounterInstance::RenderTiles(SDL_Rect camera, LTexture &gTileTexture, SDL
 std::vector< std::vector<Tile>>& EncounterInstance::GetTileMap()
 {
 	//std::cout << "Returning tilemap" << std::endl;
-	return TileMap;
+	return m_TileMap;
 }
 
 std::map<std::string, LTexture*>& EncounterInstance::GetTextures()
 {
-	return Textures;
+	return m_Textures;
 }
 
 void EncounterInstance::RollInitative()
 {
-	InitiativeList.clear(); //make list empty
+	m_InitiativeList.clear(); //make a_list empty
 
-	//roll init for every entity and insert it into the list at the correct spot
-	for (auto it = EntityList.begin(); it != EntityList.end(); it++)
+	//roll init for every entity and insert it into the a_list at the correct spot
+	for (auto it = m_EntityList.begin(); it != m_EntityList.end(); it++)
 	{
 		std::cout << (*it)->GetName() << std::endl;
 		(*it)->RollInitiative();
 
-		for (auto ins = InitiativeList.begin(); ins != InitiativeList.end();)
+		for (auto ins = m_InitiativeList.begin(); ins != m_InitiativeList.end();)
 		{
 			if ((*it)->GetInitiative() > (*ins)->GetInitiative())
 			{
-				InitiativeList.insert(ins, (*it));
+				m_InitiativeList.insert(ins, (*it));
 				break;
 			}
 			ins++;
 			//check if it is the last element in initative
-			if (ins == (InitiativeList.end()))
+			if (ins == (m_InitiativeList.end()))
 			{
-				InitiativeList.push_back((*it));
+				m_InitiativeList.push_back((*it));
 			}
 		}
-		if (InitiativeList.empty())
+		if (m_InitiativeList.empty())
 		{
-			InitiativeList.push_back((*it));
+			m_InitiativeList.push_back((*it));
 		}
 	}
 
-	std::cout << "Initiative:" << std::endl;
-	for (auto it = InitiativeList.begin(); it != InitiativeList.end(); it++)
+	std::cout << "m_Initiative:" << std::endl;
+	for (auto it = m_InitiativeList.begin(); it != m_InitiativeList.end(); it++)
 	{
 		std::cout << "    " << (*it)->GetName() << std::endl;
 	}
@@ -534,18 +482,18 @@ void EncounterInstance::RollInitative()
 
 void EncounterInstance::NextInInitiative()
 {
-	for (auto it = InitiativeList.begin(); it != InitiativeList.end(); it++)
+	for (auto it = m_InitiativeList.begin(); it != m_InitiativeList.end(); it++)
 	{
-		if (ActiveUnit == (*it))
+		if (m_ActiveUnit == (*it))
 		{
 			it++;
-			if (it == InitiativeList.end())
+			if (it == m_InitiativeList.end())
 			{
-				ActiveUnit = InitiativeList.front();
+				m_ActiveUnit = m_InitiativeList.front();
 			}
 			else
 			{
-				ActiveUnit = (*it);
+				m_ActiveUnit = (*it);
 			}
 			std::cout << "Next Init" << std::endl;
 			return;
@@ -556,41 +504,41 @@ void EncounterInstance::NextInInitiative()
 
 void EncounterInstance::RemoveDeadFromLists()
 {
-	auto it = InitiativeList.begin();
+	auto it = m_InitiativeList.begin();
 
-	while (it != InitiativeList.end()) {
+	while (it != m_InitiativeList.end()) {
 		if ((*it)->GetHitPoints()<=0) {
-			it = InitiativeList.erase(it);
+			it = m_InitiativeList.erase(it);
 		}
 		else ++it;
 	}
 
-	auto ite = EntityList.begin();
+	auto ite = m_EntityList.begin();
 
-	while (ite != EntityList.end()) {
+	while (ite != m_EntityList.end()) {
 		if ((*ite)->GetHitPoints() <= 0) {
-			ite = EntityList.erase(ite);
+			ite = m_EntityList.erase(ite);
 		}
 		else ++ite;
 	}
 	
 }
 
-void EncounterInstance::HandleEvents(SDL_Event &e)
+void EncounterInstance::HandleEvents(SDL_Event &a_event)
 {
-	//If a key was pressed
-	if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+	//If a_a key was pressed
+	if (a_event.type == SDL_KEYDOWN && a_event.key.repeat == 0)
 	{
 		//change the location
-		switch (e.key.keysym.sym)
+		switch (a_event.key.keysym.sym)
 		{
 		case SDLK_SPACE: //next turn!
 		{
 			//reset values
-			ActiveUnit->EndTurnResets();
+			m_ActiveUnit->EndTurnResets();
 			NextInInitiative();
-			InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
-			InfoPanel.SetAllTextures(gRenderer);
+			m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+			m_InfoPanel.SetAllTextures(m_Renderer);
 			break;
 		}	
 		}
@@ -618,172 +566,172 @@ bool EncounterInstance::RunEncounter()
 	BottomViewPort.h = (g_SCREEN_HEIGHT / 4);
 	BottomViewPort.w = g_SCREEN_WIDTH;
 
-	ActionLog.AddLog(gRenderer, "Hi please work");
-	ActionLog.AddLog(gRenderer, "random lines");
-	ActionLog.AddLog(gRenderer, "information");
-	ActionLog.AddLog(gRenderer, "attack action");
-	ActionLog.AddLog(gRenderer, "position 3");
-	ActionLog.AddLog(gRenderer, "pos2");
-	ActionLog.AddLog(gRenderer, "Testing this out still, checking if this is at pos1");
-	ActionLog.AddLog(gRenderer, "Testing this out still, checking if this is at pos0");
-	ActionLog.Setup(TextureFolderPath, Textures, BottomViewPort, gFont);
-	ActionLog.SetLogConstraints(BottomViewPort);
+	m_ActionLog.AddLog(m_Renderer, "Hi please work");
+	m_ActionLog.AddLog(m_Renderer, "random lines");
+	m_ActionLog.AddLog(m_Renderer, "information");
+	m_ActionLog.AddLog(m_Renderer, "attack action");
+	m_ActionLog.AddLog(m_Renderer, "position 3");
+	m_ActionLog.AddLog(m_Renderer, "pos2");
+	m_ActionLog.AddLog(m_Renderer, "Testing this out still, checking if this is at pos1");
+	m_ActionLog.AddLog(m_Renderer, "Testing this out still, checking if this is at pos0");
+	m_ActionLog.Setup(m_TextureFolderPath, m_Textures, BottomViewPort, m_MasterFont);
+	m_ActionLog.SetLogConstraints(BottomViewPort);
 
-	InfoPanel.Setup(TextureFolderPath, Textures, topLeftViewport, gFont, gRenderer);
-	InfoPanel.SetPanelConstraints(topLeftViewport);
+	m_InfoPanel.Setup(m_TextureFolderPath, m_Textures, topLeftViewport, m_MasterFont, m_Renderer);
+	m_InfoPanel.SetPanelConstraints(topLeftViewport);
 
-	bool quit = false;
+	bool m_quit = false;
 	
 	AIPlayer EnemyPlayers;
 
 			AllEntitySetTexture();
 			RollInitative();
-			ActiveUnit = InitiativeList.front();
-			InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
-			InfoPanel.SetAllTextures(gRenderer);
-			//std::cout << "Active unit is named:" << ActiveUnit->GetName() << std::endl;
-		//	ActiveUnit->SetTexture(GetTextures(), GetTextureFolderPath());
+			m_ActiveUnit = m_InitiativeList.front();
+			m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+			m_InfoPanel.SetAllTextures(m_Renderer);
+			//std::cout << "m_Active unit is named:" << m_ActiveUnit->GetName() << std::endl;
+		//	m_ActiveUnit->SetTexture(GetTextures(), GetTextureFolderPath());
 			std::cout << "Camera created, sdl event created, textures created and assigned, entering running loop" << std::endl;
-			while (!quit)
+			while (!m_quit)
 			{
-				if (ActiveUnit->GetSide() != 1)
+				if (m_ActiveUnit->GetSide() != 1)
 				{
-					ActiveUnit->SetControlMode(AIMODE);
+					m_ActiveUnit->SetControlMode(AIMODE);
 				}
 			//	std::cout << "starting event loop" << std::endl;
 				//Handle events on queue
-				while (SDL_PollEvent(&e) != 0)
+				while (SDL_PollEvent(&m_event) != 0)
 				{
-					//User requests quit
-					if (e.type == SDL_QUIT)
+					//User requests m_quit
+					if (m_event.type == SDL_QUIT)
 					{
-						quit = true;
+						m_quit = true;
 					}
-					if (TargetSys.GetActive()==true)
+					if (m_TargetSys.GetActive()==true)
 					{
-						TargetSys.handleEvent(e);
-						TargetSys.move(TileMap);
+						m_TargetSys.handleEvent(m_event);
+						m_TargetSys.move(m_TileMap);
 					}
 					else
 					{
-						//ActiveUnit->HandleTurn(e, *this);
-						ActiveUnit->handleEvent(e, *this);
+						//m_ActiveUnit->HandleTurn(a_event, *this);
+						m_ActiveUnit->handleEvent(m_event, *this);
 					}
 					
-					ActionLog.HandleEvents(e);
-					this->HandleEvents(e);
+					m_ActionLog.HandleEvents(m_event);
+					this->HandleEvents(m_event);
 				}
-				SDL_RenderSetViewport(gRenderer, &BottomViewPort);
+				SDL_RenderSetViewport(m_Renderer, &BottomViewPort);
 
 				//move the entity
 				//std::cout << "Moving man" << std::endl;
 			//	std::cout << "starting control activeunit structure" << std::endl;
 
 				//control structure for controlling units
-				switch (ActiveUnit->GetControlMode())
+				switch (m_ActiveUnit->GetControlMode())
 				{
 				case(MOVEMODE):
-					if (ActiveUnit->move(GetTileMap()) == true)
+					if (m_ActiveUnit->move(GetTileMap()) == true)
 					{
-						InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
-						InfoPanel.SetAllTextures(gRenderer);
+						m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+						m_InfoPanel.SetAllTextures(m_Renderer);
 					}
 					
 					break;
 				case(MELEEATTACKMODE):
-					ActiveUnit->EntityMeleeAttack(GetTileMap(), *this);
-					quit = CheckForEndOfEncounter();
-					InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
-					InfoPanel.SetAllTextures(gRenderer);
+					m_ActiveUnit->EntityMeleeAttack(GetTileMap(), *this);
+					m_quit = CheckForEndOfEncounter();
+					m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+					m_InfoPanel.SetAllTextures(m_Renderer);
 					break;
 				case(PICKUPMODE):
-					ActiveUnit->EntityPickup(GetTileMap());
-					ActiveUnit->SetControlMode(MOVEMODE);
-					quit = CheckForEndOfEncounter();
-					InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
-					InfoPanel.SetAllTextures(gRenderer);
+					m_ActiveUnit->EntityPickup(GetTileMap());
+					m_ActiveUnit->SetControlMode(MOVEMODE);
+					m_quit = CheckForEndOfEncounter();
+					m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+					m_InfoPanel.SetAllTextures(m_Renderer);
 					break;
 				case(INVENTORYMODE):
-					ActiveUnit->EntityInventory(GetTileMap());
-					ActiveUnit->SetControlMode(MOVEMODE);
-					quit = CheckForEndOfEncounter();
-					InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
-					InfoPanel.SetAllTextures(gRenderer);
+					m_ActiveUnit->EntityInventory(GetTileMap());
+					m_ActiveUnit->SetControlMode(MOVEMODE);
+					m_quit = CheckForEndOfEncounter();
+					m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+					m_InfoPanel.SetAllTextures(m_Renderer);
 					break;
 				case(FEATOPTIONMODE):
-					ActiveUnit->EntityFeatMenu();
-					ActiveUnit->SetControlMode(MOVEMODE);
-					quit = CheckForEndOfEncounter();
-					InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
-					InfoPanel.SetAllTextures(gRenderer);
+					m_ActiveUnit->EntityFeatMenu();
+					m_ActiveUnit->SetControlMode(MOVEMODE);
+					m_quit = CheckForEndOfEncounter();
+					m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+					m_InfoPanel.SetAllTextures(m_Renderer);
 					break;
 				case(RANGEDATTACKMODE):
-					if (TargetSys.GetControlMode() == SELECTTARGETMODE)
+					if (m_TargetSys.GetControlMode() == SELECTTARGETMODE)
 					{
-						ActiveUnit->SetControlMode(MOVEMODE);
-						ActiveUnit->EntityRangedAttack(GetTileMap(), *this);
-						TargetSys.SetControlMode(MOVEMODE);
-						InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
-						InfoPanel.SetAllTextures(gRenderer);
+						m_ActiveUnit->SetControlMode(MOVEMODE);
+						m_ActiveUnit->EntityRangedAttack(GetTileMap(), *this);
+						m_TargetSys.SetControlMode(MOVEMODE);
+						m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+						m_InfoPanel.SetAllTextures(m_Renderer);
 					}
-					quit = CheckForEndOfEncounter();
+					m_quit = CheckForEndOfEncounter();
 					break;
 				case (AIMODE):
-					EnemyPlayers.AITurn(TileMap, *ActiveUnit, *this);
-					//ActiveUnit->SetControlMode(MOVEMODE);
-					quit = CheckForEndOfEncounter();
-					ActiveUnit->EndTurnResets();
+					EnemyPlayers.AITurn(m_TileMap, *m_ActiveUnit, *this);
+					//m_ActiveUnit->SetControlMode(MOVEMODE);
+					m_quit = CheckForEndOfEncounter();
+					m_ActiveUnit->EndTurnResets();
 					NextInInitiative();
-					InfoPanel.DetermineAllLabels(*ActiveUnit, *this);
-					InfoPanel.SetAllTextures(gRenderer);
+					m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+					m_InfoPanel.SetAllTextures(m_Renderer);
 					break;
 				}
 
 		//		std::cout << "Man Moved" << std::endl;
-				if (TargetSys.GetActive())
+				if (m_TargetSys.GetActive())
 				{
-					TargetSys.setCamera(camera);
+					m_TargetSys.setCamera(m_camera);
 				}
 				else
 				{
-					ActiveUnit->setCamera(camera);
+					m_ActiveUnit->setCamera(m_camera);
 				}
 				//Clear screen
-				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-				SDL_RenderClear(gRenderer);
+				SDL_SetRenderDrawColor(m_Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+				SDL_RenderClear(m_Renderer);
 			//	std::cout << "RenderClear" << std::endl;
 				
 				//Render level
-				SDL_RenderSetViewport(gRenderer, &topRightViewPort);
+				SDL_RenderSetViewport(m_Renderer, &topRightViewPort);
 				
 				//std::cout << "Renderviewport set " << std::endl;
 
 				//std::cout << "rendering tiles" << std::endl;
 
 				//render tileset
-				RenderTiles(camera, gTileTexture, gTileClips, gRenderer);
+				RenderTiles(m_camera, m_TileTexture, m_EncounterTileClips, m_Renderer);
 				
 				//std::cout << "LevelRendered?" << std::endl;
 
-				RenderAllEntities(camera, gRenderer);
+				RenderAllEntities(m_camera, m_Renderer);
 				
 			//	std::cout << "People rendered" << std::endl;
 
 				//this is information of the selected unit renderport
-				SDL_RenderSetViewport(gRenderer, &topLeftViewport);
-				SDL_RenderCopy(gRenderer, MenuPort, NULL, NULL);
-				InfoPanel.RenderPanel(gRenderer);
+				SDL_RenderSetViewport(m_Renderer, &topLeftViewport);
+				SDL_RenderCopy(m_Renderer, m_MenuPort, NULL, NULL);
+				m_InfoPanel.RenderPanel(m_Renderer);
 
 				
-				//MenuPort.render(topLeftViewport.x, topLeftViewport.y, gRenderer);
+				//m_MenuPort.render(topLeftViewport.a_x, topLeftViewport.a_y, m_Renderer);
 				//this is the log viewport
-				SDL_RenderSetViewport(gRenderer, &BottomViewPort);
-				SDL_RenderCopy(gRenderer, BottomPort, NULL, NULL);
-				ActionLog.RenderLog(gRenderer);
-				//BottomPort.render(BottomViewPort.x, BottomViewPort.y, gRenderer);
+				SDL_RenderSetViewport(m_Renderer, &BottomViewPort);
+				SDL_RenderCopy(m_Renderer, m_BottomPort, NULL, NULL);
+				m_ActionLog.RenderLog(m_Renderer);
+				//m_BottomPort.render(BottomViewPort.a_x, BottomViewPort.a_y, m_Renderer);
 
 				//Update screen
-				SDL_RenderPresent(gRenderer);
+				SDL_RenderPresent(m_Renderer);
 			}
 
 			EncounterEndScreen EndScreen;
@@ -791,58 +739,57 @@ bool EncounterInstance::RunEncounter()
 			EndScreen.EndScreenRun();
 
 		//Free resources and close SDL
-		close(gDotTexture, gTileTexture, gRenderer, gWindow);
 	
 	return 0;
 	return true;
 }
 
-void EncounterInstance::AddLog(std::string Log)
+void EncounterInstance::AddLog(std::string a_Log)
 {
-	ActionLog.AddLog(gRenderer, Log);
+	m_ActionLog.AddLog(m_Renderer, a_Log);
 }
 std::string EncounterInstance::GetTextureFolderPath()
 {
-	return TextureFolderPath;
+	return m_TextureFolderPath;
 }
 
 void EncounterInstance::AllEntitySetTexture()
 {
 	//std::cout << "Setting textures for entities" << std::endl;
-	for (auto i = EntityList.begin(); i != EntityList.end(); i++)
+	for (auto i = m_EntityList.begin(); i != m_EntityList.end(); i++)
 	{
 		(*i)->SetTexture(GetTextures(), GetTextureFolderPath());
 	}
-	TargetSys.SetTexture(GetTextures(), GetTextureFolderPath());
+	m_TargetSys.SetTexture(GetTextures(), GetTextureFolderPath());
 	std::cout << "Settings textures successfull" << std::endl;
 }
 
-void EncounterInstance::RenderAllEntities(SDL_Rect& camera, SDL_Renderer *& Renderer)
+void EncounterInstance::RenderAllEntities(SDL_Rect& a_camera, SDL_Renderer *& a_Renderer)
 {
-	for (auto i = EntityList.begin(); i != EntityList.end(); i++)
+	for (auto i = m_EntityList.begin(); i != m_EntityList.end(); i++)
 	{
-		(*i)->render(camera, Renderer);
+		(*i)->render(a_camera, a_Renderer);
 	}
-	TargetSys.render(camera, Renderer);
+	m_TargetSys.render(a_camera, a_Renderer);
 }
 
 bool EncounterInstance::LoadSpriteSet()
 {
-	//tileset sheet path
-	SpriteSet["TileSet"] = GetTextureFolderPath() + "//tiles2.png";
-	//objects sheet path
+	//tileset sheet a_path
+	m_SpriteSet["TileSet"] = GetTextureFolderPath() + "//tiles2.png";
+	//m_objects sheet a_path
 
 	return true;
 }
 
 std::string EncounterInstance::GetCharacterFolderPath()
 {
-	return CharacterFolderPath;
+	return m_CharacterFolderPath;
 }
 
 std::string EncounterInstance::GetItemFolderPath()
 {
-	return ItemFolderPath;
+	return m_ItemFolderPath;
 }
 
 bool EncounterInstance::CheckForEndOfEncounter()
@@ -852,13 +799,13 @@ bool EncounterInstance::CheckForEndOfEncounter()
 
 	if (playerWin == true)
 	{
-		//set message
+		//set m_message
 		return true;
 	}
 
 	if (AIWin == true)
 	{
-		//set message
+		//set m_message
 		return true;
 	}
 	
@@ -868,7 +815,7 @@ bool EncounterInstance::CheckForEndOfEncounter()
 bool EncounterInstance::CheckPlayerWin()
 {
 	bool win = true;
-	for (auto it = EntityList.begin(); it!=EntityList.end(); it++)
+	for (auto it = m_EntityList.begin(); it!=m_EntityList.end(); it++)
 	{
 		if ((*it)->GetSide() != 1)
 		{
@@ -881,7 +828,7 @@ bool EncounterInstance::CheckPlayerWin()
 bool EncounterInstance::CheckAIWin()
 {
 	bool win = true;
-	for (auto it = EntityList.begin(); it != EntityList.end(); it++)
+	for (auto it = m_EntityList.begin(); it != m_EntityList.end(); it++)
 	{
 		if ((*it)->GetSide() == 1)
 		{
@@ -892,9 +839,9 @@ bool EncounterInstance::CheckAIWin()
 }
 
 //loading functions
-bool EncounterInstance::ScenarioLoad(std::string Path)
+bool EncounterInstance::ScenarioLoad(std::string a_Path)
 {
-	if (!init(gRenderer, gWindow))
+	if (!init(m_Renderer, m_EncounterWindow))
 	{
 		printf("Failed to initialize!\n");
 	}
@@ -902,7 +849,7 @@ bool EncounterInstance::ScenarioLoad(std::string Path)
 	{
 		LoadSpriteSet();
 		std::cout << "Init complete" << std::endl;
-		if (!LoadAllMedia(gRenderer, *gTileClips))
+		if (!LoadAllMedia(m_Renderer, *m_EncounterTileClips))
 		{
 			std::cout << "Failed to load media!" << std::endl;
 		}
@@ -911,9 +858,9 @@ bool EncounterInstance::ScenarioLoad(std::string Path)
 			std::cout << "Loaded media successfully!" << std::endl;
 		}
 	}
-	std::cout << "Trying to load " << Path << std::endl;
+	std::cout << "Trying to load " << a_Path << std::endl;
 	std::string line = "";
-	std::ifstream Scenario(Path);
+	std::ifstream Scenario(a_Path);
 	if (!Scenario)
 	{
 		std::cout << "File empty or error opening" << std::endl;
@@ -923,15 +870,15 @@ bool EncounterInstance::ScenarioLoad(std::string Path)
 	if (Scenario.is_open())
 	{
 		//load feats, weapons, then armor
-		for (auto i = FeatLists.begin(); i != FeatLists.end(); i++)
+		for (auto i = m_FeatLists.begin(); i != m_FeatLists.end(); i++)
 		{
 			LoadFeatList((*i));
 		}
-		for (auto i = WeaponLists.begin(); i != WeaponLists.end(); i++)
+		for (auto i = m_WeaponLists.begin(); i != m_WeaponLists.end(); i++)
 		{
 			LoadWeaponList((*i));
 		}
-		for (auto i = ArmorLists.begin(); i != ArmorLists.end(); i++)
+		for (auto i = m_ArmorLists.begin(); i != m_ArmorLists.end(); i++)
 		{
 			LoadArmorList((*i));
 		}
@@ -949,12 +896,12 @@ bool EncounterInstance::ScenarioLoad(std::string Path)
 			if (line.find("Map:")!=(std::string::npos)&&!Mapfound)
 			{
 				
-			//	std::cout << line << std::endl;
+			//	std::cout << a_line << std::endl;
 				try {
 					line = line.substr(line.find(":")+1);
 					line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
-					this->CurrentMapPath = line + ".map";
-					this->setTiles(gTileClips);
+					this->m_CurrentMapPath = line + ".map";
+					this->setTiles(m_EncounterTileClips);
 				}
 				catch (std::exception const & error)
 				{
@@ -964,7 +911,7 @@ bool EncounterInstance::ScenarioLoad(std::string Path)
 
 			if (line.find("Character:")!=std::string::npos && !EndCharacters)
 			{
-				//parse name and location
+				//parse a_name and location
 				int temploc=0;
 				int tempSide = 0;
 				std::pair<int, int> TempCharacterLocation = { 0,0 };
@@ -979,12 +926,12 @@ bool EncounterInstance::ScenarioLoad(std::string Path)
 				temploc = line.find(":")+1;
 				line = line.substr(temploc, line.length());
 				line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
-			//	std::cout << line << " No spaces, now we find path" << std::endl;
+			//	std::cout << a_line << " No spaces, now we find a_path" << std::endl;
 
 				path = line.substr(0, line.find_first_of(","));
 				path = path + ".txt";
 				location = line.substr(line.find(",")+1, line.length()-line.find(")")+1);
-				std::cout << "path: " << path << std::endl;
+				std::cout << "a_path: " << path << std::endl;
 
 				//std::cout << "Location: " << location << std::endl;
 				location = location.substr(location.find_first_of("(")+1, line.length()-location.find_first_of(")")+1);
@@ -1003,9 +950,9 @@ bool EncounterInstance::ScenarioLoad(std::string Path)
 				}
 
 				//create new character pointer in entitylist, call to load character
-				EntityList.push_back(new EntityClass);
+				m_EntityList.push_back(new EntityClass);
 				std::cout << "Trying to load character with information:" << std::endl;
-				std::cout << "Path:" << path << std::endl;
+				std::cout << "a_Path:" << path << std::endl;
 				std::cout << "Character location:" << TempCharacterLocation.first << ", " << TempCharacterLocation.second << std::endl;
 				std::cout << "PlayerControlled: ";
 				if (PlayerControlled)
@@ -1013,10 +960,10 @@ bool EncounterInstance::ScenarioLoad(std::string Path)
 				else
 					std::cout << "No" << std::endl;
 				std::cout << "On side: " << tempSide << std:: endl;
-				//load new character from this line, will contain the path of the character, 
+				//load new character from this a_line, will contain the a_path of the character, 
 				//its position in this scenario and wether or not it is player controlled
 
-				EntityList.back()->LoadEntity(path, TempCharacterLocation, PlayerControlled, tempSide, *this);
+				m_EntityList.back()->LoadEntity(path, TempCharacterLocation, PlayerControlled, tempSide, *this);
 				
 				//the character will be fully loaded at this point and we can move on
 				continue;
@@ -1027,17 +974,17 @@ bool EncounterInstance::ScenarioLoad(std::string Path)
 				int temploc = 0;
 				int tempSide = 0;
 				std::pair<int, int> TempItemLocation = { 0,0 };
-				std::string name = "";
+				std::string m_name = "";
 				std::string location = "";
 				try {
 					temploc = line.find(":") + 1;
 					line = line.substr(temploc, line.length());
 					
-					//	std::cout << line << " No spaces, now we find path" << std::endl;
-					name = line.substr(0, line.find_first_of(","));
+					//	std::cout << a_line << " No spaces, now we find a_path" << std::endl;
+					m_name = line.substr(0, line.find_first_of(","));
 					line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
 					location = line.substr(line.find(",") + 1);
-					std::cout << "name: " << name << std::endl;
+					std::cout << "a_name: " << m_name << std::endl;
 
 					std::cout << "Location: " << location << std::endl;
 					location = location.substr(location.find_first_of("(") + 1, line.length() - location.find_first_of(")") + 1);
@@ -1052,10 +999,10 @@ bool EncounterInstance::ScenarioLoad(std::string Path)
 					std::cout << "Error in Item section base file" << std::endl;
 				}
 
-				//create new object in master object list
+				//create new object in master object a_list
 				std::cout << "Trying to load item with information:" << std::endl;
 				std::cout << "Item location:" << TempItemLocation.first << ", " << TempItemLocation.second << std::endl;
-				LoadObjectIntoTile(TempItemLocation.first, TempItemLocation.second, name);
+				LoadObjectIntoTile(TempItemLocation.first, TempItemLocation.second, m_name);
 				
 
 				//the character will be fully loaded at this point and we can move on
@@ -1069,36 +1016,36 @@ bool EncounterInstance::ScenarioLoad(std::string Path)
 	return true;
 }
 
-bool EncounterInstance::LoadObjectIntoTile(int x, int y, std::string name)
+bool EncounterInstance::LoadObjectIntoTile(int a_x, int a_y, std::string a_name)
 {
-	if (MasterObjectList.count(name))
+	if (m_MasterObjectList.count(a_name))
 	{
-		if (x < TileMap.size() && y < TileMap.size() && x >= 0 && y >= 0)
+		if (a_x < m_TileMap.size() && a_y < m_TileMap.size() && a_x >= 0 && a_y >= 0)
 		{	
-		std::cout << "Object " << name << " found, loading" << std::endl;
-		if (name.find("Armor") != std::string::npos || name.find("Shield") != std::string::npos)
+		std::cout << "Object " << a_name << " found, loading" << std::endl;
+		if (a_name.find("Armor") != std::string::npos || a_name.find("Shield") != std::string::npos)
 		{
 			//std::cout << "Object loading" << std::endl;
-			ArmorObject* NewObject = new ArmorObject(*MasterObjectList[name]);
+			ArmorObject* NewObject = new ArmorObject(*m_MasterObjectList[a_name]);
 			//NewObject->DisplayObjectWeaponFacts();
 			//NewObject->DisplayArmorInfo();
-			NewObject->SetLocation(x, y, TileMap);
-			//NewObject->SetTexture(Textures, TextureFolderPath);
-			ObjectList.push_back(NewObject);
-		//	ObjectList.back()->SetLocation(x, y, TileMap);
-			//ObjectList.back()->SetRendLocation(TileMap);
-			//ObjectList.back()->SetTexture(Textures, GetTextureFolderPath());
+			NewObject->SetLocation(a_x, a_y, m_TileMap);
+			//NewObject->SetTexture(m_Textures, m_TextureFolderPath);
+			m_ObjectList.push_back(NewObject);
+		//	m_ObjectList.back()->SetLocation(a_x, a_y, m_TileMap);
+			//m_ObjectList.back()->SetRendLocation(m_TileMap);
+			//m_ObjectList.back()->SetTexture(m_Textures, GetTextureFolderPath());
 		}
 		else 
 		{
 			//std::cout << "Object loading" << std::endl;
-			//ObjectClass* NewObject = new ObjectClass(*MasterObjectList[name]);
+			//ObjectClass* NewObject = new ObjectClass(*m_MasterObjectList[a_name]);
 			//NewObject->DisplayObjectWeaponFacts();
 			//NewObject->DisplayArmorInfo();
-			ObjectList.push_back(new ObjectClass(*MasterObjectList[name]));
-			ObjectList.back()->SetLocation(x, y, TileMap);
-			//ObjectList.back()->SetRendLocation(TileMap);
-			ObjectList.back()->SetTexture(Textures, GetTextureFolderPath());
+			m_ObjectList.push_back(new ObjectClass(*m_MasterObjectList[a_name]));
+			m_ObjectList.back()->SetLocation(a_x, a_y, m_TileMap);
+			//m_ObjectList.back()->SetRendLocation(m_TileMap);
+			m_ObjectList.back()->SetTexture(m_Textures, GetTextureFolderPath());
 		}
 		}
 		else
@@ -1116,20 +1063,20 @@ bool EncounterInstance::LoadObjectIntoTile(int x, int y, std::string name)
 	return true;
 }
 
-bool EncounterInstance::LoadWeaponList(std::string list)
+bool EncounterInstance::LoadWeaponList(std::string a_list)
 {
 	//SimpleWeapons.txt
 	//MartialWeapons.txt
 	//ExoticWeapons.txt
 	std::ifstream reader;
-	reader.open(GetItemFolderPath() + "\\" + list);
+	reader.open(GetItemFolderPath() + "\\" + a_list);
 
 	if (reader.is_open())
 	{
 		std::string line = "";
-		std::string name = "";
+		std::string m_name = "";
 		std::string TempString = "";
-		std::cout << "Loading weapon list: " << list<< std::endl;
+		std::cout << "Loading weapon a_list: " << a_list<< std::endl;
 		try {
 			while (getline(reader, line))
 			{
@@ -1138,31 +1085,31 @@ bool EncounterInstance::LoadWeaponList(std::string list)
 				{
 					int endchar = line.find("//");
 					line = line.substr(0, endchar);
-					//	std::cout << "ResultAfterComment " << line << std::endl;
+					//	std::cout << "ResultAfterComment " << a_line << std::endl;
 				}
 				if (line.find_first_not_of(' ') == std::string::npos)
 				{
 					continue;
 				}
-				std::cout << "Raw line: " << line << std::endl;	
+				std::cout << "Raw a_line: " << line << std::endl;	
 
-				name = line.substr(0, line.find_first_of(","));
+				m_name = line.substr(0, line.find_first_of(","));
 
 				auto f = [](unsigned char c) { return isspace((int)c); };
 				line.erase(std::remove_if(line.begin(), line.end(), f), line.end()); //remove all spaces
 	
-				//std::cout << "New object: " << name << std::endl;
-				MasterObjectList.insert(std::pair<std::string, ObjectClass*>(name, new ObjectClass));
-				MasterObjectList[name]->SetTexture(Textures, TextureFolderPath);
-				line = line.substr(line.find(name + ',') + name.length() + 1);
-				//std::cout << "Line no name " << line << std::endl;
+				//std::cout << "New object: " << a_name << std::endl;
+				m_MasterObjectList.insert(std::pair<std::string, ObjectClass*>(m_name, new ObjectClass));
+				m_MasterObjectList[m_name]->SetTexture(m_Textures, m_TextureFolderPath);
+				line = line.substr(line.find(m_name + ',') + m_name.length() + 1);
+				//std::cout << "Line no a_name " << a_line << std::endl;
 
 				//get two handed
-				if (line.find("TwoHanded") != std::string::npos)
+				if (line.find("m_TwoHanded") != std::string::npos)
 				{
-					MasterObjectList[name]->SetTwoHanded(true);
+					m_MasterObjectList[m_name]->SetTwoHanded(true);
 				}
-				MasterObjectList[name]->SetName(name);
+				m_MasterObjectList[m_name]->SetName(m_name);
 				//get damage --------------------------------
 				TempString = line.substr(0, line.find(","));
 
@@ -1170,101 +1117,101 @@ bool EncounterInstance::LoadWeaponList(std::string list)
 			//	std::cout << TempString.substr(0, TempString.find("d") - 1) << std::endl;
 				int tempint2 = stoi(TempString.substr(TempString.find("d")+1));
 			//	std::cout << numdice << " " << Damage << std::endl;
-				MasterObjectList[name]->SetDamageDice(std::pair<int, DiceType>(tempint1, (DiceType)tempint2));
+				m_MasterObjectList[m_name]->SetDamageDice(std::pair<int, DiceType>(tempint1, (DiceType)tempint2));
 
 				//get crit multiplier ---------------------------------
 				line = line.substr(line.find_first_of(",")+1);
-			//	std::cout << line << std::endl;
+			//	std::cout << a_line << std::endl;
 				TempString = line.substr(0, line.find_first_of(","));
 				//std::cout << TempString << std::endl;
-				tempint1 = stoi(TempString.substr(0, TempString.find("/x")));
-				tempint2 = stoi(TempString.substr(TempString.find("/x") + 2));
-				MasterObjectList[name]->SetCritInformation(tempint1, tempint2);
-				//std::cout << MasterObjectList[name]->GetCritInformation().first << MasterObjectList[name]->GetCritInformation().second << std::endl;
+				tempint1 = stoi(TempString.substr(0, TempString.find("/a_x")));
+				tempint2 = stoi(TempString.substr(TempString.find("/a_x") + 2));
+				m_MasterObjectList[m_name]->SetCritInformation(tempint1, tempint2);
+				//std::cout << m_MasterObjectList[a_name]->GetCritInformation().first << m_MasterObjectList[a_name]->GetCritInformation().second << std::endl;
 			
 				//get range increment --------------------------------
 				line = line.substr(line.find_first_of(",")+1);
-				//std::cout << line << std::endl;
+				//std::cout << a_line << std::endl;
 				TempString = line.substr(0, line.find_first_of(","));
 				TempString = TempString.substr(0, TempString.find_first_of("ft"));
 				tempint1 = stoi(TempString);
-				MasterObjectList[name]->SetRangeIncrement(tempint1);
-			//	std::cout << "range increment of " <<name << ": " << tempint1 << std::endl;
-			//	std::cout << "range increment of " << name << ": " << MasterObjectList[name]->GetRangeIncrement()<< std::endl;
+				m_MasterObjectList[m_name]->SetRangeIncrement(tempint1);
+			//	std::cout << "range increment of " <<a_name << ": " << tempint1 << std::endl;
+			//	std::cout << "range increment of " << a_name << ": " << m_MasterObjectList[a_name]->GetRangeIncrement()<< std::endl;
 
 				//get base weight
 				line = line.substr(line.find_first_of(",") + 1);
 				TempString = line.substr(0, line.find_first_of("lb"));
 				float TempWeight = stof(TempString);
 			//	tempint1 = stoi(TempString);
-				MasterObjectList[name]->SetBaseWeight(TempWeight);
+				m_MasterObjectList[m_name]->SetBaseWeight(TempWeight);
 			//	std::cout << "weight: " << TempWeight << std::endl;
 
 
 				//get damage types ------------
 				line = line.substr(line.find_first_of(",")+1);
-			//	std::cout << line << std::endl;
+			//	std::cout << a_line << std::endl;
 
-				MasterObjectList[name]->GetWeaponType().clear();
+				m_MasterObjectList[m_name]->GetWeaponType().clear();
 				while (FindDamageType(line) != UNKNOWNDAMAGETYPE)
 				{
 					DamageType TempD = FindDamageType(line);
-					MasterObjectList[name]->AddDamageType(TempD);	
+					m_MasterObjectList[m_name]->AddDamageType(TempD);	
 					line.erase(line.find(DamageTypeTextMap[TempD]), DamageTypeTextMap[TempD].length());
-					//line.erase(line.find(""
-					//std::cout << "Adding DamageTypes: " << line << std::endl;
+					//a_line.erase(a_line.find(""
+					//std::cout << "Adding m_damageTypes: " << a_line << std::endl;
 					line = line.substr(line.find(",")+1);					
 				}
 				
 				while (FindWeaponType(line) != UNKNOWNWEAPONTYPE)
 				{
 					WeaponType TempW = FindWeaponType(line);
-					MasterObjectList[name]->AddWeaponType(TempW);
+					m_MasterObjectList[m_name]->AddWeaponType(TempW);
 					line.erase(line.find(WeaponTypeTextMap[TempW]), WeaponTypeTextMap[TempW].length());
-				//	std::cout << "adding weapon type:" << line << std::endl;
+				//	std::cout << "adding weapon type:" << a_line << std::endl;
 					
 					if (line.find(",") == std::string::npos)
 					{
 						break;
 					}
-					//line = line.substr(line.find(",") + 1);
+					//a_line = a_line.substr(a_line.find(",") + 1);
 				}
-				WeaponType TempW = FindWeaponType(list); //this line looks at what the list is called, and returns if it has simple, martial, or any other type in the name
-				MasterObjectList[name]->AddWeaponType(TempW);
+				WeaponType TempW = FindWeaponType(a_list); //this a_line looks at what the a_list is called, and returns if it has simple, martial, or any other type in the a_name
+				m_MasterObjectList[m_name]->AddWeaponType(TempW);
 				//determine if weapon is versitile
-				auto it = find(MasterObjectList[name]->GetWeaponType().begin(), MasterObjectList[name]->GetWeaponType().end(), LIGHT);
-				if (it != MasterObjectList[name]->GetWeaponType().end())
+				auto it = find(m_MasterObjectList[m_name]->GetWeaponType().begin(), m_MasterObjectList[m_name]->GetWeaponType().end(), LIGHT);
+				if (it != m_MasterObjectList[m_name]->GetWeaponType().end())
 				{
-					MasterObjectList[name]->SetVersatile(false);
+					m_MasterObjectList[m_name]->SetVersatile(false);
 				}
-				//std::cout << "Weapon Loaded:" << std::endl;
-			//	MasterObjectList[name]->DisplayObjectWeaponFacts();
-					//line structure is
+				//std::cout << "m_Weapon Loaded:" << std::endl;
+			//	m_MasterObjectList[a_name]->DisplayObjectWeaponFacts();
+					//a_line structure is
 					//Dagger, 			1d4, 19/x2, 10ft, 1lb, piercing, light, dagger
 			}
 			return true;
 		}
 		catch(std::exception const & error)
 		{
-			std::cout << "Error in loading objects: " << error.what() << std::endl;
+			std::cout << "Error in loading m_objects: " << error.what() << std::endl;
 			//return false;
 		}
 	}
 
 }
 
-bool EncounterInstance::LoadArmorList(std::string list)
+bool EncounterInstance::LoadArmorList(std::string a_list)
 {
-	//3.5 armor list
+	//3.5 armor a_list
 	std::ifstream reader;
-	reader.open(GetItemFolderPath() + "\\" + list);
+	reader.open(GetItemFolderPath() + "\\" + a_list);
 
 	if (reader.is_open())
 	{
 		std::string line = "";
-		std::string name = "";
+		std::string m_name = "";
 		std::string TempString = "";
-		//std::cout << "Loading armor list: " << list << std::endl;
+		//std::cout << "Loading armor a_list: " << a_list << std::endl;
 		try {
 			while (getline(reader, line))
 			{
@@ -1274,35 +1221,35 @@ bool EncounterInstance::LoadArmorList(std::string list)
 				{
 					continue;
 				}
-				//std::cout << "Raw line: " << line << std::endl;	
+				//std::cout << "Raw a_line: " << a_line << std::endl;	
 
-				name = line.substr(0, line.find_first_of(","));
+				m_name = line.substr(0, line.find_first_of(","));
 
 				line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end()); //remove all spaces
-				line = line.substr(line.find(name) + name.length()+1);
+				line = line.substr(line.find(m_name) + m_name.length()+1);
 				if (line.find("Shield") == std::string::npos)
 				{
-					name = name + " Armor";
+					m_name = m_name + " Armor";
 				}
-			//	std::cout << "New object: " << name << std::endl;
+			//	std::cout << "New object: " << a_name << std::endl;
 				ArmorObject* TempArmor= new ArmorObject;
-			//	MasterObjectList.insert(std::pair<std::string, ObjectClass*>(name, new ArmorObject));
+			//	m_MasterObjectList.insert(std::pair<std::string, ObjectClass*>(a_name, new ArmorObject));
 				
-			//	std::cout << "Line no name " << line << std::endl;
+			//	std::cout << "Line no a_name " << a_line << std::endl;
 
 				TempString = line.substr(0, line.find(","));
 				int TempInt1 = stoi(TempString);
 				TempArmor->SetArmorBonus(TempInt1);
-				TempArmor->SetName(name);
+				TempArmor->SetName(m_name);
 
 				//std::cout <<"Tempstring " << TempString << std::endl;
-				//std::cout << "ArmorBonus:" << stoi(TempString) << std::endl;
+				//std::cout << "m_armorBonus:" << stoi(TempString) << std::endl;
 				//TempString = TempString.substr(1, TempString.find(","));
 				//	std::cout << TempString << std::endl;
 
 				//get damage reduction now
 				line = line.substr(line.find(",")+1);
-			//	std::cout << line << std::endl;
+			//	std::cout << a_line << std::endl;
 				TempString = line.substr(0, line.find(","));
 				
 				TempString = TempString.substr(0, TempString.find("/-"));
@@ -1323,7 +1270,7 @@ bool EncounterInstance::LoadArmorList(std::string list)
 				}
 				
 
-				//ArmorCheckPenalty
+				//m_armorCheckPenalty
 				line = line.substr(line.find(",") + 1);
 				TempString = line.substr(0, line.find(","));
 			//	std::cout << "ACP " << stoi(TempString) << std::endl;
@@ -1347,12 +1294,12 @@ bool EncounterInstance::LoadArmorList(std::string list)
 				//get weight
 				line = line.substr(line.find(",") + 1);
 				TempString = line.substr(0, line.find(","));
-				//std::cout << "Weight " << stoi(TempString) << std::endl;
+				//std::cout << "m_Weight " << stoi(TempString) << std::endl;
 				TempInt1 = stoi(TempString);
 				TempArmor->SetBaseWeight((float)TempInt1);
 
 				line = line.substr(line.find(",")+1);
-			//	std::cout << "Define tag " << line << std::endl;
+			//	std::cout << "Define tag " << a_line << std::endl;
 
 				if (line.find("Light") != std::string::npos)
 				{
@@ -1384,10 +1331,10 @@ bool EncounterInstance::LoadArmorList(std::string list)
 					TempArmor->AddArmorType(SHIELD);
 					TempArmor->SetBodySlot(OFFHAND);
 				}
-				TempArmor->SetTexture(Textures, TextureFolderPath);
+				TempArmor->SetTexture(m_Textures, m_TextureFolderPath);
 			//	std::cout << "Armor loaded" << std::endl;
-				MasterObjectList[name] = TempArmor;
-			//	MasterObjectList[name]->DisplayArmorInfo();
+				m_MasterObjectList[m_name] = TempArmor;
+			//	m_MasterObjectList[a_name]->DisplayArmorInfo();
 				//display armor facts
 				//TempArmor->DisplayArmorInfo();
 			}
@@ -1403,23 +1350,23 @@ bool EncounterInstance::LoadArmorList(std::string list)
 
 std::map<std::string, ObjectClass*>& EncounterInstance::GetObjectList()
 {
-	return MasterObjectList;
+	return m_MasterObjectList;
 }
 
-bool EncounterInstance::LoadFeatList(std::string list)
+bool EncounterInstance::LoadFeatList(std::string a_list)
 {
 	std::ifstream reader;
-	reader.open(FeatFolderPath + "\\" + list);
+	reader.open(m_FeatFolderPath + "\\" + a_list);
 
-	std::cout << "Loading featlist start:" <<list<< std::endl;
+	std::cout << "Loading featlist start:" <<a_list<< std::endl;
 
 	if (reader.is_open())
 	{
 		std::string line = "";
-		std::string name = "";
+		std::string m_name = "";
 		std::string TempString = "";
-		std::cout << "Loading feat list: " << list << std::endl;
-		//get if it is a single feat or group of feats
+		std::cout << "Loading feat a_list: " << a_list << std::endl;
+		//get if it is a_a single feat or group of feats
 		while (getline(reader, line))
 		{
 			line = RemoveComments(line);
@@ -1434,11 +1381,11 @@ bool EncounterInstance::LoadFeatList(std::string list)
 	}
 	return true;
 }
-bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
+bool EncounterInstance::LoadFeat(std::ifstream &a_reader, int a_startFeat)
 {
 	std::string line = "";
-	std::string name = "";
-	std::string description = "";
+	std::string m_name = "";
+	std::string m_description = "";
 	std::string PreReq = "";
 	std::string Bonuses = "";
 	std::string Special = "";
@@ -1451,7 +1398,7 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 	//remember at end of loop if each = true delete tempfeat and do not add it to masterlist, it will be empty
 	FeatClass* TempFeat = new FeatClass;
 	bool success = true;
-	while (getline(reader, line) && Each == false)
+	while (getline(a_reader, line) && Each == false)
 	{
 		try {
 			line = RemoveComments(line);
@@ -1463,7 +1410,7 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 					//limit it to certain groups soon
 					for (auto i = WeaponTypeTextMap.begin()++; i != WeaponTypeTextMap.end(), (*i).first != SIMPLE; i++)
 					{
-						if (!AddEachWeaponFeat(reader, StartFeat, (*i).first))
+						if (!AddEachWeaponFeat(a_reader, a_startFeat, (*i).first))
 						{
 							success = false;
 						}
@@ -1478,28 +1425,28 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 				}
 				break;
 			} //end if find EACH
-			//std::cout << "Line loading feat:" << line << std::endl;
+			//std::cout << "Line loading feat:" << a_line << std::endl;
 			if (line.find("</Feat>") != std::string::npos)
 			{
-				MasterFeatList[TempFeat->GetName()] = TempFeat;
-				MasterFeatList[TempFeat->GetName()]->DisplayFeatFullInfo();
+				m_MasterFeatList[TempFeat->GetName()] = TempFeat;
+				m_MasterFeatList[TempFeat->GetName()]->DisplayFeatFullInfo();
 				break;
 			}
 
-			if (line.find("FeatName:") != std::string::npos)
+			if (line.find("m_FeatName:") != std::string::npos)
 			{
-				line = line.substr(line.find("FeatName:"));
-				name = line.substr(line.find(":") + 1);
-				std::cout << "New Feat Name " << name << std::endl;
-				TempFeat->SetName(name);
+				line = line.substr(line.find("m_FeatName:"));
+				m_name = line.substr(line.find(":") + 1);
+				std::cout << "New Feat Name " << m_name << std::endl;
+				TempFeat->SetName(m_name);
 			}
 			//start reading data
 			if (line.find("FeatDescription:") != std::string::npos)
 			{
-				description = line;
-				description = description.substr(line.find("\"") + 1, line.find_last_of("\"") - 1);
-			//	std::cout << "FeatDescription:" << description << std::endl;
-				TempFeat->SetDescription(description);
+				m_description = line;
+				m_description = m_description.substr(line.find("\"") + 1, line.find_last_of("\"") - 1);
+			//	std::cout << "FeatDescription:" << m_description << std::endl;
+				TempFeat->SetDescription(m_description);
 			}
 
 
@@ -1514,10 +1461,10 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 					Bonuses = Bonuses.substr(Bonuses.find("RANGE(") + 6, Bonuses.find(")") - 6);
 					//std::cout << "Bonuses range: " << Bonuses << std::endl;
 					std::string TempRange = Bonuses;
-					//std::cout << TempRange.substr(0, TempRange.find("x")) << std::endl;
-					range.first = std::stoi(TempRange.substr(0, TempRange.find("x")));
-					range.second = std::stoi(TempRange.substr(TempRange.find("x") + 1));
-					//std::cout << range.first << "x" << range.second << std::endl;
+					//std::cout << TempRange.substr(0, TempRange.find("a_x")) << std::endl;
+					range.first = std::stoi(TempRange.substr(0, TempRange.find("a_x")));
+					range.second = std::stoi(TempRange.substr(TempRange.find("a_x") + 1));
+					//std::cout << range.first << "a_x" << range.second << std::endl;
 					TempFeat->SetRangeActivated(range.first, range.second);
 					TempFeat->SetUsesRangeAbility(true);
 				}
@@ -1602,7 +1549,7 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 						} // end if(range found)
 						else
 						{
-							//range not found, so it is a fixed amount
+							//range not found, so it is a_a fixed amount
 						//	std::cout << "Amount increase " << TempString.substr(0, TempString.find("AttackRoll")) << std::endl;
 							int tempint1 = stoi(TempString.substr(0, TempString.find("AttackRoll")));
 							CircumstanceType CType = FindCircumstanceType(Benefit);
@@ -1682,7 +1629,7 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 						} // end if(range found)
 						else
 						{
-							//range not found, so it is a fixed amount
+							//range not found, so it is a_a fixed amount
 							//std::cout << "Amount increase " << TempString.substr(0, TempString.find("DamageRoll")) << std::endl;
 							int tempint1 = stoi(TempString.substr(0, TempString.find("DamageRoll")));
 
@@ -1766,7 +1713,7 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 								}
 							}//end sign = +
 						} // end if(range found)
-						else //range not found, so it is a fixed amount
+						else //range not found, so it is a_a fixed amount
 						{
 							//std::cout << "Amount increase " << TempString.substr(0, TempString.find("Dodge")) << std::endl;
 							int tempint1 = stoi(TempString.substr(0, TempString.find("Dodge")));
@@ -1863,7 +1810,7 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 								TempFeat->AddCircumstanceArmorBonusSubtract(CType, 0);
 							}
 						} // end if(range found)
-						else //range not found, so it is a fixed amount
+						else //range not found, so it is a_a fixed amount
 						{
 							//std::cout << "Amount increase " << TempString.substr(0, TempString.find("Dodge")) << std::endl;
 							int tempint1 = stoi(TempString.substr(0, TempString.find(AbilityScoreTextMap[AbType])));
@@ -1950,7 +1897,7 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 								}
 								*/
 							} // end if(range found)
-							else //range not found, so it is a fixed amount
+							else //range not found, so it is a_a fixed amount
 							{
 								//std::cout << "Amount increase " << TempString.substr(0, TempString.find("Dodge")) << std::endl;
 								int tempint1 = stoi(TempString.substr(0, TempString.find(AbilityScoreTextMap[AbType])));
@@ -2082,67 +2029,67 @@ bool EncounterInstance::LoadFeat(std::ifstream &reader, int StartFeat)
 	}
 
 //helper
-std::string EncounterInstance::RemoveComments(std::string line)
+std::string EncounterInstance::RemoveComments(std::string a_line)
 {
-	if (line.find("//") != std::string::npos)
+	if (a_line.find("//") != std::string::npos)
 	{
-		int endchar = line.find("//");
-		line = line.substr(0, endchar);
-		//	std::cout << "ResultAfterComment " << line << std::endl;
+		int endchar = a_line.find("//");
+		a_line = a_line.substr(0, endchar);
+		//	std::cout << "ResultAfterComment " << a_line << std::endl;
 	}
-	return line;
+	return a_line;
 }
 
-bool EncounterInstance::AddEachWeaponFeat(std::ifstream & reader, int StartPos, WeaponType Wtype) 
+bool EncounterInstance::AddEachWeaponFeat(std::ifstream & a_reader, int a_StartPos, WeaponType a_Wtype) 
 {
 	//start at beginning of feat
-	reader.seekg(StartPos, std::ios::beg);
+	a_reader.seekg(a_StartPos, std::ios::beg);
 
 	std::string line;
 	std::string TempString;
-	std::string name;
+	std::string m_name;
 	std::pair<WeaponType, int> TempBonus;
 	int tempint1;
 //	int tempint2;
 	
 	FeatClass* TempFeat = new FeatClass;
 
-	while (getline(reader, line))
+	while (getline(a_reader, line))
 	{
 		//start reading data, try block to stop stoi from crashing program from bad reads
 		try {
 			line = RemoveComments(line);
 
-			//std::cout << "Line loading feat:" << line << std::endl;
+			//std::cout << "Line loading feat:" << a_line << std::endl;
 			if (line.find("</Feat>") != std::string::npos)
 			{
 				break;
 			}
 
-			if (line.find("FeatName:") != std::string::npos)
+			if (line.find("m_FeatName:") != std::string::npos)
 			{
-				line = line.substr(line.find("FeatName:"));
-				name = line.substr(line.find(":")+1);
+				line = line.substr(line.find("m_FeatName:"));
+				m_name = line.substr(line.find(":")+1);
 				std::string temp = "WEAPONTYPE EACH";
 				
-				name.replace(name.find("WEAPONTYPE"), temp.length(), WeaponTypeTextMap[Wtype]);
-				TempFeat->SetName(name);
-				std::cout << "New Feat Name " << name << std::endl;
+				m_name.replace(m_name.find("WEAPONTYPE"), temp.length(), WeaponTypeTextMap[a_Wtype]);
+				TempFeat->SetName(m_name);
+				std::cout << "New Feat Name " << m_name << std::endl;
 			}
 			
 			if (line.find("FeatDescription:") != std::string::npos)
 			{
-				std::string description = line;
-				description = description.substr(line.find("\"") + 1, line.find_last_of("\"") - 1);
-			//	std::cout << "FeatDescription:" << description << std::endl;
-				TempFeat->SetDescription(description);
+				std::string m_description = line;
+				m_description = m_description.substr(line.find("\"") + 1, line.find_last_of("\"") - 1);
+			//	std::cout << "FeatDescription:" << m_description << std::endl;
+				TempFeat->SetDescription(m_description);
 			}
 
 			if (line.find("Prerequisites:") != std::string::npos)
 			{
 				std::string PreReq = line.substr(line.find(":") + 1);
 			//	std::cout << "PreReqs:" << PreReq << std::endl;
-				//TBD later, when a leveling machine can be implemented, otherwise irrelevant as we wont check for illegal characters at loadtime
+				//TBD later, when a_a leveling machine can be implemented, otherwise irrelevant as we wont check for illegal characters at loadtime
 			}
 
 			if (line.find("Benefit:") != std::string::npos)
@@ -2150,7 +2097,7 @@ bool EncounterInstance::AddEachWeaponFeat(std::ifstream & reader, int StartPos, 
 				std::string Benefit = "";
 				std::string Bonuses = "";
 				std::pair<int, int> range;
-			//	ReplaceWeaponType(line, Wtype);
+			//	ReplaceWeaponType(a_line, a_Wtype);
 
 				Benefit = line.substr(line.find(":") + 1);
 			//	std::cout << "Benefit:" << Benefit << std::endl;
@@ -2162,10 +2109,10 @@ bool EncounterInstance::AddEachWeaponFeat(std::ifstream & reader, int StartPos, 
 					Bonuses = Bonuses.substr(Bonuses.find("RANGE(") + 6, Bonuses.find(")") - 6);
 					//	std::cout << "Bonuses range: " << Bonuses << std::endl;
 					std::string TempRange = Bonuses;
-					//std::cout << TempRange.substr(0, TempRange.find("x")) << std::endl;
-					range.first = std::stoi(TempRange.substr(0, TempRange.find("x")));
-					range.second = std::stoi(TempRange.substr(TempRange.find("x") + 1));
-					//std::cout << range.first << "x" << range.second << std::endl;
+					//std::cout << TempRange.substr(0, TempRange.find("a_x")) << std::endl;
+					range.first = std::stoi(TempRange.substr(0, TempRange.find("a_x")));
+					range.second = std::stoi(TempRange.substr(TempRange.find("a_x") + 1));
+					//std::cout << range.first << "a_x" << range.second << std::endl;
 				}			
 				
 				while (Benefit.find(",") != std::string::npos || Benefit.find(".") != std::string::npos)
@@ -2189,12 +2136,12 @@ bool EncounterInstance::AddEachWeaponFeat(std::ifstream & reader, int StartPos, 
 					if (TempString.find("AttackRoll") != std::string::npos)
 					{	
 							tempint1 = stoi(TempString.substr(0, TempString.find("AttackRoll")));
-							TempFeat->AddWeaponAttackBonusAdd(Wtype, tempint1);
+							TempFeat->AddWeaponAttackBonusAdd(a_Wtype, tempint1);
 					}
 					if (TempString.find("DamageRoll") != std::string::npos)
 					{
 							tempint1 = stoi(TempString.substr(0, TempString.find("DamageRoll")));
-							TempFeat->AddWeaponDamageBonusAdd(Wtype, tempint1);
+							TempFeat->AddWeaponDamageBonusAdd(a_Wtype, tempint1);
 					}
 					//may add different bonuses later
 					if (Benefit.find(",") != std::string::npos)
@@ -2215,14 +2162,14 @@ bool EncounterInstance::AddEachWeaponFeat(std::ifstream & reader, int StartPos, 
 			return false;
 		}	
 	}
-	MasterFeatList[TempFeat->GetName()]= TempFeat;
-	//MasterFeatList[TempFeat->GetName()]->DisplayFeatFullInfo();
+	m_MasterFeatList[TempFeat->GetName()]= TempFeat;
+	//m_MasterFeatList[TempFeat->GetName()]->DisplayFeatFullInfo();
 	return true;
 }
 
 void EncounterInstance::DisplayMasterFeatListNames()
 {
-	for (auto i = MasterFeatList.begin(); i != MasterFeatList.end(); i++)
+	for (auto i = m_MasterFeatList.begin(); i != m_MasterFeatList.end(); i++)
 	{
 		std::cout << (*i).first << std::endl;
 	}
@@ -2230,7 +2177,7 @@ void EncounterInstance::DisplayMasterFeatListNames()
 
 void EncounterInstance::DisplayMasterObjectListNames()
 {
-	for (auto i = MasterObjectList.begin(); i != MasterObjectList.end(); i++)
+	for (auto i = m_MasterObjectList.begin(); i != m_MasterObjectList.end(); i++)
 	{
 		std::cout << (*i).first << std::endl;
 	}

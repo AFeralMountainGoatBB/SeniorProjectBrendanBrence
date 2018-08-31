@@ -14,15 +14,15 @@ public:
 	void DisplayObjectWeaponFacts();
 
 	virtual std::string GetName();
-	virtual void SetName(std::string name);
+	virtual void SetName(std::string m_name);
 
 	//WeaponType GetWeaponTypes();
 	void AddWeaponType(WeaponType WeaponType);
 	std::vector<WeaponType>& GetWeaponType();
-	void SetWeaponTypes(std::vector<WeaponType> WeaponTypes);
+	void SetWeaponTypes(std::vector<WeaponType> m_weaponTypes);
 
 	std::pair<int, DiceType> GetDamageDice();
-	void SetDamageDice(std::pair<int,DiceType> DamageDice);
+	void SetDamageDice(std::pair<int,DiceType> m_damageDice);
 
 	bool GetTwoHanded();
 	void SetTwoHanded(bool isTwoHanded);
@@ -44,7 +44,7 @@ public:
 	//returns the location
 	virtual std::pair<int, int> GetLocation();
 
-	//Centers the camera over the entity
+	//Centers the m_camera over the entity
 	void setCamera(SDL_Rect& camera);
 
 	//Shows the entity on the screen
@@ -56,13 +56,13 @@ public:
 	void RemoveObject(std::vector<std::vector<Tile>> &Map, int index);
 
 	virtual BodyLocation GetBodySlot();
-	virtual void SetBodySlot(BodyLocation location) { BodySlot = location; }
+	virtual void SetBodySlot(BodyLocation location) { m_BodySlot = location; }
 
-	int GetRangeIncrement() { return RangeIncrement; }
-	void SetRangeIncrement(int passed) { this->RangeIncrement = passed; }
+	int GetRangeIncrement() { return m_RangeIncrement; }
+	void SetRangeIncrement(int passed) { this->m_RangeIncrement = passed; }
 
 	const float GetBaseWeight();
-	void SetBaseWeight(float Weight);
+	void SetBaseWeight(float m_Weight);
 
 	std::vector<DamageType>& GetDamageTypes();
 	void AddDamageType(DamageType AddType);
@@ -74,61 +74,61 @@ public:
 
 	void operator=(const ObjectClass* other)
 	{
-		mBox.x = other->mBox.x;
-		mBox.y = other->mBox.y;
-		mBox.h = other->mBox.h;
-		mBox.w = other->mBox.w;
+		m_Box.x = other->m_Box.x;
+		m_Box.y = other->m_Box.y;
+		m_Box.h = other->m_Box.h;
+		m_Box.w = other->m_Box.w;
 
-		mPathTexture = other->mPathTexture;
-		ObjectName = other->ObjectName;
-		ObjectDescription = other->ObjectDescription;
+		m_PathTexture = other->m_PathTexture;
+		m_ObjectName = other->m_ObjectName;
+		m_ObjectDescription = other->m_ObjectDescription;
 
-		TwoHanded = other->TwoHanded;
-		Versatile = other->Versatile;
-		for (auto i = other->WeaponTypes.begin(); i != other->WeaponTypes.end(); i++)
+		m_TwoHanded = other->m_TwoHanded;
+		m_Versatile = other->m_Versatile;
+		for (auto i = other->m_weaponTypes.begin(); i != other->m_weaponTypes.end(); i++)
 		{
-			this->WeaponTypes.push_back(*i);
+			this->m_weaponTypes.push_back(*i);
 		}
 
-		DamageDice.first = other->DamageDice.first;
-		DamageDice.second = other->DamageDice.second;
+		m_damageDice.first = other->m_damageDice.first;
+		m_damageDice.second = other->m_damageDice.second;
 
-		Weight = other->Weight;
-		BodySlot = other->BodySlot;
-		CritMultiplier = other->CritMultiplier;
-		CritThreat = other->CritThreat;
+		m_Weight = other->m_Weight;
+		m_BodySlot = other->m_BodySlot;
+		m_CritMultiplier = other->m_CritMultiplier;
+		m_CritThreat = other->m_CritThreat;
 	}
 
-	virtual void SetPathTexture(std::string path) { mPathTexture = path; }
-	virtual std::string GetPathTexture() { return mPathTexture; }
+	virtual void SetPathTexture(std::string path) { m_PathTexture = path; }
+	virtual std::string GetPathTexture() { return m_PathTexture; }
 private:
 	//render stuff (also some model stuff)
-	SDL_Rect mBox = { 0,0,70,70 };
-	std::string mPathTexture = "pixelknife.png";
-	LTexture* mTexture;
-	std::pair<int, int> mLocation = { 0,0 };
+	SDL_Rect m_Box = { 0,0,70,70 };
+	std::string m_PathTexture = "pixelknife.png";
+	LTexture* m_Texture;
+	std::pair<int, int> m_Location = { 0,0 };
 
 	//The dimensions of the Entity
-	int OBJECT_WIDTH = 70;
-	int OBJECT_HEIGHT = 70;
+	int m_OBJECT_WIDTH = 70;
+	int m_OBJECT_HEIGHT = 70;
 
 	//Model information
-	std::string ObjectName= "";
-	std::string ObjectDescription = "";
-	std::vector<WeaponType> WeaponTypes = { }; //types of weapon this is, default improvised
-	std::vector<DamageType> DamageTypes = {};
+	std::string m_ObjectName= "";
+	std::string m_ObjectDescription = "";
+	std::vector<WeaponType> m_weaponTypes = { }; //types of weapon this is, default improvised
+	std::vector<DamageType> m_damageTypes = {};
 
-	std::pair<int, DiceType> DamageDice = { 1, D3 };
-	float Weight=0.0; //how much does the item weigh? Unimportant save for carrying capacity and determining 2h for improvised weapons
+	std::pair<int, DiceType> m_damageDice = { 1, D3 };
+	float m_Weight=0.0; //how much does the item weigh? Unimportant save for carrying capacity and determining 2h for improvised weapons
 
-	bool TwoHanded; //does it have to take up both hand slots?
-	bool Versatile; //can it be weilded in 2 hands? (example, longsword)
+	bool m_TwoHanded; //does it have to take up both hand slots?
+	bool m_Versatile; //can it be weilded in 2 hands? (example, longsword)
 
-	int RangeIncrement = 0;
-	BodyLocation BodySlot=MAINHAND; //indicates where this weapon can be used (manhand and offhand are interchangable)
+	int m_RangeIncrement = 0;
+	BodyLocation m_BodySlot=MAINHAND; //indicates where this weapon can be used (manhand and offhand are interchangable)
 
-	int CritMultiplier=2;
-	int CritThreat = 20;
+	int m_CritMultiplier=2;
+	int m_CritThreat = 20;
 
 
 	//loading functions
@@ -154,7 +154,7 @@ public:
 	virtual void SetArmorCheckPen(int penalty);
 
 	virtual int GetSpeedReduction();
-	virtual void SetSpeedReduction(int SpeedReduction);
+	virtual void SetSpeedReduction(int m_speedReduction);
 
 	virtual int GetEquipActions();
 	virtual void SetEquipActions(int actions);
@@ -168,15 +168,15 @@ public:
 	virtual void DisplayArmorInfo();
 
 	private:
-		int ArmorBonus = 0;
-		int DamageReduction = 0;
-		int MaxDexBonus = 100;
-		int ArmorCheckPenalty = 0;
-		int SpeedReduction = 100;
-		int EquipActions = 1;
-		bool IsShield = false;
+		int m_armorBonus = 0;
+		int m_damageReduction = 0;
+		int m_maxDexBonus = 100;
+		int m_armorCheckPenalty = 0;
+		int m_speedReduction = 100;
+		int m_equipActions = 1;
+		bool m_isShield = false;
 
 		//not loaded into master list
 		
-		std::vector<ArmorType> ArmorTypes = {};
+		std::vector<ArmorType> m_armorTypes = {};
 };

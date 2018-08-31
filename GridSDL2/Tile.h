@@ -17,12 +17,12 @@ public:
 	int GetXRenderPos();
 	int GetYRenderPos();
 	int GetWidth();
-	ObjectClass* GetTopObject(); //will return NULL if no objects present
-	std::vector<ObjectClass*>& GetItemsPresent(); //returns the entire vector of objects present
+	ObjectClass* GetTopObject(); //will return NULL if no m_objects present
+	std::vector<ObjectClass*>& GetItemsPresent(); //returns the entire vector of m_objects present
 	void AddItem(ObjectClass* Item);
 	Tile RemoveObject(ObjectClass*);
 	bool EntityPresent();
-	void RemoveObjectString(std::string ObjectName);
+	void RemoveObjectString(std::string m_ObjectName);
 
 	void ClearOccupant();
 	void SetOccupant(EntityClass &Entity);
@@ -39,39 +39,39 @@ public:
 
 	void operator=(const Tile* other)
 	{
-		mBox.x = other->mBox.x;
-		mBox.y = other->mBox.y;
-		mBox.h = other->mBox.h;
-		mBox.w = other->mBox.w;
+		m_Box.x = other->m_Box.x;
+		m_Box.y = other->m_Box.y;
+		m_Box.h = other->m_Box.h;
+		m_Box.w = other->m_Box.w;
 
-		mType = other->mType;
-		mOccupied = other->mOccupied;
-		PosX = other->PosX;
-		PosY = other->PosY;
+		m_type = other->m_type;
+		m_Occupied = other->m_Occupied;
+		m_posX = other->m_posX;
+		m_posY = other->m_posY;
 
 	}
 
-	int GetXPosition() { return PosX; }
-	int GetYPosition() { return PosY; }
+	int GetXPosition() { return m_posX; }
+	int GetYPosition() { return m_posY; }
 	
 private:
 	//The attributes of the tile
-	SDL_Rect mBox;
+	SDL_Rect m_Box;
 
 	//The tile type
-	int mType;
+	int m_type;
 
 	//bool to see if space is occupied, for collision purposes
-	bool mOccupied;
+	bool m_Occupied;
 	
 	//pointer to the entity that is standing in this space (tiles can only have, at most, one entity in their space)
-	EntityClass* Occupant = nullptr;
+	EntityClass* m_occupant = nullptr;
 
-	int PosX;
-	int PosY;
+	int m_posX;
+	int m_posY;
 
-	//some way to list objects in the space
-	std::vector<ObjectClass*> ItemsPresent; 
+	//some way to list m_objects in the space
+	std::vector<ObjectClass*> m_ItemsPresent; 
 
 
 };
