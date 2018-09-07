@@ -340,33 +340,6 @@ std::vector<WeaponType>& ObjectClass:: GetWeaponType()
 	return m_weaponTypes;
 }
 
-
-//loading functions start reader is a_passed from function to function
-bool ObjectClass::LoadObject()
-{
-
-
-	return false;
-}
-
-bool ObjectClass::LoadObjectByName(std::string a_line)
-{
-
-	return true;
-}
-
-bool ObjectClass::LoadNameAndDescription()
-{
-
-	return false;
-}
-
-bool ObjectClass::LoadProperties()
-{
-
-	return false;
-}
-
 bool ObjectClass:: GetVersatile()
 {
 	return m_Versatile;

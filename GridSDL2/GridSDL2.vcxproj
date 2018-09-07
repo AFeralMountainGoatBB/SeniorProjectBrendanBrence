@@ -95,7 +95,6 @@
     <ClInclude Include="Objects.h" />
     <ClInclude Include="PathfindingAlgorithm.h" />
     <ClInclude Include="PickupItemsMenu.h" />
-    <ClInclude Include="PlayerCharacter.h" />
     <ClInclude Include="Feats.h" />
     <ClInclude Include="ScenarioMenu.h" />
     <ClInclude Include="SharedEnums.h" />

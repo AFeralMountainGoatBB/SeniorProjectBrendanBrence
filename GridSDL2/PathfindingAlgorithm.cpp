@@ -5,46 +5,6 @@
 //for ease of syntax since the pair is LOCATION then COST
 typedef std::pair<GraphLocation, double> LocationCost;
 
-void PathFinder::TestBreadthFirst(std::vector<std::vector<Tile>>& a_Map, int a_x, int a_y)
-{
-	GraphLocation Start(a_x, a_y);
-	GraphLocation End(15, 11);
-	MapAsGraph CurrentGraph;
-	CurrentGraph.MapToGraph(a_Map);
-	auto temp = breadth_first_search(CurrentGraph, Start);
-
-	DisplayPath(reconstruct_path(Start, End, temp));
-}
-
-std::map<GraphLocation, GraphLocation> PathFinder:: breadth_first_search(MapAsGraph a_graph, GraphLocation a_start) {
-	std::queue<GraphLocation> frontier;
-	frontier.push(a_start);
-
-	std::map<GraphLocation, GraphLocation> came_from;
-	came_from[a_start] = a_start;
-
-	while (!frontier.empty()) {
-		GraphLocation current = frontier.front();
-		frontier.pop();
-
-		auto tempgraph1 = a_graph.Getneighbors(current);
-		std::vector<GraphLocation> TempGraph2;
-		for (auto it = tempgraph1.begin(); it != tempgraph1.end(); it++)
-		{
-			TempGraph2.push_back((*it).first);
-		}
-		for (GraphLocation next : TempGraph2)
-		{
-			if (came_from.find(next) == came_from.end())
-			{
-				frontier.push(next);
-				came_from[next] = current;
-			}
-		}
-	}
-	return came_from;
-}
-
 //this operator is backwards and scoped to only this file, it is for reversing the priority queue
 static bool operator <(LocationCost &a_a, LocationCost &a_b)
 {
@@ -61,28 +21,25 @@ static bool operator <(LocationCost &a_a, LocationCost &a_b)
 
 void PathFinder::dijkstra_search (MapAsGraph a_graph, GraphLocation a_start, GraphLocation a_goal, std::map<GraphLocation, GraphLocation>& a_came_from, std::map<GraphLocation, double>& a_cost_so_far)
 {
-	std::priority_queue<LocationCost> frontier;
-	std::pair<GraphLocation, double> StartLC = std::make_pair(a_start, 0.0);
-	frontier.push(StartLC);
+	std::priority_queue<LocationCost> frontier; //because of overloaded operators this will keep lowest cost on top
+	std::pair<GraphLocation, double> StartLC = std::make_pair(a_start, 0.0); //starting node doesnt cost movement
+	frontier.push(StartLC); //frontier always starts at start location
 
-	a_came_from[a_start] = a_start;
-	a_cost_so_far[a_start] = 0;
+	a_came_from[a_start] = a_start; //came from map, so later can reconstruct shortest path
+	a_cost_so_far[a_start] = 0; //keeping track of cost alongside came_from nodes
 	
-	while (!frontier.empty()) {
-		GraphLocation current = frontier.top().first;
+	while (!frontier.empty()) //as long as there are nodes to be explored
+	{
+		GraphLocation current = frontier.top().first; //priority queue will keep this to be the lowest value node
 		frontier.pop();
-		if (current == a_goal) {
+		if (current == a_goal) { //exit early if goal is reached
 			break;
 		}
-		auto TempGraph = a_graph.Getneighbors(current);
-		//std::cout << "     a_x:" << current.a_x << " a_y:" << current.a_y << "Neighbors:" << std::endl;
-		//for (auto it = TempGraph.begin(); it != TempGraph.end(); it++)
-		//{
-		//	std::cout << "a_x:" << (*it).first.a_x << "  a_y:" << (*it).first.a_y << std::endl;
-		//}
+		auto TempGraph = a_graph.Getneighbors(current); //get all edge nodes possible to iterate through
+		
 		for (auto it = TempGraph.begin(); it != TempGraph.end(); it++)
 		{
-			double new_cost = a_cost_so_far[current] + (*it).second;
+			double new_cost = a_cost_so_far[current] + (*it).second; // find the cost, if the cost is the same or less than its good to be added
 			if (a_cost_so_far.find((*it).first) == a_cost_so_far.end() 
 				||
 				new_cost < a_cost_so_far[(*it).first]) 
@@ -93,17 +50,6 @@ void PathFinder::dijkstra_search (MapAsGraph a_graph, GraphLocation a_start, Gra
 			}
 		}
 	}
-}
-
-void PathFinder::TestDijkstra(std::vector<std::vector<Tile>>&a_Map, int a_x, int a_y)
-{
-	GraphLocation Start(a_x, a_y);
-	GraphLocation End(15, 11);
-	MapAsGraph CurrentGraph;
-	CurrentGraph.MapToGraph(a_Map);
-	dijkstra_search(CurrentGraph, Start, End, m_came_from_graph, m_cost_so_far);
-	DisplayPath(reconstruct_path(Start, End, m_came_from_graph));
-	draw_grid(CurrentGraph, 5, &m_cost_so_far, nullptr);
 }
 
 void PathFinder::draw_grid(MapAsGraph& a_graph, int a_field_width, std::map<GraphLocation, double>* a_distances, std::map<GraphLocation, GraphLocation>* a_point_to, std::vector<GraphLocation>* a_path) {
@@ -144,14 +90,14 @@ void PathFinder::draw_grid(MapAsGraph& a_graph, int a_field_width, std::map<Grap
 }
 
 std::vector<GraphLocation> PathFinder::reconstruct_path(GraphLocation a_start, GraphLocation a_goal, std::map<GraphLocation, GraphLocation> a_came_from) {
-	std::vector<GraphLocation> path;
-	GraphLocation current = a_goal;
+	std::vector<GraphLocation> path; //path to store and return
+	GraphLocation current = a_goal; //start at the end and travel nodes backwards
 	while (current != a_start) {
 		path.push_back(current);
 		current = a_came_from[current];
 	}
-	path.push_back(a_start); // optional
-	std::reverse(path.begin(), path.end());
+	path.push_back(a_start); // optional to get the start node in the list as well
+	std::reverse(path.begin(), path.end()); //reverse to get the actual beginning of the path first and the last node last
 	return path;
 }
 

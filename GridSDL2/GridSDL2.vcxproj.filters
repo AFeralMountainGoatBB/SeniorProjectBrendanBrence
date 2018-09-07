@@ -214,9 +214,6 @@
     <ClInclude Include="EntityClass.h">
       <Filter>Header Files\EntityTypesHFiles</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerCharacter.h">
-      <Filter>Header Files\EntityTypesHFiles</Filter>
-    </ClInclude>
     <ClInclude Include="Objects.h">
       <Filter>Header Files\DataHeaders</Filter>
     </ClInclude>

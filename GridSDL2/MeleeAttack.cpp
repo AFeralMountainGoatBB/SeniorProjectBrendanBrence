@@ -132,12 +132,6 @@ bool MeleeAttack::CheckProficiency(EntityClass &a_Source)
 	return false;
 }
 
-void MeleeAttack::AttackDualWield(EntityClass&a_Source, EntityClass & a_Target, EncounterInstance &a_Instance)
-{
-
-	return;
-}
-
 int MeleeAttack::CalcTotalAttackBonus(EntityClass & a_Source)
 {	
 	int TotalAttackRollBonus = 0;	

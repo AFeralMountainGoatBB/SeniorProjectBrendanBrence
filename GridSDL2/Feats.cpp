@@ -10,13 +10,6 @@ void FeatClass::SetName(std::string a_name)
 	this->m_FeatName = a_name;
 }
 
-bool FeatClass::LoadFeat()
-{
-	bool success = true;
-
-
-	return success;
-}
 
 void FeatClass::DisplayFeatFullInfo()
 {

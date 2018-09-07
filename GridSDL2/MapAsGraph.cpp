@@ -17,7 +17,6 @@ void MapAsGraph::MapToGraph(std::vector<std::vector<Tile>>& a_Map)
 			}
 			else if (a_Map[x][y].EntityPresent())
 			{
-				//std::cout << "Entity being added to " << x << "," << y << std::endl;
 				m_Entities.insert(GraphLocation{ x,y });
 			}
 		}
@@ -26,16 +25,17 @@ void MapAsGraph::MapToGraph(std::vector<std::vector<Tile>>& a_Map)
 
 std::vector<std::pair<GraphLocation, double>> MapAsGraph:: Getneighbors(GraphLocation a_id)
 {
-	std::vector<std::pair<GraphLocation, double>> results;
-	for (GraphLocation direction : m_directions) {
-		GraphLocation next{ a_id.x + direction.x, a_id.y + direction.y };
-		if (InGraph(next) && passable(next)) {
-			auto temp = std::make_pair(next, 1.0);
+	std::vector<std::pair<GraphLocation, double>> results; //structure  to store results in, location and cost
+	for (GraphLocation direction : m_directions) //iterate through every direction to get all possible edge nodes
+	{
+		GraphLocation next{ a_id.x + direction.x, a_id.y + direction.y }; //calculate new graph location to process
+		if (InGraph(next) && passable(next))  //check if it is in the graph and check if it is passable, if not then it is passed over
+		{
+			auto temp = std::make_pair(next, 1.0); //standard cost of movement is 1.0
 			//check if entity there and add 999.0 to cost if they are there
 			if (EntityPresent(next))
 			{
-				//std::cout << "Entity Present in " << next.x << "," << next.y << std::endl;
-				temp.second += 999.0;
+				temp.second += 999.0; //999 so all other paths will be taken before this one
 			}
 			//checking if diagonal
 			if (abs(direction.x) == abs(direction.y))
@@ -59,6 +59,6 @@ std::vector<std::pair<GraphLocation, double>> MapAsGraph:: Getneighbors(GraphLoc
 
 	if ((a_id.x + a_id.y) % 2 == 0) {
 		std::reverse(results.begin(), results.end());
-	}
+	} //reverse the results so they are readable
 	return results;
 }

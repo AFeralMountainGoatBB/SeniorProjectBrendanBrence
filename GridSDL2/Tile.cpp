@@ -96,6 +96,11 @@ int Tile::GetWidth()
 	return m_Box.w;
 }
 
+int Tile::GetHeight()
+{
+	return m_Box.h;
+}
+
 void Tile::ClearOccupant()
 {
 	m_occupant = nullptr;

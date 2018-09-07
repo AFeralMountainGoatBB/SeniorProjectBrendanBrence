@@ -1,7 +1,19 @@
-﻿#pragma once
+﻿/**********************************************************************************************//**
+ * @file	SharedEnums.h.
+ *
+ * @brief	Declares the shared enums class
+ **************************************************************************************************/
+
+#pragma once
 #include <map>
 #include <string>
 #include <iostream>
+
+/**********************************************************************************************//**
+ * @enum	DiceType
+ *
+ * @brief	Values that represent dice types, with value set to the number of dice sides
+ **************************************************************************************************/
 
 enum DiceType {
 	D100 = 100,
@@ -15,6 +27,12 @@ enum DiceType {
 	D2 = 2
 };
 
+/**********************************************************************************************//**
+ * @enum	AbilityScoreType
+ *
+ * @brief	Values that represent ability score types
+ **************************************************************************************************/
+
 enum AbilityScoreType {
 	STR=1, //strength
 	CON=3, //constitution
@@ -24,6 +42,12 @@ enum AbilityScoreType {
 	CHA=6, //charisma
 	UNKNOWNABILITYSCORETYPE=999
 };
+
+/**********************************************************************************************//**
+ * @enum	DamageType
+ *
+ * @brief	Values that represent damage types
+ **************************************************************************************************/
 
 enum DamageType
 {
@@ -35,6 +59,12 @@ enum DamageType
 	UNKNOWNDAMAGETYPE=999
 	//will add more at some point probably
 };
+
+/**********************************************************************************************//**
+ * @enum	WeaponType
+ *
+ * @brief	Values that represent weapon types
+ **************************************************************************************************/
 
 enum WeaponType
 {
@@ -62,6 +92,13 @@ enum WeaponType
 };
 
 //starts at 0, ends at UNKNOWN
+
+/**********************************************************************************************//**
+ * @enum	CircumstanceType
+ *
+ * @brief	Values that represent circumstance types
+ **************************************************************************************************/
+
 enum CircumstanceType
 {
 	DUALWIELDING, //weapon in each hand type of attack
@@ -74,6 +111,12 @@ enum CircumstanceType
 	UNKNOWNCIRCUMSTANCE=999
 };
 
+/**********************************************************************************************//**
+ * @enum	AttackRollType
+ *
+ * @brief	Values that represent attack roll types
+ **************************************************************************************************/
+
 enum AttackRollType
 {
 	NORMAL,
@@ -84,6 +127,12 @@ enum AttackRollType
 	SHIELDBASH,
 	UNKNOWNATTACKTYPE=999
 };
+
+/**********************************************************************************************//**
+ * @enum	BodyLocation
+ *
+ * @brief	Values that represent body locations
+ **************************************************************************************************/
 
 enum BodyLocation {
 	HEAD=1, //helmet, headbands, phylactery, hats
@@ -103,6 +152,12 @@ enum BodyLocation {
 	UNKNOWNBODYSLOTTYPE=999
 };
 
+/**********************************************************************************************//**
+ * @enum	ArmorType
+ *
+ * @brief	Values that represent armor types
+ **************************************************************************************************/
+
 enum ArmorType
 {
 	UNARMORED = 0,
@@ -113,6 +168,12 @@ enum ArmorType
 	TOWERSHIELD = 5,
 	UNKNOWNARMORTYPE=999
 };
+
+/**********************************************************************************************//**
+ * @enum	Direction
+ *
+ * @brief	Values that represent cardinal directions and stationary
+ **************************************************************************************************/
 
 enum Direction
 {
@@ -126,6 +187,12 @@ enum Direction
 	NORTHWEST, 
 	STATIONARY
 };
+
+/**********************************************************************************************//**
+ * @enum	ControlMode
+ *
+ * @brief	Values that represent control modes for entities
+ **************************************************************************************************/
 
 enum ControlMode
 {
@@ -143,6 +210,7 @@ enum ControlMode
 #ifndef BODY_LOCATION_TEXT_MAP
 #define BODY_LOCATION_TEXT_MAP
 
+/** @brief	The body location text map, used both ways for printing out debug statements and processing text files */
 static std::map <BodyLocation, std::string> BodyLocationTextMap = {
 	{HEAD, "Head"}, //helmet, headbands, phylactery, hats
 	{FACE, "Face"}, //masks, eyewear
@@ -163,6 +231,7 @@ static std::map <BodyLocation, std::string> BodyLocationTextMap = {
 
 #ifndef ABILITY_SCORE_TEXT_MAP
 #define ABILITY_SCORE_TEXT_MAP
+/** @brief	The ability score text map used both ways for printing out debug statements and processing text files */
 static std::map<AbilityScoreType, std::string> AbilityScoreTextMap =
 {
 	{STR, "Strength"},
@@ -177,6 +246,7 @@ static std::map<AbilityScoreType, std::string> AbilityScoreTextMap =
 
 #ifndef DAMAGE_TYPE_TEXT_MAP
 #define DAMAGE_TYPE_TEXT_MAP
+/** @brief	The damage type text map used both ways for printing out debug statements and processing text files */
 static std::map<DamageType, std::string> DamageTypeTextMap =
 {
 	{ PIERCE, "Pierce" },
@@ -187,6 +257,7 @@ static std::map<DamageType, std::string> DamageTypeTextMap =
 };
 #endif
 
+/** @brief	The circumstance type text map used both ways for printing out debug statements and processing text files  */
 static std::map<CircumstanceType, std::string> CircumstanceTypeTextMap =
 {
 	{DUALWIELDING, "DualWielding"},
@@ -201,6 +272,7 @@ static std::map<CircumstanceType, std::string> CircumstanceTypeTextMap =
 
 #ifndef WEAPON_TYPE_TEXT_MAP
 #define WEAPON_TYPE_TEXT_MAP
+/** @brief	The weapon type text map used both ways for printing out debug statements and processing text files */
 static std::map<WeaponType, std::string> WeaponTypeTextMap =
 {
 	{POLEARM, "Polearm" }, //spears, other things
@@ -230,6 +302,7 @@ static std::map<WeaponType, std::string> WeaponTypeTextMap =
 
 #endif
 
+/** @brief	The armor type text map used both ways for printing out debug statements and processing text files */
 static std::map<ArmorType, std::string> ArmorTypeTextMap =
 {
 	{LIGHTARMOR, "Light Armor"},
@@ -239,6 +312,18 @@ static std::map<ArmorType, std::string> ArmorTypeTextMap =
 	{TOWERSHIELD, "Tower Shield"}
 };
 
+/**********************************************************************************************//**
+ * @fn	static WeaponType FindWeaponType(std::string line)
+ *
+ * @brief	Searches and returns the first weapon type
+ *
+ * @author	Brendan B
+ * @date	9/3/2018
+ *
+ * @param	line	The string being searched for
+ *
+ * @return	The found weapon type.
+ **************************************************************************************************/
 
 static WeaponType FindWeaponType(std::string line)
 {
@@ -253,6 +338,19 @@ static WeaponType FindWeaponType(std::string line)
 	return UNKNOWNWEAPONTYPE;
 }
 
+/**********************************************************************************************//**
+ * @fn	static DamageType FindDamageType(std::string line)
+ *
+ * @brief	Searches for the first damage type
+ *
+ * @author	Brendan B
+ * @date	9/3/2018
+ *
+ * @param	line	string searching for
+ *
+ * @return	The found damage type.
+ **************************************************************************************************/
+
 static DamageType FindDamageType(std::string line)
 {
 	for (auto i = DamageTypeTextMap.begin(); i != DamageTypeTextMap.end(); i++)
@@ -266,6 +364,19 @@ static DamageType FindDamageType(std::string line)
 	return UNKNOWNDAMAGETYPE;
 }
 
+/**********************************************************************************************//**
+ * @fn	static ArmorType FindArmorType(std::string line)
+ *
+ * @brief	Searches for the first armor type
+ *
+ * @author	Brendan B
+ * @date	9/3/2018
+ *
+ * @param	line	string searching for
+ *
+ * @return	The found armor type.
+ **************************************************************************************************/
+
 static ArmorType FindArmorType(std::string line)
 {
 	for (auto i = ArmorTypeTextMap.begin(); i != ArmorTypeTextMap.end(); i++)
@@ -278,6 +389,19 @@ static ArmorType FindArmorType(std::string line)
 	return UNKNOWNARMORTYPE;
 }
 
+/**********************************************************************************************//**
+ * @fn	static CircumstanceType FindCircumstanceType(std::string line)
+ *
+ * @brief	Searches for the first circumstance type
+ *
+ * @author	Brendan B
+ * @date	9/3/2018
+ *
+ * @param	line	string searching for
+ *
+ * @return	The found circumstance type.
+ **************************************************************************************************/
+
 static CircumstanceType FindCircumstanceType(std::string line)
 {
 	for (auto i = CircumstanceTypeTextMap.begin(); i != CircumstanceTypeTextMap.end(); i++)
@@ -289,6 +413,19 @@ static CircumstanceType FindCircumstanceType(std::string line)
 	}
 	return UNKNOWNCIRCUMSTANCE;
 }
+
+/**********************************************************************************************//**
+ * @fn	static AbilityScoreType FindAbilityScoreType(std::string line)
+ *
+ * @brief	Searches for the first ability score type
+ *
+ * @author	Brendan B
+ * @date	9/3/2018
+ *
+ * @param	line	string searching for
+ *
+ * @return	The found ability score type.
+ **************************************************************************************************/
 
 static AbilityScoreType FindAbilityScoreType(std::string line)
 {

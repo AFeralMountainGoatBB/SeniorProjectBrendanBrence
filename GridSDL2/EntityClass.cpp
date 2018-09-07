@@ -68,20 +68,7 @@ LTexture* EntityClass::GetTexture()
 {
 	return m_Texture;
 }
-/*--------------START GETTERS -------------------*/
 
-const bool EntityClass::IsBroke()
-{
-	if (m_HitPoints <= m_HitPointMaximum / 2)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-/*----------------END GETTERS -------------------*/
 /*----------------START MUTATORS-----------------*/
 
 
@@ -118,11 +105,6 @@ bool EntityClass::EntityMeleeAttack(std::vector<std::vector<Tile>> &a_TileVector
 				Attack.AttackNormal(*this, *Target, a_Instance);
 				this->m_ActionLeft = false;
 			}
-			else if (m_AttackBothHands)
-			{
-				Attack.AttackDualWield(*this, *Target, a_Instance);
-				this->m_ActionLeft = false;
-			}
 		}
 		else
 		{
@@ -146,11 +128,6 @@ bool EntityClass::EntityRangedAttack(std::vector<std::vector<Tile>> &a_TileVecto
 			if (!m_AttackBothHands)
 			{
 				Attack.AttackNormal(*this, *Target, a_Instance);
-				this->m_ActionLeft = false;
-			}
-			else if (m_AttackBothHands)
-			{
-				Attack.AttackDualWield(*this, *Target, a_Instance);
 				this->m_ActionLeft = false;
 			}
 			return true;
@@ -178,10 +155,6 @@ bool EntityClass::EntityRangedAttack(std::vector<std::vector<Tile>> &a_TileVecto
 		if (!m_AttackBothHands)
 		{
 			Attack.AttackNormal(*this, *a_Target, a_Instance);
-		}
-		else if (m_AttackBothHands)
-		{
-			Attack.AttackDualWield(*this, *a_Target, a_Instance);
 		}
 	}
 	else
@@ -616,10 +589,8 @@ void EntityClass::DropAllWornItems(Tile& a_passedTile, std::vector<std::vector<T
 
 bool EntityClass::EquipAsWeapon(ObjectClass* a_Weapon)
 {
-	std::cout <<"Number of offhand slots" << m_Equipment.count(OFFHAND) << std::endl;
 	if (a_Weapon->GetTwoHanded())
 	{
-		std::cout << "Two handed weapon" << std::endl;
 		if (GetEquipmentInSlot(MAINHAND) == nullptr && GetEquipmentInSlot(OFFHAND) == nullptr)
 		{
 			if (EquipMainHandWeapon(a_Weapon)==true && EquipOffHandWeapon(a_Weapon)==true)
@@ -640,13 +611,13 @@ bool EntityClass::EquipAsWeapon(ObjectClass* a_Weapon)
 	{
 		if (GetEquipmentInSlot(MAINHAND) ==nullptr || GetEquipmentInSlot(OFFHAND) == nullptr)
 		{
-			std::cout << "m_Equipment slot available" << std::endl;
+			
 			if (EquipMainHandWeapon(a_Weapon)==false)
 			{
-				std::cout << "Failed equipping in mainhand, occupied" << std::endl;
+			
 				if (EquipOffHandWeapon(a_Weapon)==false)
 				{
-					std::cout << "Equipped in offhand" << std::endl;
+				
 					return false;
 				}
 				else
@@ -660,7 +631,6 @@ bool EntityClass::EquipAsWeapon(ObjectClass* a_Weapon)
 			}
 		}
 	}
-	std::cout << "EquipAsWeapon returning false" << std::endl;
 	return false;
 }
 
@@ -1345,21 +1315,7 @@ bool EntityClass::EquipObject(ObjectClass* a_item)
 			return true;
 		}
 	}
-	if (a_item->GetBodySlot()==TRADEGOOD)
-	{
-		if (this->EquipAsWeapon(a_item))
-		{
-			std::cout << "Equipped as weapon" << std::endl;
-			return true;
-		}
-		else
-		{
-			m_BackPack.AddItem(a_item);
-			std::cout << "Added to backpack" << std::endl;
-			return true;
-		}
-
-	}
+	
 	//BodyLocation a_location = a_item->GetBodySlot();
 	if (DoesSlotExist(a_item->GetBodySlot())) 
 	{
@@ -1713,7 +1669,6 @@ bool EntityClass::LoadEquipment(std::ifstream & a_reader, std::map<std::string, 
 		}
 
 	}
-	success = m_BackPack.LoadAll();
 	return success;
 }
 

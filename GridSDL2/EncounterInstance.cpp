@@ -156,7 +156,7 @@ bool EncounterInstance::LoadAllMedia(SDL_Renderer *&a_Renderer, SDL_Rect &a_Tile
 	return Success;
 }
 
-void EncounterInstance::close(LTexture &a_TileTexture, SDL_Renderer*& a_Renderer, SDL_Window*& a_EncounterWindow)
+void EncounterInstance::close(SDL_Renderer*& a_Renderer, SDL_Window*& a_EncounterWindow)
 {
 	//Deallocate tiles
 	for (int i = 0; i < g_TOTAL_TILES; ++i)
@@ -165,7 +165,10 @@ void EncounterInstance::close(LTexture &a_TileTexture, SDL_Renderer*& a_Renderer
 	}
 
 	//Free loaded images
-	a_TileTexture.free();
+	for (auto it = m_Textures.begin(); it != m_Textures.end(); it++)
+	{
+		(*it).second->free();
+	}
 
 	//Destroy m_window	
 	SDL_DestroyRenderer(a_Renderer);
@@ -176,51 +179,6 @@ void EncounterInstance::close(LTexture &a_TileTexture, SDL_Renderer*& a_Renderer
 	//Quit SDL subsystems
 	IMG_Quit();
 	SDL_Quit();
-}
-
-bool EncounterInstance::checkCollision(SDL_Rect a_a, SDL_Rect a_b)
-{
-	//The sides of the rectangles
-	int leftA, leftB;
-	int rightA, rightB;
-	int topA, topB;
-	int bottomA, bottomB;
-
-	//Calculate the sides of rect A
-	leftA = a_a.x;
-	rightA = a_a.x + a_a.w;
-	topA = a_a.y;
-	bottomA = a_a.y + a_a.h;
-
-	//Calculate the sides of rect B
-	leftB = a_b.x;
-	rightB = a_b.x + a_b.w;
-	topB = a_b.y;
-	bottomB = a_b.y + a_b.h;
-
-	//If any of the sides from A are outside of B
-	if (bottomA <= topB)
-	{
-		return false;
-	}
-
-	if (topA >= bottomB)
-	{
-		return false;
-	}
-
-	if (rightA <= leftB)
-	{
-		return false;
-	}
-
-	if (leftA >= rightB)
-	{
-		return false;
-	}
-
-	//If none of the sides from A are outside B
-	return true;
 }
 
 bool EncounterInstance::setTiles(SDL_Rect a_TileClips[])
@@ -386,29 +344,6 @@ void EncounterInstance::ClipTileSheet(SDL_Rect a_TileClips[])
 	a_TileClips[g_TILE_WATER].h = g_TILE_HEIGHT;
 }
 
-bool EncounterInstance::touchesWall(SDL_Rect a_box)
-{
-	//std::cout << "Checking a_box" << std::endl;
-	//Go through the tiles
-	for (unsigned y = 0; y < m_TileMap[0].size(); y++)
-	{
-		for (unsigned x = 0; x < m_TileMap.size(); x++)
-		{
-			if ((m_TileMap[x][y].getType() >= g_TILE_CENTER) && (m_TileMap[x][y].getType() <= g_TILE_TOPLEFT))
-			{
-				if (checkCollision(a_box, m_TileMap[x][y].getBox()))
-				{
-					return true;
-				}
-			}
-			//m_TileMap[a_x][a_y].render(m_camera, m_TileTexture, m_EncounterTileClips, m_Renderer);
-		}
-	}
-
-	//If no wall tiles were touched
-	return false;
-}
-
 void EncounterInstance::AllocateTileMap(int a_width, int a_height)
 {
 	m_TileMap.resize(a_width);
@@ -482,6 +417,7 @@ void EncounterInstance::RollInitative()
 
 void EncounterInstance::NextInInitiative()
 {
+	//iterate through initative list
 	for (auto it = m_InitiativeList.begin(); it != m_InitiativeList.end(); it++)
 	{
 		if (m_ActiveUnit == (*it))
@@ -495,11 +431,9 @@ void EncounterInstance::NextInInitiative()
 			{
 				m_ActiveUnit = (*it);
 			}
-			std::cout << "Next Init" << std::endl;
 			return;
 		}
 	}
-	std::cout << "Next Init failed" << std::endl;
 }
 
 void EncounterInstance::RemoveDeadFromLists()
@@ -545,60 +479,116 @@ void EncounterInstance::HandleEvents(SDL_Event &a_event)
 	}
 }
 
+void EncounterInstance::SetPorts(SDL_Rect& a_Bottom, SDL_Rect& a_topRight, SDL_Rect & a_topLeft)
+{
+	a_topLeft.x = 0;
+	a_topLeft.y = 0;
+	a_topLeft.w = g_SCREEN_WIDTH / 4;
+	a_topLeft.h = (g_SCREEN_HEIGHT / 4) * 3;
+
+	a_topRight.x = (g_SCREEN_WIDTH / 4);
+	a_topRight.y = 0;
+	a_topRight.w = (g_SCREEN_WIDTH / 4) * 3;
+	a_topRight.h = (g_SCREEN_WIDTH / 4) * 3;
+
+	a_Bottom.x = 0;
+	a_Bottom.y = (g_SCREEN_HEIGHT / 4) * 3;
+	a_Bottom.h = (g_SCREEN_HEIGHT / 4);
+	a_Bottom.w = g_SCREEN_WIDTH;
+
+}
+
+void EncounterInstance::HandleUnitMode(bool &a_quitBool, AIPlayer& a_ActiveAIPlayer)
+{
+	switch (m_ActiveUnit->GetControlMode())
+	{
+	case(MOVEMODE):
+		if (m_ActiveUnit->move(GetTileMap()) == true)
+		{
+			m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+			m_InfoPanel.SetAllTextures(m_Renderer);
+		}
+		break;
+	case(MELEEATTACKMODE):
+		m_ActiveUnit->EntityMeleeAttack(GetTileMap(), *this);
+		a_quitBool = CheckForEndOfEncounter();
+		m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+		m_InfoPanel.SetAllTextures(m_Renderer);
+		break;
+	case(PICKUPMODE):
+		m_ActiveUnit->EntityPickup(GetTileMap());
+		m_ActiveUnit->SetControlMode(MOVEMODE);
+		a_quitBool = CheckForEndOfEncounter();
+		m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+		m_InfoPanel.SetAllTextures(m_Renderer);
+		break;
+	case(INVENTORYMODE):
+		m_ActiveUnit->EntityInventory(GetTileMap());
+		m_ActiveUnit->SetControlMode(MOVEMODE);
+		a_quitBool = CheckForEndOfEncounter();
+		m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+		m_InfoPanel.SetAllTextures(m_Renderer);
+		break;
+	case(FEATOPTIONMODE):
+		m_ActiveUnit->EntityFeatMenu();
+		m_ActiveUnit->SetControlMode(MOVEMODE);
+		a_quitBool = CheckForEndOfEncounter();
+		m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+		m_InfoPanel.SetAllTextures(m_Renderer);
+		break;
+	case(RANGEDATTACKMODE):
+		if (m_TargetSys.GetControlMode() == SELECTTARGETMODE)
+		{
+			m_ActiveUnit->SetControlMode(MOVEMODE);
+			m_ActiveUnit->EntityRangedAttack(GetTileMap(), *this);
+			m_TargetSys.SetControlMode(MOVEMODE);
+			m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+			m_InfoPanel.SetAllTextures(m_Renderer);
+		}
+		a_quitBool = CheckForEndOfEncounter();
+		break;
+	case (AIMODE):
+		a_ActiveAIPlayer.AITurn(m_TileMap, *m_ActiveUnit, *this);
+		//m_ActiveUnit->SetControlMode(MOVEMODE);
+		a_quitBool = CheckForEndOfEncounter();
+		m_ActiveUnit->EndTurnResets();
+		NextInInitiative();
+		m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+		m_InfoPanel.SetAllTextures(m_Renderer);
+		break;
+	default:
+		return;
+	}
+}
+
 bool EncounterInstance::RunEncounter()
 {
 	//set up viewports, lefthandside is menu, bottom is log righthand side is map / gamescreen
 	SDL_Rect topLeftViewport;
-	topLeftViewport.x = 0;
-	topLeftViewport.y = 0;
-	topLeftViewport.w = g_SCREEN_WIDTH / 4;
-	topLeftViewport.h = (g_SCREEN_HEIGHT/4)*3;
-
 	SDL_Rect topRightViewPort;
-	topRightViewPort.x = (g_SCREEN_WIDTH / 4);
-	topRightViewPort.y = 0;
-	topRightViewPort.w = (g_SCREEN_WIDTH / 4) * 3;
-	topRightViewPort.h = (g_SCREEN_WIDTH / 4) * 3;
-
 	SDL_Rect BottomViewPort;
-	BottomViewPort.x = 0;
-	BottomViewPort.y = (g_SCREEN_HEIGHT / 4) * 3;
-	BottomViewPort.h = (g_SCREEN_HEIGHT / 4);
-	BottomViewPort.w = g_SCREEN_WIDTH;
+	
+	SetPorts(BottomViewPort, topRightViewPort, topLeftViewport);
 
-	m_ActionLog.AddLog(m_Renderer, "Hi please work");
-	m_ActionLog.AddLog(m_Renderer, "random lines");
-	m_ActionLog.AddLog(m_Renderer, "information");
-	m_ActionLog.AddLog(m_Renderer, "attack action");
-	m_ActionLog.AddLog(m_Renderer, "position 3");
-	m_ActionLog.AddLog(m_Renderer, "pos2");
-	m_ActionLog.AddLog(m_Renderer, "Testing this out still, checking if this is at pos1");
-	m_ActionLog.AddLog(m_Renderer, "Testing this out still, checking if this is at pos0");
 	m_ActionLog.Setup(m_TextureFolderPath, m_Textures, BottomViewPort, m_MasterFont);
 	m_ActionLog.SetLogConstraints(BottomViewPort);
-
 	m_InfoPanel.Setup(m_TextureFolderPath, m_Textures, topLeftViewport, m_MasterFont, m_Renderer);
 	m_InfoPanel.SetPanelConstraints(topLeftViewport);
 
-	bool m_quit = false;
-	
+	bool m_quit = false;	
 	AIPlayer EnemyPlayers;
-
-			AllEntitySetTexture();
-			RollInitative();
-			m_ActiveUnit = m_InitiativeList.front();
-			m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
-			m_InfoPanel.SetAllTextures(m_Renderer);
-			//std::cout << "m_Active unit is named:" << m_ActiveUnit->GetName() << std::endl;
-		//	m_ActiveUnit->SetTexture(GetTextures(), GetTextureFolderPath());
-			std::cout << "Camera created, sdl event created, textures created and assigned, entering running loop" << std::endl;
+	AllEntitySetTexture();
+	RollInitative();
+	m_ActiveUnit = m_InitiativeList.front();
+	m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
+	m_InfoPanel.SetAllTextures(m_Renderer);
 			while (!m_quit)
 			{
 				if (m_ActiveUnit->GetSide() != 1)
 				{
 					m_ActiveUnit->SetControlMode(AIMODE);
 				}
-			//	std::cout << "starting event loop" << std::endl;
+
 				//Handle events on queue
 				while (SDL_PollEvent(&m_event) != 0)
 				{
@@ -614,7 +604,6 @@ bool EncounterInstance::RunEncounter()
 					}
 					else
 					{
-						//m_ActiveUnit->HandleTurn(a_event, *this);
 						m_ActiveUnit->handleEvent(m_event, *this);
 					}
 					
@@ -623,115 +612,10 @@ bool EncounterInstance::RunEncounter()
 				}
 				SDL_RenderSetViewport(m_Renderer, &BottomViewPort);
 
-				//move the entity
-				//std::cout << "Moving man" << std::endl;
-			//	std::cout << "starting control activeunit structure" << std::endl;
-
-				//control structure for controlling units
-				switch (m_ActiveUnit->GetControlMode())
-				{
-				case(MOVEMODE):
-					if (m_ActiveUnit->move(GetTileMap()) == true)
-					{
-						m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
-						m_InfoPanel.SetAllTextures(m_Renderer);
-					}
-					
-					break;
-				case(MELEEATTACKMODE):
-					m_ActiveUnit->EntityMeleeAttack(GetTileMap(), *this);
-					m_quit = CheckForEndOfEncounter();
-					m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
-					m_InfoPanel.SetAllTextures(m_Renderer);
-					break;
-				case(PICKUPMODE):
-					m_ActiveUnit->EntityPickup(GetTileMap());
-					m_ActiveUnit->SetControlMode(MOVEMODE);
-					m_quit = CheckForEndOfEncounter();
-					m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
-					m_InfoPanel.SetAllTextures(m_Renderer);
-					break;
-				case(INVENTORYMODE):
-					m_ActiveUnit->EntityInventory(GetTileMap());
-					m_ActiveUnit->SetControlMode(MOVEMODE);
-					m_quit = CheckForEndOfEncounter();
-					m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
-					m_InfoPanel.SetAllTextures(m_Renderer);
-					break;
-				case(FEATOPTIONMODE):
-					m_ActiveUnit->EntityFeatMenu();
-					m_ActiveUnit->SetControlMode(MOVEMODE);
-					m_quit = CheckForEndOfEncounter();
-					m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
-					m_InfoPanel.SetAllTextures(m_Renderer);
-					break;
-				case(RANGEDATTACKMODE):
-					if (m_TargetSys.GetControlMode() == SELECTTARGETMODE)
-					{
-						m_ActiveUnit->SetControlMode(MOVEMODE);
-						m_ActiveUnit->EntityRangedAttack(GetTileMap(), *this);
-						m_TargetSys.SetControlMode(MOVEMODE);
-						m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
-						m_InfoPanel.SetAllTextures(m_Renderer);
-					}
-					m_quit = CheckForEndOfEncounter();
-					break;
-				case (AIMODE):
-					EnemyPlayers.AITurn(m_TileMap, *m_ActiveUnit, *this);
-					//m_ActiveUnit->SetControlMode(MOVEMODE);
-					m_quit = CheckForEndOfEncounter();
-					m_ActiveUnit->EndTurnResets();
-					NextInInitiative();
-					m_InfoPanel.DetermineAllLabels(*m_ActiveUnit, *this);
-					m_InfoPanel.SetAllTextures(m_Renderer);
-					break;
-				}
-
-		//		std::cout << "Man Moved" << std::endl;
-				if (m_TargetSys.GetActive())
-				{
-					m_TargetSys.setCamera(m_camera);
-				}
-				else
-				{
-					m_ActiveUnit->setCamera(m_camera);
-				}
-				//Clear screen
-				SDL_SetRenderDrawColor(m_Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-				SDL_RenderClear(m_Renderer);
-			//	std::cout << "RenderClear" << std::endl;
-				
-				//Render level
-				SDL_RenderSetViewport(m_Renderer, &topRightViewPort);
-				
-				//std::cout << "Renderviewport set " << std::endl;
-
-				//std::cout << "rendering tiles" << std::endl;
-
-				//render tileset
-				RenderTiles(m_camera, m_TileTexture, m_EncounterTileClips, m_Renderer);
-				
-				//std::cout << "LevelRendered?" << std::endl;
-
-				RenderAllEntities(m_camera, m_Renderer);
-				
-			//	std::cout << "People rendered" << std::endl;
-
-				//this is information of the selected unit renderport
-				SDL_RenderSetViewport(m_Renderer, &topLeftViewport);
-				SDL_RenderCopy(m_Renderer, m_MenuPort, NULL, NULL);
-				m_InfoPanel.RenderPanel(m_Renderer);
-
-				
-				//m_MenuPort.render(topLeftViewport.a_x, topLeftViewport.a_y, m_Renderer);
-				//this is the log viewport
-				SDL_RenderSetViewport(m_Renderer, &BottomViewPort);
-				SDL_RenderCopy(m_Renderer, m_BottomPort, NULL, NULL);
-				m_ActionLog.RenderLog(m_Renderer);
-				//m_BottomPort.render(BottomViewPort.a_x, BottomViewPort.a_y, m_Renderer);
-
-				//Update screen
-				SDL_RenderPresent(m_Renderer);
+				//run controlling unit structure
+				HandleUnitMode(m_quit, EnemyPlayers);
+				UpdateMap(BottomViewPort, topLeftViewport, topRightViewPort);
+			
 			}
 
 			EncounterEndScreen EndScreen;
@@ -739,9 +623,46 @@ bool EncounterInstance::RunEncounter()
 			EndScreen.EndScreenRun();
 
 		//Free resources and close SDL
-	
+			this->close(m_Renderer, m_EncounterWindow);
 	return 0;
 	return true;
+}
+
+void EncounterInstance::UpdateMap(SDL_Rect &bottomPort, SDL_Rect &topLeftPort, SDL_Rect &topRightPort)
+{
+	if (m_TargetSys.GetActive())
+	{
+		m_TargetSys.setCamera(m_camera);
+	}
+	else
+	{
+		m_ActiveUnit->setCamera(m_camera);
+	}
+	//Clear screen
+	SDL_SetRenderDrawColor(m_Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_RenderClear(m_Renderer);
+	//	std::cout << "RenderClear" << std::endl;
+
+	//Render level
+	SDL_RenderSetViewport(m_Renderer, &topRightPort);
+	//render tileset
+	RenderTiles(m_camera, m_TileTexture, m_EncounterTileClips, m_Renderer);
+	RenderAllEntities(m_camera, m_Renderer);
+
+	//this is information of the selected unit renderport
+	SDL_RenderSetViewport(m_Renderer, &topLeftPort);
+	SDL_RenderCopy(m_Renderer, m_MenuPort, NULL, NULL);
+	m_InfoPanel.RenderPanel(m_Renderer);
+
+	//m_MenuPort.render(topLeftViewport.a_x, topLeftViewport.a_y, m_Renderer);
+	//this is the log viewport
+	SDL_RenderSetViewport(m_Renderer, &bottomPort);
+	SDL_RenderCopy(m_Renderer, m_BottomPort, NULL, NULL);
+	m_ActionLog.RenderLog(m_Renderer);
+	//m_BottomPort.render(BottomViewPort.a_x, BottomViewPort.a_y, m_Renderer);
+
+	//Update screen
+	SDL_RenderPresent(m_Renderer);
 }
 
 void EncounterInstance::AddLog(std::string a_Log)

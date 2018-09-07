@@ -45,13 +45,6 @@ ObjectClass* ItemContainer::GetItemAtIndex(int a_index)
 }
 
 
-bool ItemContainer::LoadAll()
-{
-	bool success= true;
-
-	return success;
-}
-
 bool ItemContainer::isItemPresent(std::string a_name)
 {
 	for (auto it = m_ItemsPresent.begin(); it != m_ItemsPresent.end(); it++)

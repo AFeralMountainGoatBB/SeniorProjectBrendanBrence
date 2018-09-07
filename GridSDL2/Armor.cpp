@@ -138,15 +138,6 @@ void ArmorObject::SetSpeedReduction(int a_speedReduction)
 	this->m_speedReduction = a_speedReduction;
 }
 
-int ArmorObject::GetEquipActions()
-{
-	return m_equipActions;
-}
-void ArmorObject::SetEquipActions(int a_actions)
-{
-	m_equipActions = a_actions;
-}
-
 bool ArmorObject::GetIsShield()
 {
 	return m_isShield;

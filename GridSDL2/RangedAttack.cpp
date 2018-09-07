@@ -154,10 +154,6 @@ void RangedAttack::AttackNormal(EntityClass & a_Source, EntityClass &a_Target, E
 	return;
 }
 
-void RangedAttack::AttackDualWield(EntityClass & a_Source, EntityClass &a_Target, EncounterInstance &a_Instance) {
-
-}
-
 int RangedAttack::CalcTotalAttackBonus(EntityClass & a_Source)
 {
 	DetermineAndSetWeapon(a_Source);
