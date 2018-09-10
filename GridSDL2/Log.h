@@ -37,7 +37,8 @@ public:
 	Log();
 
 	/**********************************************************************************************//**
-	 * @fn	Log::Log(std::string TextureFolderPath, std::map<std::string, LTexture*> &TextureMap, SDL_Rect viewport, TTF_Font* Font);
+	 * @fn	Log::Log(std::string TextureFolderPath, std::map<std::string, LTexture*> &TextureMap, SDL_Rect viewport, TTF_
+	 * 		* Font);
 	 *
 	 * @brief	Constructor
 	 *

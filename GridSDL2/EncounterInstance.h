@@ -559,6 +559,19 @@ private:
 public:
 
 	/**********************************************************************************************//**
+	 * @fn	std::string EncounterInstance::GetFontFolderPath();
+	 *
+	 * @brief	Gets font folder path
+	 *
+	 * @author	Brendan B
+	 * @date	8/31/2018
+	 *
+	 * @return	The font folder path.
+	 **************************************************************************************************/
+
+	std::string GetFontFolderPath() { return m_FontPath; }
+
+	/**********************************************************************************************//**
 	 * @fn	std::string EncounterInstance::GetTextureFolderPath();
 	 *
 	 * @brief	Gets texture folder path

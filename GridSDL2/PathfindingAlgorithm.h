@@ -2,6 +2,8 @@
  * @file	PathfindingAlgorithm.h.
  *
  * @brief	Declares the pathfinding algorithm class
+ * 			
+ * @author Code Adapted from https://www.redblobgames.com/ various examples by Brendan B
  **************************************************************************************************/
 
 #include "GeneralHeaders.h"
@@ -16,7 +18,7 @@ class Tile;
  *
  * @brief	class to hold algorithms for pathfinding
  *
- * @author	Brendan B
+ * @author	Code Adapted from https://www.redblobgames.com/ various examples by Brendan B
  * @date	9/3/2018
  **************************************************************************************************/
 
@@ -29,7 +31,7 @@ public:
 	 *
 	 * @brief	Reconstruct path  - construct a vector of graphlocations starting at the end and working way to the beginning using came_from
 	 *
-	 * @author	Brendan B
+	 * @author	Code Adapted from https://www.redblobgames.com/ various examples by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @param	start	 	The start node
@@ -46,7 +48,7 @@ public:
 	 *
 	 * @brief	Displays a path described by path to console
 	 *
-	 * @author	Brendan B
+	 * @author	Code Adapted from https://www.redblobgames.com/ various examples by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @param	path	Full path
@@ -60,7 +62,7 @@ public:
 	 * @brief	Dijkstra search, weighted dijkstra's search, uses a priority queue to find the shortest path to goal from start
 	 * 			keeps track of the cost to advance in the direction that costs the least every iteration
 	 *
-	 * @author	Brendan B
+	 * @author	Code Adapted from https://www.redblobgames.com/ various examples by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @param 		  	graph	   	The graph pathfinding is on
@@ -77,7 +79,7 @@ public:
 	 *
 	 * @brief	Draw grid to console
 	 *
-	 * @author	Brendan B
+	 * @author	Code Adapted from https://www.redblobgames.com/ various examples by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @param [in,out]	graph	   	The graph
@@ -94,7 +96,7 @@ public:
 	 *
 	 * @brief	Use dijkstra function sets up the class and executes the required functions to execute a dikstra search
 	 *
-	 * @author	Brendan B
+	 * @author	Code Adapted from https://www.redblobgames.com/ various examples by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @param [in,out]	TileMap	The tile map.
@@ -113,7 +115,7 @@ public:
 	 *
 	 * @brief	Gets total distance
 	 *
-	 * @author	Brendan B
+	 * @author	Code Adapted from https://www.redblobgames.com/ various examples by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @param	xGoal	x val for The goal
@@ -125,7 +127,7 @@ public:
 	int GetTotalDistance(int xGoal, int yGoal);
 
 private:
-
+	/** @brief Map structure to map node to shortest came from node, in order to construct shortest path**/
 	std::map <GraphLocation, GraphLocation> m_came_from_graph;
 	/** @brief	The cost so far */
 	std::map<GraphLocation, double> m_cost_so_far;

@@ -39,10 +39,10 @@ public:
 	/**********************************************************************************************//**
 	 * @fn	std::pair<bool, bool> SightAlgorithm::raytrace(std::pair<int, int> Source, std::pair<int, int> Target, std::vector<std::vector<Tile>> & TileMap);
 	 *
-	 * @brief	Raytraces between the source point and the target point on the passed TileMap, checking every tile inbetween checking for 
+	 * @brief	Raytraces between the source point and the target point on the passed TileMap, checking every tile inbetween for 
 	 * 			tiles that block vision entirely and tiles that have units in them that partially obstruct vision
 	 *
-	 * @author	Brendan B
+	 * @author	Code adapted from algorithm presented at http://playtechs.blogspot.com/2007/03/raytracing-on-grid.html by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @param 		  	Source 	Source location

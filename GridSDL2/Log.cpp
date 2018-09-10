@@ -27,8 +27,6 @@ void Log::Setup(std::string a_TextureFolderPath, std::map<std::string, LTexture*
 	m_LogConstraints.h = a_viewport.h;
 
 	m_LogFont = a_Font;
-	//m_UpIndexButton();
-	//m_DownIndexButton(&Log::DownIndex);
 
 	m_UpIndexButton.SetName("m_UpIndexButton");
 	m_DownIndexButton.SetName("m_DownIndexButton");

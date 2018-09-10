@@ -2,6 +2,8 @@
  * @file	MapAsGraph.h.
  *
  * @brief	Declares the map as graph class, and operators to be used in their functions
+ * 			
+ * @author - Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
  **************************************************************************************************/
 
 #pragma once
@@ -16,12 +18,11 @@ class Tile;
  *
  * @brief	A graph location, used to store information on created graphs
  *
- * @author	Brendan B
+ * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
  * @date	9/3/2018
  **************************************************************************************************/
 
 struct GraphLocation {
-	//x and y locations in the graph
 	/** @brief	The x coordinate */
 	int x;
 	/** @brief	The y coordinate */
@@ -32,7 +33,7 @@ struct GraphLocation {
 	 *
 	 * @brief	Constructor
 	 *
-	 * @author	Brendan B
+	 * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @param	xin	The xin.
@@ -46,7 +47,7 @@ struct GraphLocation {
 	 *
 	 * @brief	Default constructor
 	 *
-	 * @author	Brendan B
+	 * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
 	 * @date	9/3/2018
 	 **************************************************************************************************/
 
@@ -58,7 +59,7 @@ struct GraphLocation {
  *
  * @brief	A map translated to a graph.
  *
- * @author	Brendan B
+ * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
  * @date	9/3/2018
  **************************************************************************************************/
 
@@ -73,7 +74,7 @@ public:
 	 *
 	 * @brief	checks if location is in graph
 	 *
-	 * @author	Brendan B
+	 * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @param	a_loc	The location.
@@ -90,7 +91,7 @@ public:
 	 *
 	 * @brief	passable checks the given location for if it is in the walls structure
 	 *
-	 * @author	Brendan B
+	 * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @param	a_id	The identifier, the location searched for
@@ -107,7 +108,7 @@ public:
 	 *
 	 * @brief	Entity present, checks to see if an entity is present
 	 *
-	 * @author	Brendan B
+	 * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @param	a_id	The identifier graph location
@@ -124,7 +125,7 @@ public:
 	 *
 	 * @brief	calculates cost for edge between from and to
 	 *
-	 * @author	Brendan B
+	 * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @param [in,out]	from	Source graph location.
@@ -154,7 +155,7 @@ public:
 	 *
 	 * @brief	Map to graph, looks through a map made of tiles and marks the location of every entity and wall
 	 *
-	 * @author	Brendan B
+	 * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @param [in,out]	Map	The tilemap
@@ -168,7 +169,7 @@ public:
 	 * @brief	Getneighbors the given identifier, calculates the edge nodes connecting to the graphlocation
 	 * 			given by a_id and returns them
 	 *
-	 * @author	Brendan B
+	 * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @param	a_id	The identifier of the graph edge nodes are being created for
@@ -183,7 +184,7 @@ public:
 	 *
 	 * @brief	Gets the height
 	 *
-	 * @author	Brendan B
+	 * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @return	The height
@@ -196,7 +197,7 @@ public:
 	 *
 	 * @brief	Gets the width
 	 *
-	 * @author	Brendan B
+	 * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @return	The width.
@@ -209,7 +210,7 @@ public:
 	 *
 	 * @brief	Gets the walls
 	 *
-	 * @author	Brendan B
+	 * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @return	The walls located on the map
@@ -222,7 +223,7 @@ public:
 	 *
 	 * @brief	Gets the entities
 	 *
-	 * @author	Brendan B
+	 * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
 	 * @date	9/3/2018
 	 *
 	 * @return	The entities located on the map
@@ -248,7 +249,7 @@ private:
  *
  * @brief	Less-than comparison operator, reversed for use in a priority queue setting
  *
- * @author	Brendan B
+ * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
  * @date	9/3/2018
  *
  * @param	a	The first location to compare.
@@ -266,7 +267,7 @@ static bool operator < (GraphLocation a, GraphLocation b) {
  *
  * @brief	Equality operator
  *
- * @author	Brendan B
+ * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
  * @date	9/3/2018
  *
  * @param	a	The first instance to compare.
@@ -284,7 +285,7 @@ static bool operator == (GraphLocation a, GraphLocation b) {
  *
  * @brief	Inequality operator
  *
- * @author	Brendan B
+ * @author	Code ADAPTED from https://www.redblobgames.com various examples on pathfinding by Brendan B
  * @date	9/3/2018
  *
  * @param	a	The first instance to compare.

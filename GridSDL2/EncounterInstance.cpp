@@ -27,7 +27,7 @@ bool EncounterInstance::init(SDL_Renderer *&a_Renderer, SDL_Window *&a_Encounter
 		}
 
 		//Create m_window
-		a_EncounterWindow = SDL_CreateWindow("WotC Lawsuit bait", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_SCREEN_WIDTH, g_SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		a_EncounterWindow = SDL_CreateWindow("TableTopBattleMap", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_SCREEN_WIDTH, g_SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if (a_EncounterWindow == NULL)
 		{
 			printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
@@ -101,7 +101,7 @@ bool EncounterInstance::LoadAllMedia(SDL_Renderer *&a_Renderer, SDL_Rect &a_Tile
 {
 	bool Success = true;
 	//std::cout << "Loading gfont" << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl;
-	m_MasterFont = TTF_OpenFont("Baldur.ttf", 20);
+	m_MasterFont = TTF_OpenFont("Data//Fonts//Baldur.ttf", 20);
 	m_ActionLog.SetFont(m_MasterFont);
 	if (m_MasterFont == NULL)
 	{
