@@ -134,6 +134,10 @@ void RangedAttack::AttackNormal(EntityClass & a_Source, EntityClass &a_Target, E
 		m_DamageResult += a_Target.GetName() + " Resists " + std::to_string(a_Target.GetTotalDamageReduction());
 		//do damage
 		totalDamageRoll -= (a_Target.GetTotalDamageReduction());
+		if (totalDamageRoll <= 0)
+		{
+			totalDamageRoll = 1;
+		}
 		a_Target.SubHitPoints(totalDamageRoll);
 		if (a_Target.GetHitPoints()<=0)
 		{
@@ -346,7 +350,7 @@ bool RangedAttack::CheckProficiency(EntityClass &a_Source)
 			auto it = find((i)->GetWeaponProficiencies().begin(), (i)->GetWeaponProficiencies().end(), (*Type));
 			if ((it != (i)->GetWeaponProficiencies().end())) //found
 			{
-				//std::cout << "Found proficient feat for weapontype: " << WeaponTypeTextMap[(*Type)] << " feat is: " << (*i).GetName() << std::endl;
+				std::cout << "Found proficient feat for weapontype: " << WeaponTypeTextMap[(*Type)] << " feat is: " << (*i).GetName() << std::endl;
 				return true;
 			}
 		}

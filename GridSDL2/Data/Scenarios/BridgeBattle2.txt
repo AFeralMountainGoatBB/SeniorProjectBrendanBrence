@@ -1,0 +1,10 @@
+Map: Battleofthebridge
+Characters: // player or comp, name, position, 'side'
+PlayerCharacter: KnifeMan, (7,0), 1 
+PlayerCharacter: SwordMan, (6,0), 1
+ComputerCharacter:VIKTOR, (7,10), 2
+ComputerCharacter: SwordMan, (6,10), 2
+ComputerCharacter: SpearMan, (8,10), 2
+
+Item:Dagger, (1,1)
+Item:Chain shirt Armor, (3,1)

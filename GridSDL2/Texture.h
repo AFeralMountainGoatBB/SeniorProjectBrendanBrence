@@ -17,7 +17,8 @@
  *
  * @brief	
  *
- * @author	Brendan B
+ * @author	Brendan B, heavily inspired by the Texture class found at lazyfoo SDL2 tutorials
+ * http://lazyfoo.net/tutorials/SDL/
  * @date	9/1/2018
  **************************************************************************************************/
 

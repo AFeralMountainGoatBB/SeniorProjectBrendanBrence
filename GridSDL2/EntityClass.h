@@ -1265,7 +1265,7 @@ private:
 		{THROAT, NULL}, //necklaces / prepiats
 		{ARM, NULL}, //bracers, bracelets
 		{HAND, NULL}, //gloves, gauntlets
-		{RING, NULL}, //magic rings, yo
+		{RING, NULL}, //magic rings
 		{BODY, NULL}, //armor
 		{WAIST, NULL},//belts / girdles
 		{LEGS, NULL},//magic boots

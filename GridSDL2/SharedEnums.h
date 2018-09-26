@@ -83,7 +83,6 @@ enum WeaponType
 	SIMPLE,
 	MARTIAL,
 	IMPROVISED,
-	EXOTIC,
 	LIGHT,
 	AMMO,
 	RANGED,
@@ -290,7 +289,6 @@ static std::map<WeaponType, std::string> WeaponTypeTextMap =
 
 	{SIMPLE, "Simple"},
 	{MARTIAL, "Martial"},
-	{EXOTIC, "Exotic"},
 
 	{IMPROVISED,"Improvised"},
 	{LIGHT, "Light"},
@@ -331,7 +329,7 @@ static WeaponType FindWeaponType(std::string line)
 	{
 		if (line.find((*i).second) != std::string::npos)
 		{
-			//	std::cout << "m_Weapon type found:" << (*i).second << std::endl;
+			//	std::cout << "Weapon type found:" << (*i).second << std::endl;
 			return (*i).first;
 		}
 	}

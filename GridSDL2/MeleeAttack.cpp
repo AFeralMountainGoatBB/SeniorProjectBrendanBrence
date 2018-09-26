@@ -82,6 +82,10 @@ void MeleeAttack::AttackNormal(EntityClass & a_Source, EntityClass &a_Target, En
 		//do damage
 
 		totalDamageRoll -= (a_Target.GetTotalDamageReduction());
+		if (totalDamageRoll <= 0)
+		{
+			totalDamageRoll = 1;
+		}
 		a_Target.SubHitPoints(totalDamageRoll);
 		if (a_Target.GetHitPoints() <= 0)
 		{
@@ -221,6 +225,7 @@ int MeleeAttack::TotalFeatAttackBonus(EntityClass &a_Source)
 
 int MeleeAttack::CalcTotalDamageBonus(EntityClass &a_Source)
 {
+	m_TempFeats = a_Source.GetActiveFeats();
 	if (m_Weapon == nullptr)
 	{
 		DetermineAndSetWeapon(a_Source);

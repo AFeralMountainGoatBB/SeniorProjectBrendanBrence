@@ -355,5 +355,4 @@ private:
 	/** @brief	The items present */
 	std::vector<ObjectClass*> m_ItemsPresent; 
 
-
 };

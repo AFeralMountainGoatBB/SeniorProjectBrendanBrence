@@ -13,7 +13,7 @@ void FeatClass::SetName(std::string a_name)
 
 void FeatClass::DisplayFeatFullInfo()
 {
-	std::cout << "m_FeatName " << GetName() << std::endl;
+	std::cout << "FeatName " << GetName() << std::endl;
 
 	//std::cout << "Bonuses to weapon types:" << std::endl;
 	if (m_ToggleAbility)

@@ -8,11 +8,11 @@ MainMenu::MainMenu()
 		return;
 
 	kiss_window_new(&m_window, NULL, 0, 0, 0, kiss_screen_width, kiss_screen_height);
-	strcpy(m_message, "WotC Lawsuit bait Main Menu");
+	strcpy(m_message, "Table Top Battle Map Main Menu");
 	kiss_label_new(&m_label, &m_window, m_message, (m_window.rect.w / 2 - strlen(m_message) * kiss_textfont.advance / 2), (m_window.rect.h / 2 - (kiss_textfont.fontheight + 2 * kiss_normal.h) / 2));
 	m_label.textcolor.r = 255;
 	
-	kiss_button_new(&m_QuitButton, &m_window, "Quit", (m_window.rect.w / 2 - kiss_normal.w / 2), (m_label.rect.y + kiss_textfont.fontheight + 2 * kiss_normal.h)+10);
+	kiss_button_new(&m_QuitButton, &m_window, "Quit", (m_window.rect.w / 2 - (kiss_normal.w) / 2), (m_label.rect.y + kiss_textfont.fontheight + 2 * kiss_normal.h)+10);
 	strcpy(m_message ,"Scenario Select");
 
 	m_ScenarioButton.normalimg = kiss_normal_long;
@@ -20,7 +20,7 @@ MainMenu::MainMenu()
 	m_ScenarioButton.prelightimg = kiss_prelight_long;
 	kiss_button_new(&m_ScenarioButton, &m_window, m_message, (m_window.rect.w / 2 - kiss_normal_long.w / 2), (m_label.rect.y + kiss_textfont.fontheight + kiss_normal_long.h));
 	
-	m_ScenarioButton.rect.w = (strlen(m_message) * kiss_textfont.advance);
+	m_ScenarioButton.rect.w = (strlen(m_message) * kiss_textfont.advance)+30;
 
 	m_window.visible = 1;
 }

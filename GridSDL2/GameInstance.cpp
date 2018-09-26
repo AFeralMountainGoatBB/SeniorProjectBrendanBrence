@@ -68,9 +68,6 @@ int GameInstance::EncounterRun(std::string a_path)
 	EncounterInstance Instance;
 	Instance.ScenarioLoad(a_path);
 	Instance.RunEncounter();
-
-	//one pass loading implementation started to be written
-
 	return 0;
 }
 

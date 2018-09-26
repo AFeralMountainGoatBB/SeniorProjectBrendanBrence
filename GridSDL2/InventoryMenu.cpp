@@ -22,7 +22,7 @@ InventoryMenu::InventoryMenu()
 
 	kiss_textbox_new(&m_Items, &m_MainWindow, 1, &m_array1, kiss_screen_width *.3, 3 * kiss_normal.h - kiss_screen_height / 15, m_textbox_width, m_textbox_height);
 	kiss_vscrollbar_new(&m_vscrollbar1, &m_MainWindow, m_Items.rect.x + m_textbox_width, m_Items.rect.y, m_textbox_height);
-	kiss_label_new(&m_ItemsTextBoxLabel, &m_MainWindow, "m_Items", m_Items.rect.x + kiss_edge, m_Items.rect.y - kiss_textfont.lineheight);
+	kiss_label_new(&m_ItemsTextBoxLabel, &m_MainWindow, "Items", m_Items.rect.x + kiss_edge, m_Items.rect.y - kiss_textfont.lineheight);
 	kiss_entry_new(&m_entry, &m_MainWindow, 1, "Select Item to interact with", kiss_screen_width / 10, m_Items.rect.y + m_textbox_height, 2 * m_textbox_width + 2 * kiss_up.w + kiss_edge);
 	
 	kiss_button_new(&m_SwapButton, &m_MainWindow, "Swap", kiss_screen_width*.5-(.5*kiss_normal.w) , m_entry.rect.y + m_entry.rect.h + 10);

@@ -21,7 +21,7 @@ PickupItemsMenu::PickupItemsMenu()
 
 	kiss_textbox_new(&m_textbox1, &m_MainWindow, 1, &m_array1, kiss_screen_width / 3, 3 * kiss_normal.h - kiss_screen_height / 15, m_textbox_width, m_textbox_height);
 	kiss_vscrollbar_new(&m_vscrollbar1, &m_MainWindow, m_textbox1.rect.x + m_textbox_width, m_textbox1.rect.y, m_textbox_height);
-	kiss_label_new(&m_ItemsTextBoxLabel, &m_MainWindow, "m_Items", m_textbox1.rect.x + kiss_edge, m_textbox1.rect.y - kiss_textfont.lineheight);
+	kiss_label_new(&m_ItemsTextBoxLabel, &m_MainWindow, "Items", m_textbox1.rect.x + kiss_edge, m_textbox1.rect.y - kiss_textfont.lineheight);
 	kiss_entry_new(&m_entry, &m_MainWindow, 1, "Select Item to pickup", kiss_screen_width / 10, m_textbox1.rect.y + m_textbox_height, 2 * m_textbox_width + 2 * kiss_up.w + kiss_edge);
 	kiss_button_new(&m_button_cancel, &m_MainWindow, "Cancel", m_entry.rect.x + m_entry.rect.w - kiss_edge - kiss_normal.w, m_entry.rect.y + m_entry.rect.h + kiss_normal.h);
 	kiss_button_new(&m_Main_ok_button, &m_MainWindow, "OK", m_button_cancel.rect.x - 2 * kiss_normal.w, m_button_cancel.rect.y);	

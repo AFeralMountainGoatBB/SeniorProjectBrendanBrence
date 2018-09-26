@@ -851,15 +851,15 @@ bool EncounterInstance::ScenarioLoad(std::string a_Path)
 
 				path = line.substr(0, line.find_first_of(","));
 				path = path + ".txt";
-				location = line.substr(line.find(",")+1, line.length()-line.find(")")+1);
-				std::cout << "a_path: " << path << std::endl;
-
-				//std::cout << "Location: " << location << std::endl;
-				location = location.substr(location.find_first_of("(")+1, line.length()-location.find_first_of(")")+1);
-			//	std::cout << "location: " << location << std::endl;
+				location = line.substr(line.find(",")+1, line.length());
+				std::cout << "path: " << path << std::endl;
+				auto first = location.find_first_of("(");
+				auto last = location.find_first_of(")");
+			//	std::cout << "Location raw without sub " << location << std::endl;
+				location = location.substr(first+1, (last - first)-1);
+				//std::cout << "Location raw " << location;
 				TempCharacterLocation.first = stoi(location.substr(0, location.find_first_of(",")));
-				TempCharacterLocation.second = stoi(location.substr(location.find_first_of(",")+1, location.length()));
-
+				TempCharacterLocation.second = stoi(location.substr(location.find_first_of(",")+1, location.length()+1));
 				line = line.substr(line.find_last_of(",")+1);
 				std::cout << "Line: " << line << std::endl;
 				tempSide = stoi(line);
@@ -873,7 +873,7 @@ bool EncounterInstance::ScenarioLoad(std::string a_Path)
 				//create new character pointer in entitylist, call to load character
 				m_EntityList.push_back(new EntityClass);
 				std::cout << "Trying to load character with information:" << std::endl;
-				std::cout << "a_Path:" << path << std::endl;
+				std::cout << "Path:" << path << std::endl;
 				std::cout << "Character location:" << TempCharacterLocation.first << ", " << TempCharacterLocation.second << std::endl;
 				std::cout << "PlayerControlled: ";
 				if (PlayerControlled)
@@ -1012,7 +1012,7 @@ bool EncounterInstance::LoadWeaponList(std::string a_list)
 				{
 					continue;
 				}
-				std::cout << "Raw a_line: " << line << std::endl;	
+				std::cout << "Raw line: " << line << std::endl;	
 
 				m_name = line.substr(0, line.find_first_of(","));
 
@@ -1026,7 +1026,7 @@ bool EncounterInstance::LoadWeaponList(std::string a_list)
 				//std::cout << "Line no a_name " << a_line << std::endl;
 
 				//get two handed
-				if (line.find("m_TwoHanded") != std::string::npos)
+				if (line.find("TwoHanded") != std::string::npos)
 				{
 					m_MasterObjectList[m_name]->SetTwoHanded(true);
 				}
@@ -1045,8 +1045,8 @@ bool EncounterInstance::LoadWeaponList(std::string a_list)
 			//	std::cout << a_line << std::endl;
 				TempString = line.substr(0, line.find_first_of(","));
 				//std::cout << TempString << std::endl;
-				tempint1 = stoi(TempString.substr(0, TempString.find("/a_x")));
-				tempint2 = stoi(TempString.substr(TempString.find("/a_x") + 2));
+				tempint1 = stoi(TempString.substr(0, TempString.find("/x")));
+				tempint2 = stoi(TempString.substr(TempString.find("/x") + 2));
 				m_MasterObjectList[m_name]->SetCritInformation(tempint1, tempint2);
 				//std::cout << m_MasterObjectList[a_name]->GetCritInformation().first << m_MasterObjectList[a_name]->GetCritInformation().second << std::endl;
 			
@@ -1079,7 +1079,6 @@ bool EncounterInstance::LoadWeaponList(std::string a_list)
 					DamageType TempD = FindDamageType(line);
 					m_MasterObjectList[m_name]->AddDamageType(TempD);	
 					line.erase(line.find(DamageTypeTextMap[TempD]), DamageTypeTextMap[TempD].length());
-					//a_line.erase(a_line.find(""
 					//std::cout << "Adding m_damageTypes: " << a_line << std::endl;
 					line = line.substr(line.find(",")+1);					
 				}
@@ -1354,9 +1353,9 @@ bool EncounterInstance::LoadFeat(std::ifstream &a_reader, int a_startFeat)
 				break;
 			}
 
-			if (line.find("m_FeatName:") != std::string::npos)
+			if (line.find("FeatName:") != std::string::npos)
 			{
-				line = line.substr(line.find("m_FeatName:"));
+				line = line.substr(line.find("FeatName:"));
 				m_name = line.substr(line.find(":") + 1);
 				std::cout << "New Feat Name " << m_name << std::endl;
 				TempFeat->SetName(m_name);
@@ -1383,8 +1382,8 @@ bool EncounterInstance::LoadFeat(std::ifstream &a_reader, int a_startFeat)
 					//std::cout << "Bonuses range: " << Bonuses << std::endl;
 					std::string TempRange = Bonuses;
 					//std::cout << TempRange.substr(0, TempRange.find("a_x")) << std::endl;
-					range.first = std::stoi(TempRange.substr(0, TempRange.find("a_x")));
-					range.second = std::stoi(TempRange.substr(TempRange.find("a_x") + 1));
+					range.first = std::stoi(TempRange.substr(0, TempRange.find("x")));
+					range.second = std::stoi(TempRange.substr(TempRange.find("x") + 1));
 					//std::cout << range.first << "a_x" << range.second << std::endl;
 					TempFeat->SetRangeActivated(range.first, range.second);
 					TempFeat->SetUsesRangeAbility(true);
@@ -1674,15 +1673,14 @@ bool EncounterInstance::LoadFeat(std::ifstream &a_reader, int a_startFeat)
 
 					if (TempString.find("Proficiency") != std::string::npos)
 					{
-						std::cout << "PROFICIENCY FEAT HERE!!!!" << std::endl;
-						std::cout << "PROFICIENCY FEAT HERE!!!!" << std::endl;
-						std::cout << "PROFICIENCY FEAT HERE!!!!" << std::endl;
+						std::cout << "PROFICENCY FEAT" << std::endl;
 						if (TempString.find("WeaponProficiency") != std::string::npos)
 						{
 							WeaponType WType = FindWeaponType(TempString);
 							if (WType != UNKNOWNWEAPONTYPE)
 							{
 								TempFeat->AddWeaponProficiency(WType);
+							//	std::cout << "Weapon PROFICENCY FEAT" << std::endl;
 							}
 						}
 						if (TempString.find("ArmorProficiency") != std::string::npos)
@@ -1820,7 +1818,6 @@ bool EncounterInstance::LoadFeat(std::ifstream &a_reader, int a_startFeat)
 							} // end if(range found)
 							else //range not found, so it is a_a fixed amount
 							{
-								//std::cout << "Amount increase " << TempString.substr(0, TempString.find("Dodge")) << std::endl;
 								int tempint1 = stoi(TempString.substr(0, TempString.find(AbilityScoreTextMap[AbType])));
 								CircumstanceType CType = FindCircumstanceType(Benefit);
 								if (TempString.find("ALL") != std::string::npos)
@@ -1849,7 +1846,6 @@ bool EncounterInstance::LoadFeat(std::ifstream &a_reader, int a_startFeat)
 					if (TempString.find("MovementSpeed") != std::string::npos)
 					{
 						std::string Affects = TempString.substr(TempString.find("MovementSpeed") + 13);
-						//std::cout << "Amount increase " << TempString.substr(0, TempString.find("Dodge")) << std::endl;
 						int tempint1 = stoi(TempString.substr(0, TempString.find("MovementSpeed")));
 						ArmorType AmType = FindArmorType(Benefit);
 						if (TempString.find("ALL") != std::string::npos)
@@ -1875,10 +1871,6 @@ bool EncounterInstance::LoadFeat(std::ifstream &a_reader, int a_startFeat)
 							if (tempint1 > 0)
 							{
 								TempFeat->AddArmorMoveSpeedBonusAdd(AmType, tempint1);
-							}
-							else if (tempint1 < 0)
-							{
-								//TempFeat->AddArmorSpeedBonusSubtract(AmType, tempint1);
 							}
 						}
 					}
@@ -1987,9 +1979,9 @@ bool EncounterInstance::AddEachWeaponFeat(std::ifstream & a_reader, int a_StartP
 				break;
 			}
 
-			if (line.find("m_FeatName:") != std::string::npos)
+			if (line.find("FeatName:") != std::string::npos)
 			{
-				line = line.substr(line.find("m_FeatName:"));
+				line = line.substr(line.find("FeatName:"));
 				m_name = line.substr(line.find(":")+1);
 				std::string temp = "WEAPONTYPE EACH";
 				

@@ -15,10 +15,3 @@ Splint mail,		+3,	3/-,	0,	-7,	20 ft, 	45 lb, Heavy
 Banded mail,		+3,	3/-,	1,	-6,	20 ft,	35 lb, Heavy
 Half-plate,			+4,	3/-,	0,	-7,	20 ft, 	50 lb, Heavy
 Full-plate,			+4, 4/-,	1,	-6,	20 ft, 	50 lb, Heavy
-//Shields
-Buckler,			    +1,	0/-,	-,	-1,		-,	5 lb, Shield
-Light Wood Shield,  	+1,	0/-,	-,	-1,		-,	5 lb, Shield
-Light Steel Shield, 	+1,	0/-,	-,	-1,		-,	6 lb, Shield
-Heavy Wood Shield,  	+2,	0/-,	-,	-2,		-,	10 lb, Shield
-Heavy Steel Shield,     +2,	0/-,	-,	-2,		-,	15 lb, Shield
-Tower Shield, 		    +4,	0/-,	2,	-10,	-,	45 lb, TowerShield

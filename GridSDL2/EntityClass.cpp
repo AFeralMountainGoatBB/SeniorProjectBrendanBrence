@@ -417,7 +417,6 @@ int EntityClass::GetTotalDamageReduction()
 			TotalDamageReduction += (*it).second->GetDamageReduction();
 		}
 	}
-	//go through feats and add up damage reduction + resistances TODO
 	//add together, return total
 
 	return TotalDamageReduction;
@@ -501,14 +500,14 @@ void EntityClass::TwoHandWeapon()
 		else
 		{
 			m_Equipment[OFFHAND] = m_Equipment[MAINHAND];
-			std::cout << "m_Weapon Grasped in both hands" << std::endl;
+			std::cout << "Weapon Grasped in both hands" << std::endl;
 		}
 	} // end mainhand !=null
 	else
 	{
 		if (m_Equipment[OFFHAND] != NULL)
 		{
-			std::cout << "m_Weapon Grasped in both hands" << std::endl;
+			std::cout << "Weapon Grasped in both hands" << std::endl;
 			m_Equipment[MAINHAND] = m_Equipment[OFFHAND];
 		}
 	}
@@ -709,23 +708,17 @@ void EntityClass::handleEvent(SDL_Event& a_event, EncounterInstance & a_Instance
 			break;
 		case SDLK_2:
 		{
-			if (this->GetEquipmentInSlot(MAINHAND) != nullptr)
+			if (this->GetEquipmentInSlot(MAINHAND) != nullptr && this->GetEquipmentInSlot(MAINHAND)->IsRangedWeapon())
 			{
-				if (this->GetEquipmentInSlot(MAINHAND)->IsRangedWeapon())
-				{
 					SetControlMode(RANGEDATTACKMODE);
 					a_Instance.GetTargetSystem().SetActive(true);
 					break;
-				}
 			}
-			else if (this->GetEquipmentInSlot(OFFHAND) != nullptr)
+			else if (this->GetEquipmentInSlot(OFFHAND) != nullptr && this->GetEquipmentInSlot(OFFHAND)->IsRangedWeapon())
 			{
-				if (this->GetEquipmentInSlot(OFFHAND)->IsRangedWeapon())
-				{
 					SetControlMode(RANGEDATTACKMODE);
 					a_Instance.GetTargetSystem().SetActive(true);
 					break;
-				}
 			}
 			std::cout << "No ranged weapon found" << std::endl;
 			break;
@@ -1696,14 +1689,15 @@ bool EntityClass::LoadFeats(std::ifstream & a_reader, EncounterInstance& a_Encou
 			continue;
 		}
 
-		if (line.find("End m_Feats:") != std::string::npos)
+		if (line.find("End Feats:") != std::string::npos)
 		{
 			LoadingFeats= false;
 			break;
 		}
-		else if (line.find("m_Feats:") != std::string::npos)
+		else if (line.find("Feats:") != std::string::npos)
 		{
 			LoadingFeats = true;
+			std::cout << "YERRRRRRRRR" << std::endl;
 			continue;
 		}
 		if (LoadingFeats == true)

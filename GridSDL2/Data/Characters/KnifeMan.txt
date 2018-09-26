@@ -1,4 +1,4 @@
-Name:Knife guy
+Name:KnifeMan
 
 Ability Scores:
 
@@ -11,8 +11,14 @@ Charisma:5
 
 End Ability Scores:
 
+Properties:
+MaxHitPoints: 40
+BaseAttackBonus: 2
+End Properties:
+
 Equipped:
 MainHand:Longsword
+Offhand:Dagger
 Body:Chain shirt Armor
 
 End Equipped:

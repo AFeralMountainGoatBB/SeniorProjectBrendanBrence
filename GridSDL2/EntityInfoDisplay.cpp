@@ -167,7 +167,7 @@ std::pair<std::string, std::string> EntityInfoDisplay::DetermineDamageLabels(Ent
 			RangedDamageBonus = std::to_string(RAttack.CalcTotalDamageBonus(a_ActiveUnit, a_Instance));
 			RangedDamageDice = std::to_string(a_ActiveUnit.GetEquipmentInSlot(MAINHAND)->GetDamageDice().first) + "d" + std::to_string(a_ActiveUnit.GetEquipmentInSlot(MAINHAND)->GetDamageDice().second);
 	}
-	else if (a_ActiveUnit.GetEquipmentInSlot(OFFHAND) != nullptr && a_ActiveUnit.GetEquipmentInSlot(MAINHAND)->IsRangedWeapon())
+	else if (a_ActiveUnit.GetEquipmentInSlot(OFFHAND) != nullptr && a_ActiveUnit.GetEquipmentInSlot(OFFHAND)->IsRangedWeapon())
 	{
 			a_ActiveUnit.SwapWeaponHands();
 			RangedWeaponName = a_ActiveUnit.GetEquipmentInSlot(MAINHAND)->GetName();
@@ -205,7 +205,7 @@ std::string EntityInfoDisplay::DetermineHitPointsLabel(EntityClass a_ActiveUnit,
 
 	CurrentHP = std::to_string(a_ActiveUnit.GetHitPoints());
 	MaxHP = std::to_string(a_ActiveUnit.GetMaxHitPoints());
-	HitPointsLabel = "m_HitPoints: " + CurrentHP + "/" + MaxHP;
+	HitPointsLabel = "HitPoints: " + CurrentHP + "/" + MaxHP;
 	return HitPointsLabel;
 }
 
@@ -215,7 +215,7 @@ std::string EntityInfoDisplay::DetermineACLabel(EntityClass a_ActiveUnit, Encoun
 	std::string AC = "";
 
 	AC = std::to_string(a_ActiveUnit.GetArmorClass());
-	ACLabelStore = "m_ArmorClass: " + AC;
+	ACLabelStore = "ArmorClass: " + AC;
 	return ACLabelStore;
 }
 

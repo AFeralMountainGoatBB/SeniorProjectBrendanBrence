@@ -362,7 +362,7 @@ void ObjectClass::DisplayObjectWeaponFacts()
 	std::cout << "Damage dice: " << m_damageDice.first << "d" << m_damageDice.second << std::endl;
 	
 	//display weapon types
-	std::cout << "m_Weapon Types: "<<std::endl<< "\t";
+	std::cout << "Weapon Types: "<<std::endl<< "\t";
 	for (auto i = m_weaponTypes.begin(); i != m_weaponTypes.end(); i++)
 	{
 		std::cout << WeaponTypeTextMap[(*i)] << ", ";
