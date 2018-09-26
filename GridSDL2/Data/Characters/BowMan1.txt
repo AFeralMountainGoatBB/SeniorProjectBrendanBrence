@@ -1,23 +1,18 @@
-Name:VIKTOR
+Name:BowMan1
 Ability Scores:
 
-Strength: 50
-Dexterity: 15
+Strength: 10
+Dexterity: 16
 Constitution: 13
 Intelligence: 12
 Wisdom: 14
-Charisma:100
+Charisma:5
 
 End Ability Scores:
 
-Properties:
-MaxHitPoints: 60
-BaseAttackBonus: 6
-End Properties:
-
 Equipped:
-MainHand:Spear
-Body:Full-plate Armor
+MainHand:Longbow
+Body:Leather Armor
 
 End Equipped:
 
@@ -27,9 +22,11 @@ Dagger
 End Backpack:
 
 Feats:
-Power Attack
+WeaponFocus Bow
+WeaponSpecialization Bow
 Simple Weapon Proficiency
 Martial Weapon Proficiency
+
 End Feats:
 
-Texture:Miller-Victor.jpeg
+Texture:Archer.png

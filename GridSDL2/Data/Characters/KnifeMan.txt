@@ -2,7 +2,7 @@ Name:KnifeMan
 
 Ability Scores:
 
-Strength: 40
+Strength: 16
 Dexterity: 15
 Constitution: 13
 Intelligence: 12

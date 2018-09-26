@@ -15,7 +15,7 @@ Heavy Pick,		1d6,	20/x4,	0ft, 	6 lb,	Pierce, Axe, Melee
 Rapier,			1d6,	18/x2,	0ft,	2 lb, 	Pierce, Sword, Melee
 Scimitar, 		1d6,	18/x2,	0ft, 	4 lb,	Slashing, Sword, Melee
 Trident,		1d8,	20/x2,	10 ft,	4 lb,	Pierce, Polearm, Melee, Thrown
-Warhammer,		1d8,	20/x3	0ft, 	5 lb,	Blunt, Hammer, Melee
+Warhammer,		1d8,	20/x3,	0ft, 	5 lb,	Blunt, Hammer, Melee
 
 //two handed melee weapons
 Falchion,		2d4,	18/x2,	0ft,	8 lb,	Slashing, Melee, TwoHanded, Sword
@@ -30,6 +30,4 @@ Lance,			1d8,	20/x3,	0ft,	10 lb,	Pierce, Polearm, TwoHanded, Melee
 
 //ranged martial weapons
 Longbow,		1d8,	20/x3, 	100 ft,	3 lb,	Pierce, Ranged, Bow, TwoHanded
-//Longbow, composite	100 gp	1d6	1d8	×3	110 ft.	3 lb.	Piercing
-Shortbow,		1d6, 	20/x3	60 ft,	2 lb,	Pierce, Ranged, Bow, TwoHanded
-//Shortbow, composite	75 gp	1d4	1d6	×3	70 ft.	2 lb.	Piercing
+Shortbow,		1d6, 	20/x3,	60 ft,	2 lb,	Pierce, Ranged, Bow, TwoHanded

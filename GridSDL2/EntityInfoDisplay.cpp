@@ -67,7 +67,7 @@ std::pair<std::string, std::string> EntityInfoDisplay::DetermineAttackLabels(Ent
 	bool MAttackPossible = true;
 	bool RAttackPossible = true;
 	//do what would show for melee
-	if (a_ActiveUnit.GetEquipmentInSlot(MAINHAND) != nullptr && a_ActiveUnit.GetEquipmentInSlot(MAINHAND)->IsMeleeWeapon())
+	if (a_ActiveUnit.GetEquipmentInSlot(MAINHAND) != nullptr && a_ActiveUnit.GetEquipmentInSlot(MAINHAND)->IsMeleeWeapon()==true)
 	{
 			MeleeWeaponName = a_ActiveUnit.GetEquipmentInSlot(MAINHAND)->GetName();
 			MeleeAttackBonus = std::to_string(MAttack.CalcTotalAttackBonus(a_ActiveUnit));

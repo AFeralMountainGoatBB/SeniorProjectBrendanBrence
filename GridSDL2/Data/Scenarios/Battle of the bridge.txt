@@ -1,7 +1,6 @@
 Map: Battle of the bridge
 Characters: // player or comp, name, position, 'side'
 PlayerCharacter: KnifeMan, (0,0), 1 //test comment two
-ComputerCharacter:VIKTOR, (5,1), 2
 ComputerCharacter: SwordMan, (1,0), 2
 ComputerCharacter: SpearMan, (0,3), 2
 //testcomment

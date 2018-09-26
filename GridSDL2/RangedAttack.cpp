@@ -40,7 +40,7 @@ void RangedAttack::AttackNormal(EntityClass & a_Source, EntityClass &a_Target, E
 	else if (BlockObstructed.second == true)
 	{
 		std::cout << "Tile is obstructed" << std::endl;
-		a_Instance.AddLog("a_Target has cover from attack");
+		a_Instance.AddLog("Target has cover from attack");
 		m_Circumstances.push_back(TARGETHASCOVER);
 	}
 	else
@@ -245,11 +245,14 @@ int RangedAttack::TotalFeatAttackBonus(EntityClass&a_Source)
 
 int RangedAttack::CalcTotalDamageBonus(EntityClass &a_Source, EncounterInstance &a_Instance)
 {
+	m_TempFeats = a_Source.GetActiveFeats();
+	DetermineAndSetWeapon(a_Source);
 	int TotalDamageBonus = 0;
 	//add damage bonuses
 	//weapontypes
 	for (auto it = m_TempFeats.begin(); it != m_TempFeats.end(); it++)
 	{
+		std::cout << (*it).GetName() << std::endl;
 		for (auto Type = m_Weapon->GetWeaponType().begin(); Type != m_Weapon->GetWeaponType().end(); Type++)
 		{
 			if ((*it).GetWeaponDamageBonuses().count(*Type)) //true if > 0

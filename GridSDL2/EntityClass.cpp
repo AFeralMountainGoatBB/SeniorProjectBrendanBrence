@@ -1582,7 +1582,7 @@ bool EntityClass::LoadEquipment(std::ifstream & a_reader, std::map<std::string, 
 		else if (line.find("Equipped:") != std::string::npos)
 		{
 			EquipmentLoading = true;
-			std::cout << "Loading m_Equipment" << std::endl;
+			std::cout << "Loading Equipment" << std::endl;
 		}
 
 		TempLocation = GetBodyLocation(line);
@@ -1600,7 +1600,7 @@ bool EntityClass::LoadEquipment(std::ifstream & a_reader, std::map<std::string, 
 					//std::cout << "Found armor, adding it to character " << a_line << std::endl;
 					if (a_MasterObjectList.count(line) == 0)
 					{
-						std::cout << line << " not found in a_MasterObjectList, not adding it in" << std::endl;
+						std::cout << line << " armor not found in a_MasterObjectList, not adding it in" << std::endl;
 					}
 					else
 					{
@@ -1614,7 +1614,8 @@ bool EntityClass::LoadEquipment(std::ifstream & a_reader, std::map<std::string, 
 				{
 					if (a_MasterObjectList.count(line) == 0)
 					{
-						std::cout << line << " not found in a_MasterObjectList, not adding it in" << std::endl;
+						std::cout << line << " weapon not found in a_MasterObjectList, not adding it in" << std::endl;
+						break;
 					}
 					else
 					{
@@ -1626,7 +1627,7 @@ bool EntityClass::LoadEquipment(std::ifstream & a_reader, std::map<std::string, 
 				
 				if (m_Equipment[TempLocation]->GetName()!=line)
 				{
-					std::cout << "Error loading a_object equipped in " << BodyLocationTextMap[TempLocation]<< std::endl;
+					std::cout << "Error loading object equipped in " << BodyLocationTextMap[TempLocation]<< std::endl;
 					m_Equipment[TempLocation] = NULL;
 				}
 

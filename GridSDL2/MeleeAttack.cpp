@@ -287,14 +287,28 @@ void MeleeAttack::DetermineAttbUsed(EntityClass &a_Source)
 			m_UsesAttributeForDamageRoll = DEX;
 		}
 	}
+	m_UsesAttributeForAttackRoll = STR;
+	m_UsesAttributeForDamageRoll = STR;
 }
 
 void MeleeAttack::DetermineAndSetWeapon(EntityClass &a_Source)
 {
 	m_Weapon = a_Source.GetEquipmentInSlot(MAINHAND);
+	if (m_Weapon != nullptr)
+	{
+		auto types = m_Weapon->GetWeaponType();
+		auto it = std::find(types.begin(), types.end(), MELEE);
+		if (it == types.end())
+		{
+			m_Weapon = &a_Source.GetUnarmedStrike();
+			DetermineAttbUsed(a_Source);
+			std::cout << "setting to unarmed attack" << m_Weapon->GetName() << std::endl;
+		}
+	}
 	if (m_Weapon == nullptr)
 	{
 		m_Weapon = &a_Source.GetUnarmedStrike();
+		DetermineAttbUsed(a_Source);
 		std::cout << "setting to unarmed attack" << m_Weapon->GetName() << std::endl;
 	}
 }

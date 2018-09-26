@@ -26,7 +26,7 @@ std::pair<bool, bool> SightAlgorithm::raytrace(std::pair<int, int> a_Source, std
 			//this statement checks to see if we are looking at the start or end tiles, two tiles that should not be checked for obstructions or blocking
 			if (((x == a_Source.first && y == a_Source.second) || (x == a_Target.first && y == a_Target.second))==false)
 			{
-				std::cout << "a_x:" << x << " a_y:" << y << std::endl;
+				std::cout << "x:" << x << " y:" << y << std::endl;
 				TempBool = CheckTile(x, y, a_TileMap);
 			}
 			if (TempBool.first == true)
@@ -60,6 +60,7 @@ std::pair<bool, bool> SightAlgorithm:: CheckTile(int a_x, int a_y, std::vector<s
 	bool obstructed;
 	if (a_TileMap[a_x][a_y].getType()>g_TILE_STONE && a_TileMap[a_x][a_y].getType()!=g_TILE_WATER)
 	{
+		std::cout << a_x << ", " << a_y << "is blocked" << std::endl;
 		block = true;
 	}
 	if (a_TileMap[a_x][a_y].EntityPresent())
